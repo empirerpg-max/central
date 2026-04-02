@@ -3,197 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empire Oficial - Central</title>
+    <title>Empire Charts Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --empire: #8a2be2; --bg: #050505; --card: #121212; --sp: #1DB954; --am: #FA243C; --yt: #FF0000; --gray: #b3b3b3; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
-        
-        /* HEADER EMPIRE */
-        header { padding: 30px 20px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, #050505); border-bottom: 2px solid var(--empire); }
-        .logo { width: 70px; filter: drop-shadow(0 0 10px var(--empire)); margin-bottom: 10px; }
-        h1 { font-family: 'Figtree'; font-size: 24px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
+        header { padding: 30px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, #050505); border-bottom: 2px solid var(--empire); }
+        .logo { width: 60px; filter: drop-shadow(0 0 10px var(--empire)); margin-bottom: 10px; }
+        nav { display: flex; overflow-x: auto; background: #111; padding: 10px; gap: 8px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
+        nav a { color: #888; text-decoration: none; font-size: 11px; font-weight: 700; padding: 8px 15px; border-radius: 20px; white-space: nowrap; text-transform: uppercase; border: 1px solid transparent; }
+        nav a.active { background: var(--empire); color: white; }
+        #app { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .filters { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
+        select { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 600; }
 
-        /* NAV */
-        nav { display: flex; overflow-x: auto; background: #111; padding: 12px; gap: 10px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; justify-content: center; }
-        nav a { color: #888; text-decoration: none; font-size: 12px; font-weight: 700; padding: 8px 18px; border-radius: 20px; white-space: nowrap; transition: 0.3s; border: 1px solid transparent; text-transform: uppercase; }
-        nav a.active { background: var(--empire); color: white; border-color: var(--empire); }
+        /* TABELA PADRÃO (BILLBOARD / COUNTRIES) */
+        .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 15px; background: var(--card); margin-bottom: 2px; border-radius: 4px; }
+        .chart-row img { width: 50px; height: 50px; border-radius: 4px; }
+        .rank { font-family: 'Figtree'; font-size: 24px; font-weight: 900; font-style: italic; text-align: center; }
+        .status { font-size: 10px; font-weight: 900; text-align: center; }
+        .up { color: var(--sp); } .down { color: var(--am); } .new { color: #1d75ff; }
 
-        #app { padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 60vh; }
-
-        /* FILTROS */
-        .filters { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
-        select { background: #222; color: white; border: 1px solid #444; padding: 12px; border-radius: 10px; outline: none; cursor: pointer; font-weight: 600; font-family: 'Inter'; }
-
-        /* ------------------------------------------------------------------ */
-        /* DESIGN SPOTIFY (DARK & IMMERSIVE) */
-        .sp-banner { height: 350px; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 40px; position: relative; border-radius: 12px; margin-bottom: 20px; }
-        .sp-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
-        .sp-content { position: relative; z-index: 2; }
-        .sp-verified { display: flex; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
-        .sp-verified span { background: #3d91f4; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 10px; }
-        .sp-name { font-size: clamp(40px, 8vw, 96px); font-weight: 900; margin: 0; font-family: 'Figtree'; letter-spacing: -4px; }
-        .sp-row { display: grid; grid-template-columns: 40px 50px 1fr 120px; align-items: center; padding: 10px; border-radius: 4px; transition: background 0.2s; }
-        .sp-row:hover { background: rgba(255,255,255,0.1); }
-        .sp-row img { width: 45px; height: 45px; border-radius: 2px; }
-        .sp-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
-        .sp-about { background: #242424; padding: 25px; border-radius: 8px; font-size: 14px; line-height: 1.6; color: var(--gray); }
-
-        /* DESIGN APPLE (CLEAN & WHITE) */
-        .am-container { background: #fff; color: #000; border-radius: 15px; padding: 40px; }
-        .am-header { display: flex; align-items: center; margin-bottom: 40px; }
-        .am-img { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .am-info { padding-left: 40px; }
-        .am-name { font-size: 48px; font-weight: 900; margin: 0; letter-spacing: -2px; }
-        .am-stat { color: var(--am); font-weight: 700; font-size: 20px; }
-        .am-song { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .am-song img { width: 50px; height: 50px; border-radius: 6px; margin-right: 15px; }
-
-        /* DESIGN YOUTUBE (CHANNEL STYLE) */
-        .yt-banner { height: 200px; background-size: cover; background-position: center; border-radius: 12px 12px 0 0; }
-        .yt-meta { display: flex; align-items: center; padding: 20px; background: #0f0f0f; border-radius: 0 0 12px 12px; }
-        .yt-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #0f0f0f; margin-top: -60px; margin-right: 20px; object-fit: cover; }
-        .yt-video { display: flex; gap: 15px; margin-bottom: 20px; }
-        .yt-thumb { width: 160px; height: 90px; border-radius: 10px; object-fit: cover; }
-
-        /* PREVISÕES REAL-TIME */
+        /* REAL TIME GRID */
         .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .rt-col { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; }
-        .rt-head { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
-        .rt-item { display: grid; grid-template-columns: 35px 45px 1fr 90px; align-items: center; padding: 10px; border-bottom: 1px solid #1a1a1a; font-size: 13px; }
+        .col { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+        .col-h { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
+        .item-rt { display: grid; grid-template-columns: 35px 45px 1fr 90px; align-items: center; padding: 10px; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
 
-        @media (max-width: 850px) { .sp-grid, .am-header { grid-template-columns: 1fr; display: block; } .am-info { padding: 20px 0; } .am-img { width: 150px; height: 150px; } }
+        /* MONTHLY PROFILE (SPOTIFY/APPLE/YT) */
+        .banner { height: 320px; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 30px; position: relative; border-radius: 15px; margin-bottom: 30px; }
+        .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, #000); }
+        .banner-c { position: relative; z-index: 2; }
+        .art-name { font-size: clamp(30px, 6vw, 60px); font-weight: 900; margin: 0; font-family: 'Figtree'; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-<header>
-    <img src="https://i.imgur.com/8N69f3I.png" class="logo"> <h1>Empire Charts</h1>
-</header>
+<header><img src="https://i.imgur.com/8N69f3I.png" class="logo"><h1>Empire Charts</h1></header>
 
 <nav id="navbar">
     <a href="#" onclick="route('realtime')" id="btn-realtime">Previsões</a>
-    <a href="#" onclick="route('spotify')" id="btn-spotify">Spotify</a>
-    <a href="#" onclick="route('apple')" id="btn-apple">Apple Music</a>
-    <a href="#" onclick="route('youtube')" id="btn-youtube">YouTube</a>
+    <a href="#" onclick="route('chart', 'HOT 100')" id="btn-hot100">Hot 100</a>
+    <a href="#" onclick="route('chart', 'DADOS ÁLBUNS')" id="btn-albums">Billboard 200</a>
+    <a href="#" onclick="route('spotify')" id="btn-spotify">Spotify Monthly</a>
+    <a href="#" onclick="route('country', 'SPOTIFY COUNTRIES')" id="btn-sp-c">Spotify Países</a>
+    <a href="#" onclick="route('apple')" id="btn-apple">Apple Monthly</a>
+    <a href="#" onclick="route('country', 'APPLE MUSIC COUNTRIES')" id="btn-am-c">Apple Países</a>
+    <a href="#" onclick="route('youtube')" id="btn-youtube">YouTube Monthly</a>
 </nav>
 
 <div id="app"></div>
 
 <script>
-    // ⚠️ SUBSTITUA PELO SEU LINK DO APPS SCRIPT
     const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
 
-    async function route(page) {
+    async function route(type, tab) {
         document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-        const btn = document.getElementById('btn-'+page);
-        if(btn) btn.classList.add('active');
+        const activeBtn = document.querySelector(`[onclick*="${tab || type}"]`);
+        if(activeBtn) activeBtn.classList.add('active');
 
         const app = document.getElementById('app');
-        app.innerHTML = "<p style='text-align:center; padding:100px; color:#666;'>Sincronizando com o Império...</p>";
+        app.innerHTML = "<p style='text-align:center; padding:100px;'>Invocando Império...</p>";
 
-        if(page === 'realtime') renderRealTime();
-        else renderMonthly(page.toUpperCase().replace('APPLE', 'APPLE MUSIC'));
+        if (type === 'realtime') renderRealTime();
+        else if (type === 'chart') renderMainChart(tab);
+        else if (type === 'country') renderCountryChart(tab);
+        else renderMonthly(type === 'spotify' ? 'SPOTIFY' : type === 'apple' ? 'APPLE MUSIC' : 'YOUTUBE');
     }
 
-    // --- RENDERIZAR PREVISÕES ---
-    async function renderRealTime() {
-        try {
-            const res = await fetch(API + "?action=getRealTime").then(r => r.json());
-            const row = (list, color) => list.map(i => `
-                <div class="rt-item">
-                    <div style="color:#444; text-align:center;">${i.posicao}</div>
-                    <img src="${i.capa}" style="width:35px; height:35px; border-radius:3px;">
-                    <div style="padding-left:10px; font-weight:700;">${i.titulo}</div>
-                    <div style="text-align:right; font-weight:700; color:${color}">${i.streams}</div>
-                </div>`).join('');
-
-            document.getElementById('app').innerHTML = `
-                <div class="rt-grid">
-                    <div class="rt-col"><div class="rt-head" style="background:var(--sp); color:#000;">Spotify</div>${row(res.spotify, 'var(--sp)')}</div>
-                    <div class="rt-col"><div class="rt-head" style="background:#fff; color:var(--am);">Apple Music</div>${row(res.apple, 'var(--am)')}</div>
-                    <div class="rt-col"><div class="rt-head" style="background:var(--yt); color:#fff;">YouTube</div>${row(res.youtube, '#fff')}</div>
-                </div>`;
-        } catch(e) { document.getElementById('app').innerHTML = "Erro ao carregar dados."; }
+    // --- CHARTS PRINCIPAIS (HOT 100 / 200) ---
+    async function renderMainChart(tab) {
+        const dates = await fetch(`${API}?action=getDates&tab=${tab}`).then(r => r.json());
+        document.getElementById('app').innerHTML = `
+            <div class="filters"><select id="dateS" onchange="loadMain('${tab}')">${dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
+            <div id="chart-body"></div>`;
+        loadMain(tab);
     }
 
-    // --- SISTEMA MENSAL UNIFICADO ---
-    async function renderMonthly(platform) {
-        const years = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
+    async function loadMain(tab) {
+        const d = document.getElementById('dateS').value;
+        const res = await fetch(`${API}?action=getChart&tab=${tab}&date=${d}`).then(r => r.json());
+        document.getElementById('chart-body').innerHTML = res.map(i => `
+            <div class="chart-row">
+                <div class="rank">#${i.pos}</div>
+                <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/50'">
+                <div style="padding-left:15px;"><b>${i.titulo}</b><br><small style="color:#888;">${i.art}</small></div>
+                <div style="text-align:right;"><b>${i.sem}</b><br><small style="color:#666;">TOTAL: ${i.tot}</small></div>
+            </div>`).join('');
+    }
+
+    // --- SUBCHARTS (PAÍSES) ---
+    async function renderCountryChart(tab) {
+        const [dates, countries] = await Promise.all([
+            fetch(`${API}?action=getDates&tab=${tab}`).then(r => r.json()),
+            fetch(`${API}?action=getCountries&tab=${tab}`).then(r => r.json())
+        ]);
         document.getElementById('app').innerHTML = `
             <div class="filters">
-                <select id="yS" onchange="updateM('${platform}')">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select>
-                <select id="mS" onchange="updateA('${platform}')"></select>
-                <select id="aS" onchange="loadStats('${platform}')"></select>
-            </div>
-            <div id="monthly-body"></div>`;
-        updateM(platform);
+                <select id="countryS" onchange="loadCountry('${tab}')">${countries.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
+                <select id="dateS" onchange="loadCountry('${tab}')">${dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
+            </div><div id="chart-body"></div>`;
+        loadCountry(tab);
     }
 
-    async function updateM(p) {
-        const y = document.getElementById('yS').value;
-        const months = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json());
-        const mS = document.getElementById('mS'); 
-        mS.innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join('');
-        updateA(p);
+    async function loadCountry(tab) {
+        const c = document.getElementById('countryS').value; const d = document.getElementById('dateS').value;
+        const res = await fetch(`${API}?action=getCountryData&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
+        document.getElementById('chart-body').innerHTML = res.map(i => `
+            <div class="chart-row">
+                <div class="rank" style="font-size:18px;">#${i.pos}</div>
+                <img src="${i.capa}">
+                <div style="padding-left:15px;"><b>${i.titulo}</b><br><small style="color:#888;">${i.art}</small></div>
+                <div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div>
+            </div>`).join('');
     }
 
-    async function updateA(p) {
-        const y = document.getElementById('yS').value; const m = document.getElementById('mS').value;
-        const arts = await fetch(`${API}?action=getArtists&platform=${p}&month=${m}&year=${y}`).then(r => r.json());
-        const aS = document.getElementById('aS'); 
-        aS.innerHTML = arts.map(a => `<option value="${a}">${a}</option>`).join('');
-        loadStats(p);
+    // --- REAL TIME E MONTHLY (MANTIDOS DA v41) ---
+    async function renderRealTime() {
+        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
+        const row = (l, c) => l.map(i => `<div class="item-rt"><div style="color:#444;">${i.posicao}</div><img src="${i.capa}" style="width:35px;height:35px;border-radius:3px;"><div style="padding:0 10px;font-weight:700;">${i.titulo}</div><div style="text-align:right;color:${c}">${i.streams}</div></div>`).join('');
+        document.getElementById('app').innerHTML = `<div class="rt-grid">
+            <div class="col"><div class="col-h" style="background:var(--sp);color:#000;">Spotify</div>${row(d.spotify, 'var(--sp)')}</div>
+            <div class="col"><div class="col-h" style="background:#fff;color:var(--am);">Apple Music</div>${row(d.apple, 'var(--am)')}</div>
+            <div class="col"><div class="col-h" style="background:var(--yt);color:#fff;">YouTube</div>${row(d.youtube, '#fff')}</div>
+        </div>`;
     }
 
-    async function loadStats(p) {
+    async function renderMonthly(p) {
+        const years = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
+        document.getElementById('app').innerHTML = `<div class="filters">
+            <select id="yS" onchange="updateM('${p}')">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select>
+            <select id="mS" onchange="updateA('${p}')"></select><select id="aS" onchange="getStats('${p}')"></select>
+        </div><div id="monthly-body"></div>`;
+        updateM(p);
+    }
+    async function updateM(p) { const y = document.getElementById('yS').value; const months = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json()); document.getElementById('mS').innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join(''); updateA(p); }
+    async function updateA(p) { const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const arts = await fetch(`${API}?action=getArtists&platform=${p}&month=${m}&year=${y}`).then(r => r.json()); document.getElementById('aS').innerHTML = arts.map(a => `<option value="${a}">${a}</option>`).join(''); getStats(p); }
+    async function getStats(p) {
         const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const a = document.getElementById('aS').value;
         const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&artist=${a}&year=${y}`).then(r => r.json());
-        const art = data[0];
-        const body = document.getElementById('monthly-body');
-
-        if(p === 'SPOTIFY') {
-            body.innerHTML = `
-                <div class="sp-banner" style="background-image:url('${art.capaArtista}')">
-                    <div class="sp-content">
-                        <div class="sp-verified"><span>✓</span> Artista Verificado</div>
-                        <h2 class="sp-name">${art.nome}</h2>
-                        <div style="font-weight:700; margin-top:10px;">${art.totalOuvintes} ouvintes mensais</div>
-                    </div>
-                </div>
-                <div class="sp-grid">
-                    <div><h3 style="font-size:24px; margin-bottom:20px;">Populares</h3>
-                    ${art.musicas.map((m,i) => `<div class="sp-row"><div style="color:var(--gray);">${i+1}</div><img src="${m.capaMusica}"><div><b>${m.titulo}</b></div><div style="text-align:right; color:var(--gray);">${m.streams}</div></div>`).join('')}</div>
-                    <div><h3 style="font-size:24px; margin-bottom:20px;">Sobre</h3><div class="sp-about">${art.sobre}</div></div>
-                </div>`;
-        } 
-        else if(p === 'APPLE MUSIC') {
-            body.innerHTML = `
-                <div class="am-container">
-                    <div class="am-header">
-                        <img src="${art.capaArtista}" class="am-img">
-                        <div class="am-info"><h2 class="am-name">${art.nome}</h2><div class="am-stat">${art.totalOuvintes} ouvintes mensais</div></div>
-                    </div>
-                    <div class="sp-grid">
-                        <div><h3 style="color:#000; border-bottom:1px solid #eee; padding-bottom:10px;">As mais ouvidas</h3>
-                        ${art.musicas.map(m => `<div class="am-song"><img src="${m.capaMusica}"><div><b>${m.titulo}</b><br><small style="color:#888;">${m.streams} reproduções</small></div></div>`).join('')}</div>
-                        <div><h3 style="color:#000; border-bottom:1px solid #eee; padding-bottom:10px;">Sobre</h3><p style="color:#444; line-height:1.6;">${art.sobre}</p></div>
-                    </div>
-                </div>`;
-        }
-        else { // YOUTUBE
-            body.innerHTML = `
-                <div class="yt-banner" style="background-image:url('${art.capaArtista}')"></div>
-                <div class="yt-meta">
-                    <img src="${art.capaArtista}" class="yt-avatar">
-                    <div><h2 style="margin:0;">${art.nome}</h2><small style="color:#aaa;">${art.totalOuvintes} visualizações mensais</small></div>
-                </div>
-                <div class="sp-grid" style="margin-top:30px;">
-                    <div><h3 style="text-transform:uppercase; font-size:14px; color:#aaa; letter-spacing:1px;">Vídeos em destaque</h3>
-                    ${art.musicas.map(m => `<div class="yt-video"><img src="${m.capaMusica}" class="yt-thumb"><div><b>${m.titulo}</b><br><small style="color:#aaa;">${m.streams} views</small></div></div>`).join('')}</div>
-                    <div><h3 style="text-transform:uppercase; font-size:14px; color:#aaa; letter-spacing:1px;">Sobre</h3><p style="color:#aaa; font-size:14px;">${art.sobre}</p></div>
-                </div>`;
-        }
+        const art = data[0]; const cl = p === 'SPOTIFY' ? 'var(--sp)' : (p === 'APPLE MUSIC' ? 'var(--am)' : '#fff');
+        document.getElementById('monthly-body').innerHTML = `
+            <div class="banner" style="background-image:url('${art.capaArtista}')"><div class="banner-c"><h2 class="art-name">${art.nome}</h2><p style="color:${cl};font-weight:700;">${art.totalOuvintes} ouvintes mensais</p></div></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;">
+                <div><h3>Músicas</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent;padding:10px 0;"><div class="rank" style="font-size:16px;width:30px;">${i+1}</div><img src="${mus.capaMusica}" style="width:40px;height:40px;"><div style="padding-left:10px;"><b>${mus.titulo}</b></div><div style="text-align:right;color:${cl};font-weight:700;flex-grow:1;">${mus.streams}</div></div>`).join('')}</div>
+                <div><h3>Sobre</h3><p style="color:#aaa;line-height:1.6;font-size:14px;">${art.sobre}</p></div>
+            </div>`;
     }
 
     window.onload = () => route('realtime');
