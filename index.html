@@ -10,11 +10,11 @@
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
         header { padding: 30px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, #050505); border-bottom: 2px solid var(--empire); }
         
-        /* SUBMENUS DROPDOWN */
+        /* MENU COM SUBMENUS  */
         nav { background: #111; display: flex; justify-content: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
-        .menu-item { position: relative; padding: 15px 20px; cursor: pointer; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #888; transition: 0.3s; }
+        .menu-item { position: relative; padding: 15px 18px; cursor: pointer; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #888; transition: 0.3s; }
         .menu-item:hover { color: var(--empire); }
-        .submenu { display: none; position: absolute; top: 100%; left: 0; background: #111; border: 1px solid #222; min-width: 210px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
+        .submenu { display: none; position: absolute; top: 100%; left: 0; background: #111; border: 1px solid #222; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
         .menu-item:hover .submenu { display: block; }
         .submenu-item { padding: 12px 15px; font-size: 10px; color: #aaa; border-bottom: 1px solid #222; transition: 0.2s; white-space: nowrap; }
         .submenu-item:hover { background: var(--empire); color: white; }
@@ -35,6 +35,11 @@
         .art-name { font-size: clamp(35px, 8vw, 80px); font-weight: 900; margin: 0; font-family: 'Figtree'; text-transform: uppercase; letter-spacing: -3px; }
         .grid-m { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
         h3 { border-bottom: 2px solid var(--empire); padding-bottom: 10px; margin-bottom: 20px; font-family: 'Figtree'; text-transform: uppercase; font-size: 18px; }
+
+        /* REAL TIME GRID */
+        .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .rt-col { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+        .rt-head { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
         
         @media (max-width: 768px) { nav { flex-wrap: wrap; } .menu-item { padding: 10px; font-size: 9px; } }
     </style>
@@ -87,7 +92,7 @@
 <div id="app"></div>
 
 <script>
-    // ⚠️ SUBSTITUA PELO SEU LINK /exec DO APPS SCRIPT
+    // ⚠️ SUBSTITUA PELO SEU LINK /exec
     const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
 
     async function route(type, tab) {
@@ -105,9 +110,9 @@
     }
 
     async function renderMainChart(tab) {
-        const dates = await fetch(`${API}?action=getFilterData&tab=${tab}`).then(r => r.json());
+        const filters = await fetch(`${API}?action=getFilterData&tab=${tab}`).then(r => r.json());
         document.getElementById('app').innerHTML = `
-            <div class="filters"><select id="dateS" onchange="loadMain('${tab}')">${dates.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
+            <div class="filters"><select id="dateS" onchange="loadMain('${tab}')">${filters.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
             <div id="chart-body"></div>`;
         loadMain(tab);
     }
@@ -133,7 +138,7 @@
         const c = document.getElementById('countryS').value; const d = document.getElementById('dateS').value;
         const res = await fetch(`${API}?action=getCountryData&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
         document.getElementById('chart-body').innerHTML = res.length ? res.map(i => `
-            <div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div></div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados para esta seleção.</p>`;
+            <div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div></div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados disponíveis.</p>`;
     }
 
     async function renderMonthly(p) {
@@ -154,17 +159,17 @@
             <div class="banner" style="background-image:url('${art.capaArtista}')"><div class="banner-c"><h2 class="art-name">${art.nome}</h2><p style="color:${cl}; font-weight:900;">${art.totalOuvintes} ouvintes mensais</p></div></div>
             <div class="grid-m">
                 <div><h3>Populares</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent; padding:10px 0;"><div class="rank" style="font-size:16px; width:30px;">${i+1}</div><img src="${mus.capaMusica}"><div style="padding-left:15px;"><b>${mus.titulo}</b></div><div style="text-align:right; color:${cl}; font-weight:700; flex-grow:1;">${mus.streams}</div></div>`).join('')}</div>
-                <div><h3>Sobre</h3><p style="color:#aaa; line-height:1.6; font-size:14px;">${art.sobre}</p><br><p style="color:#555; font-size:12px;">Pesquisas Online: ${art.pesquisas}</p></div>
+                <div><h3>Sobre</h3><p style="color:#aaa; line-height:1.6; font-size:14px;">${art.sobre}</p><br><p style="color:#444; font-size:12px;">Pesquisas Online: ${art.pesquisas}</p></div>
             </div>`;
     }
 
     async function renderRealTime() {
         const d = await fetch(API + "?action=getRealTime").then(r => r.json());
         const row = (l, c) => l.map(i => `<div class="chart-row" style="padding:10px; background:transparent; border-bottom:1px solid #1a1a1a;"><div style="color:#444; font-weight:900;">${i.posicao}</div><img src="${i.capa}" style="width:35px;height:35px;border-radius:3px;"><div style="padding:0 10px; font-size:12px; font-weight:700;">${i.titulo}</div><div style="text-align:right; font-size:12px; color:${c}; font-weight:700;">${i.streams}</div></div>`).join('');
-        document.getElementById('app').innerHTML = `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
-            <div style="background:var(--card); border-radius:12px; overflow:hidden;"><div style="padding:15px; text-align:center; background:var(--sp); color:#000; font-weight:900;">SPOTIFY</div>${row(d.spotify, 'var(--sp)')}</div>
-            <div style="background:var(--card); border-radius:12px; overflow:hidden;"><div style="padding:15px; text-align:center; background:#fff; color:var(--am); font-weight:900;">APPLE MUSIC</div>${row(d.apple, 'var(--am)')}</div>
-            <div style="background:var(--card); border-radius:12px; overflow:hidden;"><div style="padding:15px; text-align:center; background:var(--yt); color:#fff; font-weight:900;">YOUTUBE</div>${row(d.youtube, '#fff')}</div>
+        document.getElementById('app').innerHTML = `<div class="rt-grid">
+            <div class="rt-col"><div class="rt-head" style="background:var(--sp); color:#000;">SPOTIFY</div>${row(d.spotify, 'var(--sp)')}</div>
+            <div class="rt-col"><div class="rt-head" style="background:#fff; color:var(--am);">APPLE MUSIC</div>${row(d.apple, 'var(--am)')}</div>
+            <div class="rt-col"><div class="rt-head" style="background:var(--yt); color:#fff;">YOUTUBE</div>${row(d.youtube, '#fff')}</div>
         </div>`;
     }
 
