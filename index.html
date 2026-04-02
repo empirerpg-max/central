@@ -7,24 +7,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --empire: #8a2be2; --bg: #050505; --card: #121212; --sp: #1DB954; --am: #FA243C; --yt: #FF0000; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
         header { padding: 30px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, #050505); border-bottom: 2px solid var(--empire); }
         
-        /* ESTILO SUBMENU */
+        /* ESTILO SUBMENU - FIEL AO GOOGLE SITES  */
         nav { background: #111; display: flex; justify-content: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
-        .menu-item { position: relative; padding: 15px 20px; cursor: pointer; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #888; transition: 0.3s; }
+        .menu-item { position: relative; padding: 15px 20px; cursor: pointer; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #888; transition: 0.3s; }
         .menu-item:hover { color: var(--empire); }
-        .submenu { display: none; position: absolute; top: 100%; left: 0; background: #111; border: 1px solid #222; min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
+        .submenu { display: none; position: absolute; top: 100%; left: 0; background: #111; border: 1px solid #222; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
         .menu-item:hover .submenu { display: block; }
-        .submenu-item { padding: 12px 15px; font-size: 11px; color: #aaa; border-bottom: 1px solid #222; transition: 0.2s; white-space: nowrap; }
+        .submenu-item { padding: 12px 15px; font-size: 10px; color: #aaa; border-bottom: 1px solid #222; transition: 0.2s; white-space: nowrap; }
         .submenu-item:hover { background: var(--empire); color: white; }
 
         #app { padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh; }
         .filters { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
         select { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 600; outline: none; }
 
-        /* TABELAS */
-        .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 15px; background: var(--card); margin-bottom: 2px; border-radius: 4px; }
+        /* TABELAS DESIGN REAL */
+        .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 15px; background: var(--card); margin-bottom: 2px; border-radius: 4px; transition: 0.3s; }
         .chart-row img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
         .rank { font-family: 'Figtree'; font-size: 24px; font-weight: 900; font-style: italic; text-align: center; }
         
@@ -34,7 +34,7 @@
         .banner-c { position: relative; z-index: 2; }
         .art-name { font-size: clamp(35px, 8vw, 80px); font-weight: 900; margin: 0; font-family: 'Figtree'; text-transform: uppercase; }
 
-        @media (max-width: 768px) { nav { flex-wrap: wrap; } .menu-item { padding: 10px; font-size: 10px; } }
+        @media (max-width: 768px) { nav { flex-wrap: wrap; } .menu-item { padding: 10px; font-size: 9px; } }
     </style>
 </head>
 <body>
@@ -42,46 +42,50 @@
 <header><h1>Empire Charts</h1></header>
 
 <nav>
-    <div class="menu-item" onclick="route('realtime')">Previsões</div>
-    <div class="menu-item">Billboard
+    <div class="menu-item" onclick="route('realtime')">Real Time</div>
+    <div class="menu-item">Billboard Hot 100
         <div class="submenu">
-            <div class="submenu-item" onclick="route('chart', 'HOT 100')">Hot 100</div>
-            <div class="submenu-item" onclick="route('chart', 'MusicStyle')">Hot 100 by Style</div>
-            <div class="submenu-item" onclick="route('chart', 'DADOS ÁLBUNS')">Billboard 200</div>
-            <div class="submenu-item" onclick="route('chart', 'Billboard200Style')">B200 by Style</div>
+            <div class="submenu-item" onclick="route('chart', 'HOT 100')">Billboard Hot 100</div>
+            <div class="submenu-item" onclick="route('chart', 'MusicStyle')">Hot 100 by Music Style</div>
         </div>
     </div>
     <div class="menu-item">Spotify
         <div class="submenu">
-            <div class="submenu-item" onclick="route('chart', 'Spotify')">Global</div>
-            <div class="submenu-item" onclick="route('country', 'SPOTIFY COUNTRIES')">By Country</div>
-            <div class="submenu-item" onclick="route('chart', 'SpotifyStyle')">By Style</div>
-            <div class="submenu-item" onclick="route('spotify')">Monthly Artists</div>
+            <div class="submenu-item" onclick="route('chart', 'Spotify')">Spotify Global</div>
+            <div class="submenu-item" onclick="route('country', 'SPOTIFY COUNTRIES')">Spotify by Country</div>
+            <div class="submenu-item" onclick="route('chart', 'SpotifyStyle')">Spotify by Style</div>
+            <div class="submenu-item" onclick="route('spotify')">Spotify Artists</div>
         </div>
     </div>
     <div class="menu-item">Apple Music
         <div class="submenu">
-            <div class="submenu-item" onclick="route('chart', 'AppleMusic')">Global</div>
-            <div class="submenu-item" onclick="route('country', 'APPLE MUSIC COUNTRIES')">By Country</div>
-            <div class="submenu-item" onclick="route('chart', 'AppleStyle')">By Style</div>
-            <div class="submenu-item" onclick="route('apple')">Monthly Artists</div>
+            <div class="submenu-item" onclick="route('chart', 'AppleMusic')">Apple Music Global</div>
+            <div class="submenu-item" onclick="route('country', 'APPLE MUSIC COUNTRIES')">Apple by Country</div>
+            <div class="submenu-item" onclick="route('chart', 'AppleStyle')">Apple by Style</div>
+            <div class="submenu-item" onclick="route('apple')">Apple Music Artists</div>
         </div>
     </div>
     <div class="menu-item">YouTube
         <div class="submenu">
-            <div class="submenu-item" onclick="route('chart', 'Youtube')">Global</div>
-            <div class="submenu-item" onclick="route('country', 'YOUTUBE COUNTRIES')">By Country</div>
-            <div class="submenu-item" onclick="route('chart', 'YoutubeStyle')">By Style</div>
-            <div class="submenu-item" onclick="route('youtube')">Monthly Artists</div>
+            <div class="submenu-item" onclick="route('chart', 'Youtube')">YouTube Global</div>
+            <div class="submenu-item" onclick="route('country', 'YOUTUBE COUNTRIES')">YouTube by Country</div>
+            <div class="submenu-item" onclick="route('chart', 'YoutubeStyle')">YouTube by Style</div>
+            <div class="submenu-item" onclick="route('youtube')">YouTube Artists</div>
         </div>
     </div>
-    <div class="menu-item" onclick="route('chart', 'DigitalSales')">Vendas Digitais</div>
+    <div class="menu-item" onclick="route('chart', 'DigitalSales')">Digital Sales</div>
+    <div class="menu-item">Billboard 200
+        <div class="submenu">
+            <div class="submenu-item" onclick="route('chart', 'DADOS ÁLBUNS')">Billboard 200</div>
+            <div class="submenu-item" onclick="route('chart', 'Billboard200Style')">B200 by Music Style</div>
+        </div>
+    </div>
 </nav>
 
 <div id="app"></div>
 
 <script>
-    // ⚠️ COLOQUE SEU LINK /exec AQUI
+    // ⚠️ SUBSTITUA PELO SEU LINK /exec DO APPS SCRIPT
     const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
 
     async function route(type, tab) {
@@ -94,11 +98,10 @@
             else if (type === 'country') await renderCountryChart(tab);
             else await renderMonthly(type.toUpperCase().replace('APPLE', 'APPLE MUSIC'));
         } catch (e) {
-            app.innerHTML = `<p style='text-align:center; color:red; padding:50px;'>Erro de conexão. Verifique o console.</p>`;
+            app.innerHTML = `<div style='text-align:center; padding:50px;'><p style='color:red;'>Erro de conexão.</p><p style='font-size:12px;'>${e.message}</p></div>`;
         }
     }
 
-    // Lógica principal de tabelas (Billboard, Global, Estilos)
     async function renderMainChart(tab) {
         const dates = await fetch(`${API}?action=getDates&tab=${tab}`).then(r => r.json());
         document.getElementById('app').innerHTML = `
@@ -114,7 +117,6 @@
             <div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right;"><b>${i.sem}</b><br><small>TOTAL: ${i.tot}</small></div></div>`).join('');
     }
 
-    // Lógica de Países
     async function renderCountryChart(tab) {
         const resFilter = await fetch(`${API}?action=getFilterData&tab=${tab}`).then(r => r.json());
         document.getElementById('app').innerHTML = `
@@ -129,10 +131,9 @@
         const c = document.getElementById('countryS').value; const d = document.getElementById('dateS').value;
         const res = await fetch(`${API}?action=getCountryData&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
         document.getElementById('chart-body').innerHTML = res.length ? res.map(i => `
-            <div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div></div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados para esta data.</p>`;
+            <div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div></div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados disponíveis para esta seleção.</p>`;
     }
 
-    // Sistema Mensal Cascata (Ano > Mês > Artista)
     async function renderMonthly(p) {
         const years = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
         document.getElementById('app').innerHTML = `<div class="filters">
