@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8"><title>Empire - Artists</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><h1>Empire Artists</h1></header>
+<div class="filters">
+    <select id="yS" onchange="updateM()"></select>
+    <select id="mS" onchange="updateA()"></select>
+    <select id="aS" onchange="getStats()"></select>
+</div>
+<div id="app"></div>
+<script>
+    const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
+    const P = new URLSearchParams(window.location.search).get('p') || 'SPOTIFY';
+
+    async function init() {
+        const years = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
+        document.getElementById('yS').innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+        updateM();
+    }
+    async function updateM() {
+        const y = document.getElementById('yS').value;
+        const months = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json());
+        document.getElementById('mS').innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join('');
+        updateA();
+    }
+    async function updateA() {
+        const y = document.getElementById('yS').value, m = document.getElementById('mS').value;
+        const arts = await fetch(`${API}?action=getArtists&platform=${P}&month=${m}&year=${y}`).then(r => r.json());
+        document.getElementById('aS').innerHTML = arts.map(a => `<option value="${a}">${a}</option>`).join('');
+        getStats();
+    }
+    async function getStats() {
+        const y = document.getElementById('yS').value, m = document.getElementById('mS').value, a = document.getElementById('aS').value;
+        const res = await fetch(`${API}?action=getMonthlyStats&platform=${P}&month=${m}&artist=${a}&year=${y}`).then(r => r.json());
+        const art = res[0];
+        document.getElementById('app').innerHTML = `
+            <div class="banner" style="background-image:url('${art.capaArtista}')"><div style="position:relative; z-index:2; padding:40px;"><h2 style="font-size:60px; margin:0;">${art.nome}</h2><p>${art.totalOuvintes} ouvintes mensais</p></div></div>
+            <div style="padding:40px; display:grid; grid-template-columns:2fr 1fr; gap:40px;">
+                <div><h3>Populares</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent; max-width:100%; border-bottom:1px solid #222;"><div>${i+1}</div><img src="${mus.capaMusica}"><div>${mus.titulo}</div><div style="text-align:right;">${mus.streams}</div></div>`).join('')}</div>
+                <div><h3>Sobre</h3><p style="color:#aaa; line-height:1.6;">${art.sobre}</p></div>
+            </div>`;
+    }
+    init();
+</script>
+</body>
+</html>
