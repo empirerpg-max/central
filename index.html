@@ -7,34 +7,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --empire: #8a2be2; --bg: #050505; --card: #121212; --sp: #1DB954; --am: #FA243C; --yt: #FF0000; --gray: #b3b3b3; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
         header { padding: 30px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, #050505); border-bottom: 2px solid var(--empire); }
         .logo { width: 60px; filter: drop-shadow(0 0 10px var(--empire)); margin-bottom: 10px; }
         nav { display: flex; overflow-x: auto; background: #111; padding: 10px; gap: 8px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
         nav a { color: #888; text-decoration: none; font-size: 11px; font-weight: 700; padding: 8px 15px; border-radius: 20px; white-space: nowrap; text-transform: uppercase; border: 1px solid transparent; }
         nav a.active { background: var(--empire); color: white; }
         #app { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        
         .filters { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
-        select { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 600; }
+        select { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 600; outline: none; }
 
-        /* TABELA PADRÃO (BILLBOARD / COUNTRIES) */
-        .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 15px; background: var(--card); margin-bottom: 2px; border-radius: 4px; }
-        .chart-row img { width: 50px; height: 50px; border-radius: 4px; }
+        /* TABELAS */
+        .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 15px; background: var(--card); margin-bottom: 2px; border-radius: 4px; transition: 0.3s; }
+        .chart-row:hover { background: #1a1a1a; }
+        .chart-row img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
         .rank { font-family: 'Figtree'; font-size: 24px; font-weight: 900; font-style: italic; text-align: center; }
-        .status { font-size: 10px; font-weight: 900; text-align: center; }
-        .up { color: var(--sp); } .down { color: var(--am); } .new { color: #1d75ff; }
 
-        /* REAL TIME GRID */
+        /* REAL TIME */
         .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .col { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; }
         .col-h { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
-        .item-rt { display: grid; grid-template-columns: 35px 45px 1fr 90px; align-items: center; padding: 10px; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
 
-        /* MONTHLY PROFILE (SPOTIFY/APPLE/YT) */
-        .banner { height: 320px; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 30px; position: relative; border-radius: 15px; margin-bottom: 30px; }
+        /* MONTHLY */
+        .banner { height: 350px; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 40px; position: relative; border-radius: 15px; margin-bottom: 30px; }
         .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, #000); }
         .banner-c { position: relative; z-index: 2; }
-        .art-name { font-size: clamp(30px, 6vw, 60px); font-weight: 900; margin: 0; font-family: 'Figtree'; text-transform: uppercase; }
+        .art-name { font-size: clamp(35px, 8vw, 80px); font-weight: 900; margin: 0; font-family: 'Figtree'; text-transform: uppercase; letter-spacing: -3px; }
+        
+        .grid-m { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        h3 { border-bottom: 2px solid var(--empire); padding-bottom: 10px; margin-bottom: 20px; font-family: 'Figtree'; text-transform: uppercase; font-size: 18px; }
+        
+        .sp-t { color: var(--sp); } .am-t { color: var(--am); }
+        .sp-b { background: var(--sp); color: black; } .am-b { background: #fff; color: var(--am); } .yt-b { background: var(--yt); color: white; }
     </style>
 </head>
 <body>
@@ -55,7 +60,8 @@
 <div id="app"></div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
+    // ⚠️ COLOQUE O SEU LINK /exec AQUI
+    const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyF8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuhuNZXEWjGEiYe/exec";
 
     async function route(type, tab) {
         document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
@@ -63,15 +69,14 @@
         if(activeBtn) activeBtn.classList.add('active');
 
         const app = document.getElementById('app');
-        app.innerHTML = "<p style='text-align:center; padding:100px;'>Invocando Império...</p>";
+        app.innerHTML = "<p style='text-align:center; padding:100px;'>Sincronizando com o Império...</p>";
 
         if (type === 'realtime') renderRealTime();
         else if (type === 'chart') renderMainChart(tab);
         else if (type === 'country') renderCountryChart(tab);
-        else renderMonthly(type === 'spotify' ? 'SPOTIFY' : type === 'apple' ? 'APPLE MUSIC' : 'YOUTUBE');
+        else renderMonthly(type.toUpperCase().replace('APPLE', 'APPLE MUSIC'));
     }
 
-    // --- CHARTS PRINCIPAIS (HOT 100 / 200) ---
     async function renderMainChart(tab) {
         const dates = await fetch(`${API}?action=getDates&tab=${tab}`).then(r => r.json());
         document.getElementById('app').innerHTML = `
@@ -82,7 +87,7 @@
 
     async function loadMain(tab) {
         const d = document.getElementById('dateS').value;
-        const res = await fetch(`${API}?action=getChart&tab=${tab}&date=${d}`).then(r => r.json());
+        const res = await fetch(`${API}?action=getChartData&tab=${tab}&date=${d}`).then(r => r.json());
         document.getElementById('chart-body').innerHTML = res.map(i => `
             <div class="chart-row">
                 <div class="rank">#${i.pos}</div>
@@ -92,7 +97,6 @@
             </div>`).join('');
     }
 
-    // --- SUBCHARTS (PAÍSES) ---
     async function renderCountryChart(tab) {
         const [dates, countries] = await Promise.all([
             fetch(`${API}?action=getDates&tab=${tab}`).then(r => r.json()),
@@ -109,24 +113,13 @@
     async function loadCountry(tab) {
         const c = document.getElementById('countryS').value; const d = document.getElementById('dateS').value;
         const res = await fetch(`${API}?action=getCountryData&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
-        document.getElementById('chart-body').innerHTML = res.map(i => `
+        document.getElementById('chart-body').innerHTML = res.length ? res.map(i => `
             <div class="chart-row">
                 <div class="rank" style="font-size:18px;">#${i.pos}</div>
-                <img src="${i.capa}">
+                <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/50'">
                 <div style="padding-left:15px;"><b>${i.titulo}</b><br><small style="color:#888;">${i.art}</small></div>
-                <div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div>
-            </div>`).join('');
-    }
-
-    // --- REAL TIME E MONTHLY (MANTIDOS DA v41) ---
-    async function renderRealTime() {
-        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
-        const row = (l, c) => l.map(i => `<div class="item-rt"><div style="color:#444;">${i.posicao}</div><img src="${i.capa}" style="width:35px;height:35px;border-radius:3px;"><div style="padding:0 10px;font-weight:700;">${i.titulo}</div><div style="text-align:right;color:${c}">${i.streams}</div></div>`).join('');
-        document.getElementById('app').innerHTML = `<div class="rt-grid">
-            <div class="col"><div class="col-h" style="background:var(--sp);color:#000;">Spotify</div>${row(d.spotify, 'var(--sp)')}</div>
-            <div class="col"><div class="col-h" style="background:#fff;color:var(--am);">Apple Music</div>${row(d.apple, 'var(--am)')}</div>
-            <div class="col"><div class="col-h" style="background:var(--yt);color:#fff;">YouTube</div>${row(d.youtube, '#fff')}</div>
-        </div>`;
+                <div style="text-align:right; font-weight:700;">${i.streams}</div>
+            </div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados para este país nesta data.</p>`;
     }
 
     async function renderMonthly(p) {
@@ -137,18 +130,191 @@
         </div><div id="monthly-body"></div>`;
         updateM(p);
     }
-    async function updateM(p) { const y = document.getElementById('yS').value; const months = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json()); document.getElementById('mS').innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join(''); updateA(p); }
-    async function updateA(p) { const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const arts = await fetch(`${API}?action=getArtists&platform=${p}&month=${m}&year=${y}`).then(r => r.json()); document.getElementById('aS').innerHTML = arts.map(a => `<option value="${a}">${a}</option>`).join(''); getStats(p); }
+
+    async function updateM(p) { const y = document.getElementById('yS').value; const m = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json()); document.getElementById('mS').innerHTML = m.map(v => `<option value="${v}">${v}</option>`).join(''); updateA(p); }
+    async function updateA(p) { const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const a = await fetch(`${API}?action=getArtists&platform=${p}&month=${m}&year=${y}`).then(r => r.json()); document.getElementById('aS').innerHTML = a.map(v => `<option value="${v}">${v}</option>`).join(''); getStats(p); }
+    
     async function getStats(p) {
         const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const a = document.getElementById('aS').value;
         const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&artist=${a}&year=${y}`).then(r => r.json());
         const art = data[0]; const cl = p === 'SPOTIFY' ? 'var(--sp)' : (p === 'APPLE MUSIC' ? 'var(--am)' : '#fff');
         document.getElementById('monthly-body').innerHTML = `
-            <div class="banner" style="background-image:url('${art.capaArtista}')"><div class="banner-c"><h2 class="art-name">${art.nome}</h2><p style="color:${cl};font-weight:700;">${art.totalOuvintes} ouvintes mensais</p></div></div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;">
-                <div><h3>Músicas</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent;padding:10px 0;"><div class="rank" style="font-size:16px;width:30px;">${i+1}</div><img src="${mus.capaMusica}" style="width:40px;height:40px;"><div style="padding-left:10px;"><b>${mus.titulo}</b></div><div style="text-align:right;color:${cl};font-weight:700;flex-grow:1;">${mus.streams}</div></div>`).join('')}</div>
-                <div><h3>Sobre</h3><p style="color:#aaa;line-height:1.6;font-size:14px;">${art.sobre}</p></div>
+            <div class="banner" style="background-image:url('${art.capaArtista}')"><div class="banner-c"><h2 class="art-name">${art.nome}</h2><p style="color:${cl}; font-weight:900; font-size:20px;">${art.totalOuvintes} ouvintes mensais</p></div></div>
+            <div class="grid-m">
+                <div><h3>Populares</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent; padding:10px 0;"><div class="rank" style="font-size:16px; width:30px;">${i+1}</div><img src="${mus.capaMusica}" style="width:45px;height:45px;"><div style="padding-left:15px;"><b>${mus.titulo}</b></div><div style="text-align:right; color:${cl}; font-weight:700; flex-grow:1;">${mus.streams}</div></div>`).join('')}</div>
+                <div><h3>Sobre</h3><p style="color:#aaa; line-height:1.6; font-size:14px;">${art.sobre}</p></div>
             </div>`;
+    }
+
+    async function renderRealTime() {
+        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
+        const row = (l, c) => l.map(i => `<div class="chart-row" style="grid-template-columns: 30px 40px 1fr 100px; padding:10px; background:transparent; border-bottom:1px solid #1a1a1a;"><div style="color:#444; font-weight:700;">${i.posicao}</div><img src="${i.capa}" style="width:35px;height:35px;border-radius:3px;"><div style="padding:0 10px; font-size:12px; font-weight:700;">${i.titulo}</div><div style="text-align:right; font-size:12px; color:${c}; font-weight:700;">${i.streams}</div></div>`).join('');
+        document.getElementById('app').innerHTML = `<div class="rt-grid">
+            <div class="col"><div class="col-h sp-b">Spotify</div>${row(d.spotify, 'var(--sp)')}</div>
+            <div class="col"><div class="col-h am-b">Apple Music</div>${row(d.apple, 'var(--am)')}</div>
+            <div class="col"><div class="col-h yt-b">YouTube</div>${row(d.youtube, '#fff')}</div>
+        </div>`;
+    }
+
+    window.onload = () => route('realtime');
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire Charts Oficial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --empire: #8a2be2; --bg: #050505; --card: #121212; --sp: #1DB954; --am: #FA243C; --yt: #FF0000; --gray: #b3b3b3; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
+        header { padding: 30px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, #050505); border-bottom: 2px solid var(--empire); }
+        .logo { width: 60px; filter: drop-shadow(0 0 10px var(--empire)); margin-bottom: 10px; }
+        nav { display: flex; overflow-x: auto; background: #111; padding: 10px; gap: 8px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
+        nav a { color: #888; text-decoration: none; font-size: 11px; font-weight: 700; padding: 8px 15px; border-radius: 20px; white-space: nowrap; text-transform: uppercase; border: 1px solid transparent; }
+        nav a.active { background: var(--empire); color: white; }
+        #app { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        
+        .filters { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
+        select { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 600; outline: none; }
+
+        /* TABELAS */
+        .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 15px; background: var(--card); margin-bottom: 2px; border-radius: 4px; transition: 0.3s; }
+        .chart-row:hover { background: #1a1a1a; }
+        .chart-row img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
+        .rank { font-family: 'Figtree'; font-size: 24px; font-weight: 900; font-style: italic; text-align: center; }
+
+        /* REAL TIME */
+        .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .col { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+        .col-h { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
+
+        /* MONTHLY */
+        .banner { height: 350px; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 40px; position: relative; border-radius: 15px; margin-bottom: 30px; }
+        .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, #000); }
+        .banner-c { position: relative; z-index: 2; }
+        .art-name { font-size: clamp(35px, 8vw, 80px); font-weight: 900; margin: 0; font-family: 'Figtree'; text-transform: uppercase; letter-spacing: -3px; }
+        
+        .grid-m { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        h3 { border-bottom: 2px solid var(--empire); padding-bottom: 10px; margin-bottom: 20px; font-family: 'Figtree'; text-transform: uppercase; font-size: 18px; }
+        
+        .sp-t { color: var(--sp); } .am-t { color: var(--am); }
+        .sp-b { background: var(--sp); color: black; } .am-b { background: #fff; color: var(--am); } .yt-b { background: var(--yt); color: white; }
+    </style>
+</head>
+<body>
+
+<header><img src="https://i.imgur.com/8N69f3I.png" class="logo"><h1>Empire Charts</h1></header>
+
+<nav id="navbar">
+    <a href="#" onclick="route('realtime')" id="btn-realtime">Previsões</a>
+    <a href="#" onclick="route('chart', 'HOT 100')" id="btn-hot100">Hot 100</a>
+    <a href="#" onclick="route('chart', 'DADOS ÁLBUNS')" id="btn-albums">Billboard 200</a>
+    <a href="#" onclick="route('spotify')" id="btn-spotify">Spotify Monthly</a>
+    <a href="#" onclick="route('country', 'SPOTIFY COUNTRIES')" id="btn-sp-c">Spotify Países</a>
+    <a href="#" onclick="route('apple')" id="btn-apple">Apple Monthly</a>
+    <a href="#" onclick="route('country', 'APPLE MUSIC COUNTRIES')" id="btn-am-c">Apple Países</a>
+    <a href="#" onclick="route('youtube')" id="btn-youtube">YouTube Monthly</a>
+</nav>
+
+<div id="app"></div>
+
+<script>
+    // ⚠️ COLOQUE O SEU LINK /exec AQUI
+    const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
+
+    async function route(type, tab) {
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        const activeBtn = document.querySelector(`[onclick*="${tab || type}"]`);
+        if(activeBtn) activeBtn.classList.add('active');
+
+        const app = document.getElementById('app');
+        app.innerHTML = "<p style='text-align:center; padding:100px;'>Sincronizando com o Império...</p>";
+
+        if (type === 'realtime') renderRealTime();
+        else if (type === 'chart') renderMainChart(tab);
+        else if (type === 'country') renderCountryChart(tab);
+        else renderMonthly(type.toUpperCase().replace('APPLE', 'APPLE MUSIC'));
+    }
+
+    async function renderMainChart(tab) {
+        const dates = await fetch(`${API}?action=getDates&tab=${tab}`).then(r => r.json());
+        document.getElementById('app').innerHTML = `
+            <div class="filters"><select id="dateS" onchange="loadMain('${tab}')">${dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
+            <div id="chart-body"></div>`;
+        loadMain(tab);
+    }
+
+    async function loadMain(tab) {
+        const d = document.getElementById('dateS').value;
+        const res = await fetch(`${API}?action=getChartData&tab=${tab}&date=${d}`).then(r => r.json());
+        document.getElementById('chart-body').innerHTML = res.map(i => `
+            <div class="chart-row">
+                <div class="rank">#${i.pos}</div>
+                <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/50'">
+                <div style="padding-left:15px;"><b>${i.titulo}</b><br><small style="color:#888;">${i.art}</small></div>
+                <div style="text-align:right;"><b>${i.sem}</b><br><small style="color:#666;">TOTAL: ${i.tot}</small></div>
+            </div>`).join('');
+    }
+
+    async function renderCountryChart(tab) {
+        const [dates, countries] = await Promise.all([
+            fetch(`${API}?action=getDates&tab=${tab}`).then(r => r.json()),
+            fetch(`${API}?action=getCountries&tab=${tab}`).then(r => r.json())
+        ]);
+        document.getElementById('app').innerHTML = `
+            <div class="filters">
+                <select id="countryS" onchange="loadCountry('${tab}')">${countries.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
+                <select id="dateS" onchange="loadCountry('${tab}')">${dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
+            </div><div id="chart-body"></div>`;
+        loadCountry(tab);
+    }
+
+    async function loadCountry(tab) {
+        const c = document.getElementById('countryS').value; const d = document.getElementById('dateS').value;
+        const res = await fetch(`${API}?action=getCountryData&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
+        document.getElementById('chart-body').innerHTML = res.length ? res.map(i => `
+            <div class="chart-row">
+                <div class="rank" style="font-size:18px;">#${i.pos}</div>
+                <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/50'">
+                <div style="padding-left:15px;"><b>${i.titulo}</b><br><small style="color:#888;">${i.art}</small></div>
+                <div style="text-align:right; font-weight:700;">${i.streams}</div>
+            </div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados para este país nesta data.</p>`;
+    }
+
+    async function renderMonthly(p) {
+        const years = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
+        document.getElementById('app').innerHTML = `<div class="filters">
+            <select id="yS" onchange="updateM('${p}')">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select>
+            <select id="mS" onchange="updateA('${p}')"></select><select id="aS" onchange="getStats('${p}')"></select>
+        </div><div id="monthly-body"></div>`;
+        updateM(p);
+    }
+
+    async function updateM(p) { const y = document.getElementById('yS').value; const m = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json()); document.getElementById('mS').innerHTML = m.map(v => `<option value="${v}">${v}</option>`).join(''); updateA(p); }
+    async function updateA(p) { const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const a = await fetch(`${API}?action=getArtists&platform=${p}&month=${m}&year=${y}`).then(r => r.json()); document.getElementById('aS').innerHTML = a.map(v => `<option value="${v}">${v}</option>`).join(''); getStats(p); }
+    
+    async function getStats(p) {
+        const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const a = document.getElementById('aS').value;
+        const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&artist=${a}&year=${y}`).then(r => r.json());
+        const art = data[0]; const cl = p === 'SPOTIFY' ? 'var(--sp)' : (p === 'APPLE MUSIC' ? 'var(--am)' : '#fff');
+        document.getElementById('monthly-body').innerHTML = `
+            <div class="banner" style="background-image:url('${art.capaArtista}')"><div class="banner-c"><h2 class="art-name">${art.nome}</h2><p style="color:${cl}; font-weight:900; font-size:20px;">${art.totalOuvintes} ouvintes mensais</p></div></div>
+            <div class="grid-m">
+                <div><h3>Populares</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent; padding:10px 0;"><div class="rank" style="font-size:16px; width:30px;">${i+1}</div><img src="${mus.capaMusica}" style="width:45px;height:45px;"><div style="padding-left:15px;"><b>${mus.titulo}</b></div><div style="text-align:right; color:${cl}; font-weight:700; flex-grow:1;">${mus.streams}</div></div>`).join('')}</div>
+                <div><h3>Sobre</h3><p style="color:#aaa; line-height:1.6; font-size:14px;">${art.sobre}</p></div>
+            </div>`;
+    }
+
+    async function renderRealTime() {
+        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
+        const row = (l, c) => l.map(i => `<div class="chart-row" style="grid-template-columns: 30px 40px 1fr 100px; padding:10px; background:transparent; border-bottom:1px solid #1a1a1a;"><div style="color:#444; font-weight:700;">${i.posicao}</div><img src="${i.capa}" style="width:35px;height:35px;border-radius:3px;"><div style="padding:0 10px; font-size:12px; font-weight:700;">${i.titulo}</div><div style="text-align:right; font-size:12px; color:${c}; font-weight:700;">${i.streams}</div></div>`).join('');
+        document.getElementById('app').innerHTML = `<div class="rt-grid">
+            <div class="col"><div class="col-h sp-b">Spotify</div>${row(d.spotify, 'var(--sp)')}</div>
+            <div class="col"><div class="col-h am-b">Apple Music</div>${row(d.apple, 'var(--am)')}</div>
+            <div class="col"><div class="col-h yt-b">YouTube</div>${row(d.youtube, '#fff')}</div>
+        </div>`;
     }
 
     window.onload = () => route('realtime');
