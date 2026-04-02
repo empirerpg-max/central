@@ -56,7 +56,7 @@
 
 <script>
     // ⚠️ COLE AQUI SUA URL DO GOOGLE APPS SCRIPT
-    const API = "https://script.google.com/macros/s/SUA_ID_AQUI/exec";
+    const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
 
     async function loadPage(page) {
         const app = document.getElementById('app');
