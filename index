@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire Charts Oficial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --empire: #8a2be2; --bg: #050505; --card: #111; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Estética Empire */
+        header { padding: 40px 20px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, var(--bg)); border-bottom: 2px solid var(--empire); }
+        h1 { font-family: 'Figtree'; font-size: 28px; margin: 0; letter-spacing: -1px; text-transform: uppercase; }
+        
+        /* Navegação Scrollable no Mobile */
+        nav { display: flex; overflow-x: auto; background: #111; padding: 12px; gap: 10px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
+        nav a { color: #888; text-decoration: none; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 20px; white-space: nowrap; transition: 0.3s; }
+        nav a.active { background: var(--empire); color: white; }
+
+        /* Container Dinâmico */
+        #app { flex-grow: 1; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+
+        /* Design Real-Time (Grid 3 colunas) */
+        .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .rt-col { background: var(--card); border-radius: 12px; overflow: hidden; }
+        .rt-head { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
+        .item { display: grid; grid-template-columns: 40px 45px 1fr 90px; align-items: center; padding: 10px; border-bottom: 1px solid #1a1a1a; }
+        .cover { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+        .val { text-align: right; font-weight: 700; font-family: monospace; font-size: 13px; }
+
+        /* Estilos de Plataforma */
+        .sp { color: #1DB954; } .am { color: #FA243C; } .yt { color: #FF0000; }
+        .sp-bg { background: #1DB954; color: black; } .am-bg { background: #fff; color: #FA243C; } .yt-bg { background: #FF0000; color: white; }
+
+        /* Filtros */
+        .filters { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 30px; }
+        select { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; outline: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Empire Charts Oficial</h1>
+</header>
+
+<nav id="navbar">
+    <a href="#" onclick="loadPage('realtime')" id="btn-realtime">Real-Time</a>
+    <a href="#" onclick="loadPage('spotify')" id="btn-spotify">Spotify Monthly</a>
+    <a href="#" onclick="loadPage('apple')" id="btn-apple">Apple Monthly</a>
+    <a href="#" onclick="loadPage('youtube')" id="btn-youtube">YouTube Monthly</a>
+</nav>
+
+<div id="app">
+    </div>
+
+<script>
+    // ⚠️ COLE AQUI SUA URL DO GOOGLE APPS SCRIPT
+    const API = "https://script.google.com/macros/s/SUA_ID_AQUI/exec";
+
+    async function loadPage(page) {
+        const app = document.getElementById('app');
+        app.innerHTML = "<p style='text-align:center;'>Carregando Empire...</p>";
+        
+        // Atualiza botões
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        document.getElementById('btn-' + page).classList.add('active');
+
+        if (page === 'realtime') renderRealTime();
+        if (page === 'spotify') renderMonthly('SPOTIFY');
+        if (page === 'apple') renderMonthly('APPLE MUSIC');
+        if (page === 'youtube') renderMonthly('YOUTUBE');
+    }
+
+    async function renderRealTime() {
+        const res = await fetch(`${API}?action=getRealTime`);
+        const d = await res.json();
+        
+        const row = (l, c) => l.map(i => `<div class="item"><div style="color:#555; text-align:center;">${i.posicao}</div><img src="${i.capa}" class="cover"><div style="padding-left:10px; font-size:12px; font-weight:700;">${i.titulo}</div><div class="val ${c}">${i.streams}</div></div>`).join('');
+
+        document.getElementById('app').innerHTML = `
+            <div class="rt-grid">
+                <div class="rt-col"><div class="rt-head sp-bg">Spotify</div>${row(d.spotify, 'sp')}</div>
+                <div class="rt-col"><div class="rt-head am-bg">Apple Music</div>${row(d.apple, 'am')}</div>
+                <div class="rt-col"><div class="rt-head yt-h yt-bg">YouTube</div>${row(d.youtube, '')}</div>
+            </div>`;
+    }
+
+    // Função de renderização para Mensais (Exemplo Spotify)
+    async function renderMonthly(platform) {
+        // Busca anos iniciais
+        const yearsRes = await fetch(`${API}?action=getMonthlyYears`);
+        const years = await yearsRes.json();
+
+        document.getElementById('app').innerHTML = `
+            <div class="filters">
+                <select id="ySel" onchange="updateMonths('${platform}')">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select>
+                <select id="mSel" onchange="updateArtists('${platform}')"></select>
+                <select id="aSel" onchange="getStats('${platform}')"></select>
+            </div>
+            <div id="monthly-content"></div>`;
+        
+        // Dispara cascata
+        updateMonths(platform);
+    }
+
+    // ... (Aqui viriam as funções auxiliares updateMonths, updateArtists, etc, que fazem o fetch das ações)
+
+    window.onload = () => loadPage('realtime');
+</script>
+
+</body>
+</html>
