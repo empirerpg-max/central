@@ -1,25 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head><meta charset="UTF-8"><link rel="stylesheet" href="style.css"></head>
+<head>
+    <meta charset="UTF-8"><title>Empire - By Country</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 <header><h1>By Country</h1></header>
-<div class="filters"><select id="countryS" onchange="load()"></select><select id="dateS" onchange="load()"></select></div>
+<nav></nav>
 <div id="app"></div>
+<script src="script-master.js"></script>
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
-    const TAB = new URLSearchParams(window.location.search).get('tab') || 'SpotifyCountry';
-    async function init() {
-        const f = await fetch(`${API}?action=getFilterData&tab=${TAB}`).then(r => r.json());
-        document.getElementById('countryS').innerHTML = f.countries.map(c => `<option value="${c}">${c}</option>`).join('');
-        document.getElementById('dateS').innerHTML = f.dates.map(d => `<option value="${d}">${d}</option>`).join('');
-        load();
+    window.onload = () => {
+        buildMenu();
+        const params = new URLSearchParams(window.location.search);
+        initCountry(params.get('tab'));
     }
-    async function load() {
-        const c = document.getElementById('countryS').value, d = document.getElementById('dateS').value;
-        const res = await fetch(`${API}?action=getCountryData&tab=${TAB}&country=${c}&date=${d}`).then(r => r.json());
-        document.getElementById('app').innerHTML = res.map(i => `<div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right; font-weight:700;">${i.streams}</div></div>`).join('');
-    }
-    init();
 </script>
 </body>
 </html>
