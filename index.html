@@ -6,11 +6,12 @@
     <title>Empire Oficial - Central</title>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --empire: #8a2be2; --bg: #050505; --card: #121212; --sp: #1DB954; --am: #FA243C; --yt: #FF0000; --gray: #b3b3b3; }
+        :root { --empire: #8a2be2; --bg: #050505; --card: #121212; --sp: #1DB954; --am: #FA243C; --yt: #FF0000; }
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
         header { padding: 30px; text-align: center; background: linear-gradient(to bottom, #1a0a2e, #050505); border-bottom: 2px solid var(--empire); }
-        
-        /* MENU COM SUBMENUS  */
+        h1 { font-family: 'Figtree'; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+
+        /* NAVEGAÇÃO COM SUBMENUS */
         nav { background: #111; display: flex; justify-content: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
         .menu-item { position: relative; padding: 15px 18px; cursor: pointer; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #888; transition: 0.3s; }
         .menu-item:hover { color: var(--empire); }
@@ -23,24 +24,26 @@
         .filters { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
         select { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 600; outline: none; }
 
-        /* TABELAS */
+        /* DESIGN DAS TABELAS */
         .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 15px; background: var(--card); margin-bottom: 2px; border-radius: 4px; transition: 0.3s; }
+        .chart-row:hover { background: #1a1a1a; }
         .chart-row img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
         .rank { font-family: 'Figtree'; font-size: 24px; font-weight: 900; font-style: italic; text-align: center; }
-        
-        /* DESIGN MENSAL */
+
+        /* REAL TIME (GRID 3 COLUNAS) */
+        .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .rt-col { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+        .rt-head { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
+
+        /* PERFIL DE ARTISTA (MONTHLY) */
         .banner { height: 350px; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 40px; position: relative; border-radius: 15px; margin-bottom: 30px; }
         .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, #000); }
         .banner-c { position: relative; z-index: 2; }
         .art-name { font-size: clamp(35px, 8vw, 80px); font-weight: 900; margin: 0; font-family: 'Figtree'; text-transform: uppercase; letter-spacing: -3px; }
-        .grid-m { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
-        h3 { border-bottom: 2px solid var(--empire); padding-bottom: 10px; margin-bottom: 20px; font-family: 'Figtree'; text-transform: uppercase; font-size: 18px; }
-
-        /* REAL TIME GRID */
-        .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .rt-col { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; }
-        .rt-head { padding: 15px; font-weight: 900; text-align: center; text-transform: uppercase; font-family: 'Figtree'; }
         
+        .sp-t { color: var(--sp); } .am-t { color: var(--am); }
+        .sp-b { background: var(--sp); color: black; } .am-b { background: #fff; color: var(--am); } .yt-b { background: var(--yt); color: white; }
+
         @media (max-width: 768px) { nav { flex-wrap: wrap; } .menu-item { padding: 10px; font-size: 9px; } }
     </style>
 </head>
@@ -92,7 +95,7 @@
 <div id="app"></div>
 
 <script>
-    // ⚠️ SUBSTITUA PELO SEU LINK /exec
+    // ⚠️ SUBSTITUA PELO SEU LINK /exec NOVO
     const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
 
     async function route(type, tab) {
@@ -105,48 +108,45 @@
             else if (type === 'country') await renderCountryChart(tab);
             else if (type === 'monthly') await renderMonthly(tab);
         } catch (e) {
-            app.innerHTML = `<div style='text-align:center; padding:50px; color:red;'><p>Erro de conexão com o servidor.</p><small>${e.message}</small></div>`;
+            app.innerHTML = `<div style='text-align:center; padding:50px; color:red;'><p>Erro de conexão.</p><small>${e.message}</small></div>`;
         }
     }
 
-    async function renderMainChart(tab) {
-        const filters = await fetch(`${API}?action=getFilterData&tab=${tab}`).then(r => r.json());
-        document.getElementById('app').innerHTML = `
-            <div class="filters"><select id="dateS" onchange="loadMain('${tab}')">${filters.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
-            <div id="chart-body"></div>`;
-        loadMain(tab);
+    async function renderRealTime() {
+        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
+        const row = (l, c) => l.map(i => `<div class="chart-row" style="padding:10px; background:transparent; border-bottom:1px solid #1a1a1a;"><div style="color:#444; font-weight:900;">${i.posicao}</div><img src="${i.capa}" style="width:35px;height:35px;border-radius:3px;"><div style="padding:0 10px; font-weight:700; font-size:12px;">${i.titulo}</div><div style="text-align:right; font-size:12px; color:${c}; font-weight:700;">${i.streams}</div></div>`).join('');
+        document.getElementById('app').innerHTML = `<div class="rt-grid">
+            <div class="rt-col"><div class="rt-head" style="background:var(--sp); color:#000;">Spotify</div>${row(d.spotify, 'var(--sp)')}</div>
+            <div class="rt-col"><div class="rt-head" style="background:#fff; color:var(--am);">Apple Music</div>${row(d.apple, 'var(--am)')}</div>
+            <div class="rt-col"><div class="rt-head" style="background:var(--yt); color:#fff;">YouTube</div>${row(d.youtube, '#fff')}</div>
+        </div>`;
     }
 
+    async function renderMainChart(tab) {
+        const f = await fetch(`${API}?action=getFilterData&tab=${tab}`).then(r => r.json());
+        document.getElementById('app').innerHTML = `<div class="filters"><select id="dateS" onchange="loadMain('${tab}')">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div><div id="chart-body"></div>`;
+        loadMain(tab);
+    }
     async function loadMain(tab) {
         const d = document.getElementById('dateS').value;
         const res = await fetch(`${API}?action=getChartData&tab=${tab}&date=${d}`).then(r => r.json());
-        document.getElementById('chart-body').innerHTML = res.map(i => `
-            <div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}" onerror="this.src='https://via.placeholder.com/50'"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right;"><b>${i.sem}</b><br><small>TOTAL: ${i.tot}</small></div></div>`).join('');
+        document.getElementById('chart-body').innerHTML = res.map(i => `<div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right;"><b>${i.sem}</b><br><small>TOTAL: ${i.tot}</small></div></div>`).join('');
     }
 
     async function renderCountryChart(tab) {
-        const resFilter = await fetch(`${API}?action=getFilterData&tab=${tab}`).then(r => r.json());
-        document.getElementById('app').innerHTML = `
-            <div class="filters">
-                <select id="countryS" onchange="loadCountry('${tab}')">${resFilter.countries.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
-                <select id="dateS" onchange="loadCountry('${tab}')">${resFilter.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
-            </div><div id="chart-body"></div>`;
+        const f = await fetch(`${API}?action=getFilterData&tab=${tab}`).then(r => r.json());
+        document.getElementById('app').innerHTML = `<div class="filters"><select id="countryS" onchange="loadCountry('${tab}')">${f.countries.map(c => `<option value="${c}">${c}</option>`).join('')}</select><select id="dateS" onchange="loadCountry('${tab}')">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div><div id="chart-body"></div>`;
         loadCountry(tab);
     }
-
     async function loadCountry(tab) {
         const c = document.getElementById('countryS').value; const d = document.getElementById('dateS').value;
         const res = await fetch(`${API}?action=getCountryData&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
-        document.getElementById('chart-body').innerHTML = res.length ? res.map(i => `
-            <div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div></div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados disponíveis.</p>`;
+        document.getElementById('chart-body').innerHTML = res.length ? res.map(i => `<div class="chart-row"><div class="rank">#${i.pos}</div><img src="${i.capa}"><div><b>${i.titulo}</b><br><small>${i.art}</small></div><div style="text-align:right; color:var(--sp); font-weight:700;">${i.streams}</div></div>`).join('') : `<p style="text-align:center; padding:50px;">Sem dados disponíveis.</p>`;
     }
 
     async function renderMonthly(p) {
-        const years = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
-        document.getElementById('app').innerHTML = `<div class="filters">
-            <select id="yS" onchange="updateM('${p}')">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select>
-            <select id="mS" onchange="updateA('${p}')"></select><select id="aS" onchange="getStats('${p}')"></select>
-        </div><div id="monthly-body"></div>`;
+        const yS = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
+        document.getElementById('app').innerHTML = `<div class="filters"><select id="yS" onchange="updateM('${p}')">${yS.map(y => `<option value="${y}">${y}</option>`).join('')}</select><select id="mS" onchange="updateA('${p}')"></select><select id="aS" onchange="getStats('${p}')"></select></div><div id="monthly-body"></div>`;
         updateM(p);
     }
     async function updateM(p) { const y = document.getElementById('yS').value; const m = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json()); document.getElementById('mS').innerHTML = m.map(v => `<option value="${v}">${v}</option>`).join(''); updateA(p); }
@@ -155,22 +155,7 @@
         const y = document.getElementById('yS').value; const m = document.getElementById('mS').value; const a = document.getElementById('aS').value;
         const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&artist=${a}&year=${y}`).then(r => r.json());
         const art = data[0]; const cl = p === 'SPOTIFY' ? 'var(--sp)' : (p === 'APPLE MUSIC' ? 'var(--am)' : '#fff');
-        document.getElementById('monthly-body').innerHTML = `
-            <div class="banner" style="background-image:url('${art.capaArtista}')"><div class="banner-c"><h2 class="art-name">${art.nome}</h2><p style="color:${cl}; font-weight:900;">${art.totalOuvintes} ouvintes mensais</p></div></div>
-            <div class="grid-m">
-                <div><h3>Populares</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent; padding:10px 0;"><div class="rank" style="font-size:16px; width:30px;">${i+1}</div><img src="${mus.capaMusica}"><div style="padding-left:15px;"><b>${mus.titulo}</b></div><div style="text-align:right; color:${cl}; font-weight:700; flex-grow:1;">${mus.streams}</div></div>`).join('')}</div>
-                <div><h3>Sobre</h3><p style="color:#aaa; line-height:1.6; font-size:14px;">${art.sobre}</p><br><p style="color:#444; font-size:12px;">Pesquisas Online: ${art.pesquisas}</p></div>
-            </div>`;
-    }
-
-    async function renderRealTime() {
-        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
-        const row = (l, c) => l.map(i => `<div class="chart-row" style="padding:10px; background:transparent; border-bottom:1px solid #1a1a1a;"><div style="color:#444; font-weight:900;">${i.posicao}</div><img src="${i.capa}" style="width:35px;height:35px;border-radius:3px;"><div style="padding:0 10px; font-size:12px; font-weight:700;">${i.titulo}</div><div style="text-align:right; font-size:12px; color:${c}; font-weight:700;">${i.streams}</div></div>`).join('');
-        document.getElementById('app').innerHTML = `<div class="rt-grid">
-            <div class="rt-col"><div class="rt-head" style="background:var(--sp); color:#000;">SPOTIFY</div>${row(d.spotify, 'var(--sp)')}</div>
-            <div class="rt-col"><div class="rt-head" style="background:#fff; color:var(--am);">APPLE MUSIC</div>${row(d.apple, 'var(--am)')}</div>
-            <div class="rt-col"><div class="rt-head" style="background:var(--yt); color:#fff;">YOUTUBE</div>${row(d.youtube, '#fff')}</div>
-        </div>`;
+        document.getElementById('monthly-body').innerHTML = `<div class="banner" style="background-image:url('${art.capaArtista}')"><div class="banner-c"><h2 class="art-name">${art.nome}</h2><p style="color:${cl}; font-weight:900;">${art.totalOuvintes} ouvintes mensais</p></div></div><div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:40px;"><div><h3>Músicas Populares</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent; padding:10px 0;"><div class="rank" style="font-size:16px; width:30px;">${i+1}</div><img src="${mus.capaMusica}"><div style="padding-left:15px;"><b>${mus.titulo}</b></div><div style="text-align:right; color:${cl}; font-weight:700; flex-grow:1;">${mus.streams}</div></div>`).join('')}</div><div><h3>Sobre o Artista</h3><p style="color:#aaa; line-height:1.6; font-size:14px;">${art.sobre}</p></div></div>`;
     }
 
     window.onload = () => route('realtime');
