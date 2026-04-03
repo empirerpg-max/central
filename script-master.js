@@ -1,8 +1,11 @@
-// COLOQUE AQUI A URL DA SUA API DO GOOGLE QUE ESTÁ FUNCIONANDO
+// ATENÇÃO: COLOQUE A URL QUE VOCÊ GEROU NO GOOGLE APPS SCRIPT AQUI DENTRO DAS ASPAS
 const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec"; 
 
 function buildMenu() {
-    document.querySelector('nav').innerHTML = `
+    const navMenu = document.getElementById('menu-nav');
+    if(!navMenu) return;
+
+    navMenu.innerHTML = `
     <a href="index.html" class="menu-item">Início / Real Time</a>
     
     <div class="menu-item">Billboard Hot 100 Charts
@@ -213,4 +216,23 @@ async function renderM(p) {
                     <p style="font-weight:900; color:var(--empire); font-size:20px;">${art.ov} OUVINTES MENSAIS</p>
                 </div>
             </div>
-            <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:40px;
+            <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:40px; margin-top:20px;">
+                <div>
+                    <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Top Músicas</h3>
+                    ${art.m.map((mus, idx) => `
+                        <div class="chart-row" style="grid-template-columns:30px 50px 1fr 100px; background:transparent; padding:10px 0; border-bottom:1px solid #222;">
+                            <div class="rank" style="font-size:16px;">${idx+1}</div>
+                            <img src="${mus.c}" onerror="this.src='https://via.placeholder.com/150'">
+                            <div class="info-box"><b>${mus.t}</b></div>
+                            <div class="stats-box"><b style="font-size:14px;">${mus.s}</b></div>
+                        </div>`).join('')}
+                </div>
+                <div>
+                    <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Sobre</h3>
+                    <p style="color:#aaa; line-height:1.6; font-size:14px;">${art.bio}</p>
+                </div>
+            </div>`;
+    } catch(e) {
+        profile.innerHTML = `<p style="text-align:center; color:#ff4444;">Erro ao carregar o artista.</p>`;
+    }
+}
