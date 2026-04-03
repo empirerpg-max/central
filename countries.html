@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Empire - Countries</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header><h1>By Country</h1></header>
+<nav></nav>
+
+<div id="app">
+    <div id="chart-area"></div>
+</div>
+
+<script src="script-master.js"></script>
+<script>
+    window.onload = () => {
+        buildMenu();
+        const p = new URLSearchParams(window.location.search);
+        initCountry(p.get('type'), p.get('tab'));
+    }
+</script>
+
+</body>
+</html>
