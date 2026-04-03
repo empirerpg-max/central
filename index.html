@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Empire - Real Time</title>
+    <meta charset="UTF-8">
+    <title>Empire - Real Time</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
 <header><h1>Empire Charts</h1></header>
 <nav></nav>
-<div id="app"></div>
+
+<div id="app">
+    </div>
+
 <script src="script-master.js"></script>
 <script>
-    window.onload = () => { buildMenu(); loadRealTime(); }
+    window.onload = () => {
+        buildMenu(); // Cria o menu no topo
+        loadRealTime(); // Carrega os dados do Spotify, Apple e YouTube Real Time
+    }
 </script>
 </body>
 </html>
