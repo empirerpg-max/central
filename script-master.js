@@ -1,7 +1,6 @@
-// MANTÉM A TUA API QUE ESTÁ A FUNCIONAR AQUI:
+// COLOQUE AQUI A URL DA SUA API DO GOOGLE QUE ESTÁ FUNCIONANDO
 const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec"; 
 
-// MENU FIEL AO ARQUIVO "EMPIRE OFICIAL"
 function buildMenu() {
     document.querySelector('nav').innerHTML = `
     <a href="index.html" class="menu-item">Início / Real Time</a>
@@ -50,53 +49,168 @@ function buildMenu() {
     </div>`;
 }
 
-// O NOVO RENDERIZADOR (ASPETO DE FERRAMENTA REAL)
+async function loadRealTime() {
+    const app = document.getElementById('app');
+    if(!app) return;
+    app.innerHTML = '<div class="skeleton"></div>'.repeat(6);
+    
+    try {
+        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
+        const row = (l, color) => l.map(i => `
+            <div class="chart-row" style="grid-template-columns:30px 50px 1fr 90px; background:var(--card);">
+                <div class="rank" style="font-size:16px;">${i.p}</div>
+                <img src="${i.c}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="info-box"><b style="font-size:13px;">${i.t}</b></div>
+                <div style="text-align:right; color:${color}; font-weight:900;">${i.s}</div>
+            </div>`).join('');
+        
+        app.innerHTML = `<div class="rt-grid">
+            <div class="rt-col"><div class="rt-head" style="background:var(--sp); color:#000;">Spotify</div>${row(d.spotify, 'var(--sp)')}</div>
+            <div class="rt-col"><div class="rt-head" style="background:#fff; color:var(--am);">Apple</div>${row(d.apple, 'var(--am)')}</div>
+            <div class="rt-col"><div class="rt-head" style="background:var(--yt); color:#fff;">YouTube</div>${row(d.youtube, '#fff')}</div>
+        </div>`;
+    } catch (e) { 
+        app.innerHTML = `<p style="text-align:center; color:#ff4444;">Erro de conexão. Tente atualizar a página.</p>`; 
+    }
+}
+
+async function initChart(tab, hasStyle) {
+    const app = document.getElementById('app');
+    if(!app) return;
+    app.innerHTML = '<div class="skeleton"></div>'.repeat(8);
+    
+    try {
+        const f = await fetch(`${API}?action=getFilters&tab=${tab}`).then(r => r.json());
+        app.innerHTML = `
+            <div class="filters">
+                <select id="dateS" onchange="renderChart('${tab}', ${hasStyle})">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
+                ${hasStyle ? `<select id="styleS" onchange="renderChart('${tab}', true)"><option value="">Todos os Estilos</option>${f.styles.map(s => `<option value="${s}">${s}</option>`).join('')}</select>` : ''}
+            </div><div id="chart-area"></div>`;
+        renderChart(tab, hasStyle);
+    } catch(e) {
+        app.innerHTML = `<p style="text-align:center; color:#ff4444;">Erro ao carregar os filtros.</p>`;
+    }
+}
+
 async function renderChart(tab, hasStyle) {
     const area = document.getElementById('chart-area');
-    area.innerHTML = '<div class="skeleton"></div>'.repeat(10); // Mostra o loading
+    if(!area) return;
+    area.innerHTML = '<div class="skeleton"></div>'.repeat(5);
     
     const date = document.getElementById('dateS').value;
     const style = hasStyle ? document.getElementById('styleS').value : "";
     
-    // Procura os dados na tua API (que já sabemos que funciona)
-    const res = await fetch(`${API}?action=getChart&tab=${tab}&date=${date}&style=${style}`).then(r => r.json());
-    
-    // Desenha as ferramentas
-    area.innerHTML = res.map(i => {
-        let stClass = "neutral"; 
-        let stIcon = "-";
-        
-        // Verifica se os dados do teu sheets dizem NEW, ↑ ou ↓
-        if(i.st && i.st.toUpperCase().includes("NEW")) { 
-            stClass = "new"; 
-            stIcon = "NEW"; 
-        }
-        else if(i.st && (i.st.includes("↑") || i.st.toLowerCase().includes("subiu"))) { 
-            stClass = "up"; 
-            stIcon = `↑<br><span style="font-size:10px;">${i.q || ''}</span>`; 
-        }
-        else if(i.st && (i.st.includes("↓") || i.st.toLowerCase().includes("desceu"))) { 
-            stClass = "down"; 
-            stIcon = `↓<br><span style="font-size:10px;">${i.q || ''}</span>`; 
-        }
+    try {
+        const res = await fetch(`${API}?action=getChart&tab=${tab}&date=${date}&style=${style}`).then(r => r.json());
+        area.innerHTML = res.map(i => {
+            let stClass = "neutral"; let stIcon = "-";
+            if(i.st && i.st.toUpperCase().includes("NEW")) { stClass = "new"; stIcon = "NEW"; }
+            else if(i.st && (i.st.includes("↑") || i.st.toLowerCase().includes("subiu"))) { stClass = "up"; stIcon = `↑<br><span style="font-size:10px;">${i.q || ''}</span>`; }
+            else if(i.st && (i.st.includes("↓") || i.st.toLowerCase().includes("desceu"))) { stClass = "down"; stIcon = `↓<br><span style="font-size:10px;">${i.q || ''}</span>`; }
 
-        return `
-        <div class="chart-row">
-            <div class="rank">${i.pos}</div>
-            <div class="status ${stClass}">${stIcon}</div>
-            <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/150'">
-            <div class="info-box">
-                <b>${i.tit}</b>
-                <span>${i.art}</span>
-            </div>
-            <div class="stats-box">
-                <b>${i.val}</b>
-                <small>TOTAL: ${i.tot || 0}</small>
-            </div>
-        </div>`;
-    }).join('');
+            return `
+            <div class="chart-row">
+                <div class="rank">${i.pos}</div>
+                <div class="status ${stClass}">${stIcon}</div>
+                <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="info-box"><b>${i.tit}</b><span>${i.art}</span></div>
+                <div class="stats-box"><b>${i.val}</b><small>TOTAL: ${i.tot || 0}</small></div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        area.innerHTML = `<p style="text-align:center; color:#ff4444;">Erro ao carregar a lista.</p>`;
+    }
 }
 
-// As outras funções (loadRealTime, initChart, initCountry, initMonthly, renderCountry, renderM) 
-// mantêm a mesma lógica de ligação que já tinhas, apenas precisas de garantir que usam as novas classes CSS.
-// (Se precisares que eu reescreva também a renderM ou renderCountry com o novo design, avisa!)
+async function initCountry(tab) {
+    const app = document.getElementById('app');
+    if(!app) return;
+    app.innerHTML = '<div class="skeleton"></div>'.repeat(5);
+    
+    try {
+        const f = await fetch(`${API}?action=getFilters&tab=${tab}`).then(r => r.json());
+        app.innerHTML = `
+            <div class="filters">
+                <select id="countryS" onchange="renderCountry('${tab}')">${f.countries.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
+                <select id="dateS" onchange="renderCountry('${tab}')">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
+            </div><div id="chart-area"></div>`;
+        renderCountry(tab);
+    } catch(e) {
+        app.innerHTML = `<p style="text-align:center; color:#ff4444;">Erro ao carregar países.</p>`;
+    }
+}
+
+async function renderCountry(tab) {
+    const area = document.getElementById('chart-area');
+    if(!area) return;
+    const c = document.getElementById('countryS').value;
+    const d = document.getElementById('dateS').value;
+    
+    try {
+        const res = await fetch(`${API}?action=getChart&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
+        area.innerHTML = res.map(i => `
+            <div class="chart-row" style="grid-template-columns: 50px 70px 1fr 130px;">
+                <div class="rank">${i.pos}</div>
+                <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="info-box"><b>${i.tit}</b><span>${i.art}</span></div>
+                <div class="stats-box"><b>${i.val}</b></div>
+            </div>`).join('');
+    } catch(e) {
+        area.innerHTML = `<p style="text-align:center; color:#ff4444;">Erro ao carregar dados do país.</p>`;
+    }
+}
+
+async function initMonthly(p) {
+    const app = document.getElementById('app');
+    if(!app) return;
+    app.innerHTML = '<div id="monthly-filters" class="filters"></div><div id="profile-area"></div>';
+    
+    try {
+        const years = await fetch(`${API}?action=getMonthlyYears`).then(r => r.json());
+        document.getElementById('monthly-filters').innerHTML = `
+            <select id="yS" onchange="upM('${p}')">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select>
+            <select id="mS" onchange="upA('${p}')"></select>
+            <select id="aS" onchange="renderM('${p}')"></select>`;
+        upM(p);
+    } catch(e) {
+        app.innerHTML = `<p style="text-align:center; color:#ff4444;">Erro ao iniciar painel mensal.</p>`;
+    }
+}
+
+async function upM(p) {
+    const y = document.getElementById('yS').value;
+    const m = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json());
+    document.getElementById('mS').innerHTML = m.map(x => `<option value="${x}">${x}</option>`).join('');
+    upA(p);
+}
+
+async function upA(p) {
+    const y = document.getElementById('yS').value;
+    const m = document.getElementById('mS').value;
+    const a = await fetch(`${API}?action=getArtists&platform=${p}&month=${m}&year=${y}`).then(r => r.json());
+    document.getElementById('aS').innerHTML = a.map(x => `<option value="${x}">${x}</option>`).join('');
+    renderM(p);
+}
+
+async function renderM(p) {
+    const profile = document.getElementById('profile-area');
+    if(!profile) return;
+    profile.innerHTML = '<div class="skeleton" style="height:300px;"></div>';
+    
+    const y = document.getElementById('yS').value;
+    const m = document.getElementById('mS').value;
+    const a = document.getElementById('aS').value;
+    
+    try {
+        const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&year=${y}&artist=${a}`).then(r => r.json());
+        const art = data[0];
+
+        profile.innerHTML = `
+            <div class="banner" style="background-image:url('${art.capa}')">
+                <div class="banner-content">
+                    ${art.rank !== '-' ? `<span class="status new" style="padding:6px 12px; font-size:12px;">TOP ${art.rank} MENSAL</span>` : ''}
+                    <h2 style="font-size:50px; margin:10px 0; font-family:'Figtree'; font-weight:900; text-transform:uppercase; color:#fff;">${a}</h2>
+                    <p style="font-weight:900; color:var(--empire); font-size:20px;">${art.ov} OUVINTES MENSAIS</p>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:40px;
