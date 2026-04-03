@@ -1,38 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head><meta charset="UTF-8"><link rel="stylesheet" href="style.css"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Empire - Artistas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<header><h1>Empire Artists</h1></header>
-<div class="filters"><select id="yS" onchange="updateM()"></select><select id="mS" onchange="updateA()"></select><select id="aS" onchange="getStats()"></select></div>
-<div id="app"></div>
-<script>
-    const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec";
-    const P = new URLSearchParams(window.location.search).get('p') || 'SPOTIFY';
 
-    async function init() {
-        const years = await fetch(API + "?action=getMonthlyYears").then(r => r.json());
-        document.getElementById('yS').innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
-        updateM();
+<header><h1>Monthly Listeners</h1></header>
+<nav></nav>
+
+<div id="app">
+    <div id="profile-area">
+        </div>
+</div>
+
+<script src="script-master.js"></script>
+<script>
+    window.onload = () => {
+        buildMenu();
+        const params = new URLSearchParams(window.location.search);
+        initMonthly(params.get('p')); // Carrega os ouvintes baseado na plataforma (Spotify, etc)
     }
-    async function updateM() {
-        const y = document.getElementById('yS').value;
-        const months = await fetch(`${API}?action=getMonthlyDates&year=${y}`).then(r => r.json());
-        document.getElementById('mS').innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join('');
-        updateA();
-    }
-    async function updateA() {
-        const y = document.getElementById('yS').value, m = document.getElementById('mS').value;
-        const arts = await fetch(`${API}?action=getArtists&platform=${P}&month=${m}&year=${y}`).then(r => r.json());
-        document.getElementById('aS').innerHTML = arts.map(a => `<option value="${a}">${a}</option>`).join('');
-        getStats();
-    }
-    async function getStats() {
-        const y = document.getElementById('yS').value, m = document.getElementById('mS').value, a = document.getElementById('aS').value;
-        const data = await fetch(`${API}?action=getMonthlyStats&platform=${P}&month=${m}&artist=${a}&year=${y}`).then(r => r.json());
-        const art = data[0]; const cl = P === 'SPOTIFY' ? 'var(--sp)' : (P === 'APPLE MUSIC' ? 'var(--am)' : '#fff');
-        document.getElementById('app').innerHTML = `<div class="banner" style="background-image:url('${art.capaArtista}')"><div style="position:relative; z-index:2; padding:40px;"><h2 style="font-size:60px; margin:0;">${art.nome}</h2><p style="color:${cl}; font-weight:900;">${art.totalOuvintes} ouvintes mensais</p></div></div><div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:40px; padding:40px;"><div><h3>Populares</h3>${art.musicas.map((mus,i) => `<div class="chart-row" style="background:transparent; padding:10px 0;"><div class="rank" style="font-size:16px; width:30px;">${i+1}</div><img src="${mus.capaMusica}"><div style="padding-left:15px;"><b>${mus.titulo}</b></div><div style="text-align:right; color:${cl}; font-weight:700; flex-grow:1;">${mus.streams}</div></div>`).join('')}</div><div><h3>Sobre</h3><p style="color:#aaa; line-height:1.6; font-size:14px;">${art.sobre}</p></div></div>`;
-    }
-    init();
 </script>
 </body>
 </html>
