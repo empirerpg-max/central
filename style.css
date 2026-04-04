@@ -1,27 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,700;0,900;1,900&family=Bricolage+Grotesque:wght@800&family=Figtree:wght@400;700;900&family=Inter:wght@400;600;700;800;900&family=Roboto:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,700;0,900;1,900&family=Bricolage+Grotesque:wght@800&family=Figtree:wght@400;700;900&family=Inter:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap');
 
 :root { 
     --empire: #8a2be2; 
     --border-dark: rgba(255,255,255,0.08); 
-    --border-light: #eeeeee;
     --up: #1DB954; --down: #FA243C; --new: #00bfff;
 }
 
 body { margin: 0; padding-top: 130px; transition: background 0.3s, color 0.3s; }
 
-/* === MENU FIXO (NÃO SOME MAIS) === */
-header { 
-    position: fixed; top: 0; width: 100%; z-index: 2000; 
-    padding: 20px 0; text-align: center; 
-    background: #000; border-bottom: 2px solid var(--empire); 
-}
+/* MENU FIXO E CABEÇALHO */
+header { position: fixed; top: 0; width: 100%; z-index: 2000; padding: 20px 0; text-align: center; background: #000; border-bottom: 2px solid var(--empire); }
 header h1 { font-family: 'Figtree', sans-serif; font-weight: 900; letter-spacing: 8px; margin: 0; font-size: 26px; text-transform: uppercase; color: #fff; }
 
-nav { 
-    background: rgba(10,10,10,0.98); display: flex; justify-content: center; 
-    position: fixed; top: 72px; width: 100%; z-index: 1999; 
-    border-bottom: 1px solid var(--border-dark); flex-wrap: wrap; 
-}
+nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; position: fixed; top: 72px; width: 100%; z-index: 1999; border-bottom: 1px solid var(--border-dark); flex-wrap: wrap; }
 .menu-item { position: relative; padding: 15px 18px; cursor: pointer; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #aaa; text-decoration: none; font-family: 'Inter', sans-serif; }
 .menu-item:hover { color: var(--empire); }
 .submenu { display: none; position: absolute; top: 100%; left: 0; background: #0a0a0a; border: 1px solid var(--border-dark); min-width: 220px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
@@ -32,7 +23,7 @@ nav {
 #app { max-width: 1000px; margin: 0 auto; padding: 20px; }
 .filters { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
 
-/* === ESTRUTURA DA TABELA === */
+/* ESTRUTURA GERAL DAS TABELAS */
 .chart-row { display: grid; grid-template-columns: 50px 50px 70px 1fr 140px; align-items: center; padding: 15px 20px; transition: 0.2s; }
 .chart-row img { width: 60px; height: 60px; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 .info-box { padding-left: 15px; display: flex; flex-direction: column; overflow: hidden; }
@@ -43,64 +34,65 @@ nav {
 .stats-box small { font-size: 10px; text-transform: uppercase; font-weight: 700; margin-top: 4px; display: block; }
 
 .status { font-weight: 900; font-size: 11px; text-align: center; }
-.status.up { color: #1DB954; } .status.down { color: #FA243C; } 
+.status.up { color: var(--up); } 
+.status.down { color: var(--down); } 
 .status.new { background: var(--new); color: black; padding: 2px 4px; border-radius: 3px; font-size: 9px; }
 
-/* =========================================================
-   TEMAS ESPECÍFICOS DOS CHARTS (BASEADO NO SEU DOCX)
-   ========================================================= */
+/* =========================================
+   TEMAS DOS CHARTS 
+   ========================================= */
 
-/* 1. SPOTIFY (Verde e Escuro) */
-.theme-spotify { background: #121212; color: white; font-family: 'Figtree', sans-serif; }
-.theme-spotify .chart-row { background: transparent; border-bottom: 1px solid #222; }
-.theme-spotify .chart-row:hover { background: rgba(255,255,255,0.05); }
-.theme-spotify .rank { color: #b3b3b3; font-weight: 900; font-size: 20px; text-align: center; }
-.theme-spotify .info-box b { font-weight: 700; color: #fff; }
+/* SPOTIFY (Fundo Escuro, Fonte Inter) */
+.theme-spotify { background: #121212; color: #fff; font-family: 'Inter', sans-serif; }
+.theme-spotify .chart-row { background: #121212; border-bottom: 1px solid #282828; }
+.theme-spotify .chart-row:hover { background: #1a1a1a; }
+.theme-spotify .rank { color: #b3b3b3; font-weight: 900; font-size: 18px; text-align: center; }
+.theme-spotify .info-box b { font-weight: 700; color: #fff; font-size: 16px; }
 .theme-spotify .info-box span { color: #b3b3b3; }
 .theme-spotify .stats-box b { color: #1DB954; }
 .theme-spotify select { background: #282828; color: white; border: 1px solid #444; border-radius: 50px; }
 
-/* 2. APPLE MUSIC (Claro, Inter) */
-.theme-apple { background: #ffffff; color: #1d1d1f; font-family: 'Inter', sans-serif; }
-.theme-apple .chart-row { background: #ffffff; border-bottom: 0.5px solid #eee; }
+/* APPLE MUSIC (Fundo Claro, Fonte Inter) */
+.theme-apple { background: #fbfbfd; color: #1d1d1f; font-family: 'Inter', sans-serif; }
+.theme-apple .chart-row { background: transparent; border-bottom: 1px solid #e5e5ea; }
 .theme-apple .chart-row:hover { background: #f5f5f7; }
-.theme-apple .rank { color: #8e8e93; font-weight: 600; font-size: 18px; text-align: center; }
-.theme-apple .info-box b { font-weight: 600; color: #000; }
+.theme-apple .rank { color: #8e8e93; font-weight: 600; font-size: 16px; text-align: center; }
+.theme-apple .info-box b { font-weight: 600; color: #1d1d1f; }
 .theme-apple .info-box span { color: #8e8e93; }
 .theme-apple .stats-box b { color: #FA243C; }
 .theme-apple select { background: #f5f5f7; color: #FA243C; border: 1px solid #eee; border-radius: 8px; }
 
-/* 3. YOUTUBE (Escuro, Roboto) */
-.theme-youtube { background: #030303; color: white; font-family: 'Roboto', sans-serif; }
-.theme-youtube .chart-row { background: transparent; border-bottom: 1px solid #1a1a1a; }
-.theme-youtube .chart-row:hover { background: #111; }
-.theme-youtube .rank { color: #aaa; font-weight: 700; font-size: 18px; text-align: center; }
-.theme-youtube .info-box b { font-weight: 700; color: #fff; }
+/* YOUTUBE (Fundo Escuro, Fonte Roboto) */
+.theme-youtube { background: #0f0f0f; color: #fff; font-family: 'Roboto', sans-serif; }
+.theme-youtube .chart-row { background: transparent; border-bottom: 1px solid #272727; }
+.theme-youtube .chart-row:hover { background: #1f1f1f; }
+.theme-youtube .rank { color: #aaa; font-weight: 700; font-size: 20px; text-align: center; }
+.theme-youtube .info-box b { font-weight: 500; color: #fff; }
 .theme-youtube .info-box span { color: #aaa; }
 .theme-youtube .stats-box b { color: #fff; }
 .theme-youtube select { background: #212121; color: white; border: 1px solid #444; border-radius: 20px; }
 
-/* 4. BILLBOARD (Claro, Archivo) */
+/* BILLBOARD HOT 100 E 200 (Fundo Claro, Fonte Archivo) */
 .theme-billboard { background: #ffffff; color: #000; font-family: 'Archivo', sans-serif; }
 .theme-billboard .chart-row { background: #ffffff; border-bottom: 1px solid #eee; }
 .theme-billboard .chart-row:hover { background: #f8f8f8; }
 .theme-billboard .rank { font-weight: 900; font-size: 32px; font-style: italic; color: #000; text-align: center; }
 .theme-billboard .info-box b { font-weight: 900; text-transform: uppercase; color: #000; }
-.theme-billboard .info-box span { color: #555; font-size: 14px; }
+.theme-billboard .info-box span { color: #555; }
 .theme-billboard .stats-box b { color: #000; font-weight: 900; }
 .theme-billboard select { background: #fff; color: #000; border: 1px solid #ccc; border-radius: 4px; }
 
-/* 5. DIGITAL SALES (Preto e Dourado, Bricolage) */
+/* DIGITAL SALES (Preto e Dourado, Fonte Bricolage Grotesque) */
 .theme-digital { background: #0a0a0a; color: white; font-family: 'Inter', sans-serif; }
 .theme-digital .chart-row { background: transparent; border-bottom: 1px solid #222; }
-.theme-digital .rank { font-family: 'Bricolage Grotesque'; font-size: 30px; color: #d4af37; font-style: italic; text-align: center; }
-.theme-digital .info-box b { font-family: 'Bricolage Grotesque'; font-size: 18px; color: #d4af37; text-transform: uppercase; }
+.theme-digital .rank { font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; color: #d4af37; font-style: italic; text-align: center; }
+.theme-digital .info-box b { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; color: #d4af37; text-transform: uppercase; }
 .theme-digital .info-box span { color: #aaa; }
 .theme-digital .stats-box b { color: #fff; font-size: 20px; }
 .theme-digital .chart-row img { border: 1px solid #d4af37; }
 .theme-digital select { background: #000; color: #d4af37; border: 1px solid #d4af37; border-radius: 4px; }
 
-/* Real Time e Loading Padrão */
+/* EXTRAS */
 .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 .rt-col { background: #111; border-radius: 15px; overflow: hidden; border: 1px solid var(--border-dark); }
 .rt-head { padding: 15px; text-align: center; font-weight: 900; font-family: 'Figtree', sans-serif; text-transform: uppercase; color: #fff; }
