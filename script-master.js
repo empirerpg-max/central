@@ -1,5 +1,5 @@
 // ATENÇÃO: COLOQUE A SUA API DO GOOGLE AQUI
-const API = "URL_DA_TUA_API_DO_GOOGLE_SCRIPT"; 
+const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec"; 
 
 function buildMenu() {
     const navMenu = document.getElementById('menu-nav');
