@@ -1,5 +1,5 @@
 // ATENÇÃO: COLOQUE A SUA API DO GOOGLE AQUI
-const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec"; 
+const API = "URL_DA_TUA_API_DO_GOOGLE_SCRIPT"; 
 
 function buildMenu() {
     const navMenu = document.getElementById('menu-nav');
@@ -47,7 +47,7 @@ function buildMenu() {
     </div>`;
 }
 
-// === FUNÇÕES DO HALL OF FAME (PÁGINA DO ARTISTA) ===
+// === FUNÇÕES DO HALL OF FAME (DIRETÓRIO E PERFIL) ===
 
 async function loadHOFList() {
     const app = document.getElementById('app');
@@ -76,95 +76,96 @@ async function loadHOFProfile(artistName) {
     app.innerHTML = '<div class="skeleton" style="height:400px;"></div>';
     
     try {
-        const a = await fetch(`${API}?action=getHOFProfile&artist=${encodeURIComponent(artistName)}`).then(r => r.json());
+        const response = await fetch(`${API}?action=getHOFProfile&artist=${encodeURIComponent(artistName)}`);
+        const a = await response.json();
 
         const renderList = (list, color) => {
-            if(!list || list.length === 0) return `<p style="color:#444; font-size:13px; padding:10px;">Sem dados registrados.</p>`;
+            if(!list || list.length === 0) return `<p style="color:#444; font-size:12px; padding:10px;">Sem dados.</p>`;
             return list.map((i, idx) => `
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 5px; border-bottom:1px solid #1a1a1a;">
-                    <div style="display:flex; align-items:center; gap:12px; min-width:0;">
-                        <span style="color:#444; font-weight:900; font-size:14px; width:20px;">${idx+1}</span>
-                        <span style="color:#fff; font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${i.t}</span>
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 5px; border-bottom:1px solid #1a1a1a; font-size:13px;">
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <span style="color:#444; font-weight:900; width:18px;">${idx+1}</span>
+                        <span style="color:#fff; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${i.t}</span>
                     </div>
-                    <span style="color:${color}; font-weight:900; font-size:12px; margin-left:10px;">${i.v}</span>
+                    <span style="color:${color}; font-weight:900; margin-left:10px;">${i.v}</span>
                 </div>`).join('');
         };
 
         const renderRuns = (list) => {
-            if(!list || list.length === 0) return `<p style="color:#444; font-size:13px;">Nenhuma entrada na Hot 100.</p>`;
+            if(!list || list.length === 0) return `<p style="color:#444; font-size:12px;">Sem histórico.</p>`;
             return list.map(i => `
-                <div style="background:#161616; border:1px solid #222; border-radius:8px; padding:15px; margin-bottom:12px; border-left:4px solid #d4af37;">
-                    <b style="color:#fff; font-size:14px; display:block; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">${i.t}</b>
-                    <div style="color:#d4af37; font-size:13px; font-weight:700; font-family:monospace; letter-spacing:2px; overflow-x:auto; white-space:nowrap; padding-bottom:5px;">
-                        ${i.v}
-                    </div>
+                <div style="background:#161616; border:1px solid #222; border-radius:8px; padding:12px; margin-bottom:10px; border-left:3px solid #d4af37;">
+                    <b style="color:#fff; font-size:12px; display:block; margin-bottom:5px; text-transform:uppercase;">${i.t}</b>
+                    <div style="color:#d4af37; font-size:12px; font-weight:700; font-family:monospace; overflow-x:auto; white-space:nowrap; padding-bottom:3px;">${i.v}</div>
                 </div>`).join('');
         };
 
         app.innerHTML = `
-            <button onclick="loadHOFList()" style="background:transparent; border:none; color:#d4af37; cursor:pointer; font-weight:900; margin-bottom:25px; font-size:12px; letter-spacing:2px; text-transform:uppercase;">← BACK TO DIRECTORY</button>
+            <div style="max-width:1000px; margin:0 auto; font-family:'Inter', sans-serif;">
+                <button onclick="loadHOFList()" style="background:transparent; border:none; color:#d4af37; cursor:pointer; font-weight:900; margin-bottom:20px; font-size:11px; letter-spacing:1px; text-transform:uppercase;">← BACK TO DIRECTORY</button>
 
-            <div style="display:flex; align-items:center; gap:40px; background:linear-gradient(135deg, #111 0%, #050505 100%); padding:50px; border-radius:24px; border:1px solid rgba(212,175,55,0.2); margin-bottom:40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-                <img src="${a.img}" onerror="this.src='https://via.placeholder.com/200'" style="width:180px; height:180px; border-radius:50%; object-fit:cover; border:5px solid #d4af37; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
-                <div>
-                    <h1 style="font-family:'Figtree', sans-serif; font-size:60px; font-weight:900; margin:0 0 10px 0; text-transform:uppercase; color:#fff; letter-spacing:-2px; line-height:1;">${a.name}</h1>
-                    <div style="display:flex; gap:12px;">
-                        <span style="background:rgba(212,175,55,0.1); padding:8px 18px; border-radius:30px; font-size:12px; font-weight:800; color:#d4af37; border:1px solid rgba(212,175,55,0.3); text-transform:uppercase; letter-spacing:1px;">🌎 ${a.country}</span>
-                        <span style="background:rgba(255,255,255,0.05); padding:8px 18px; border-radius:30px; font-size:12px; font-weight:800; color:#aaa; border:1px solid rgba(255,255,255,0.1); text-transform:uppercase; letter-spacing:1px;">🎵 ${a.style}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; margin-bottom:50px;">
-                <div style="background:#111; padding:25px; border-radius:16px; text-align:center; border:1px solid rgba(212,175,55,0.15); box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-                    <div style="font-family:'Figtree'; font-size:42px; font-weight:900; color:#d4af37; margin-bottom:5px; line-height:1;">${a.n1_hot100}</div>
-                    <div style="font-size:10px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:2px;">#1 Hot 100</div>
-                </div>
-                <div style="background:#111; padding:25px; border-radius:16px; text-align:center; border:1px solid rgba(29,185,84,0.15);">
-                    <div style="font-family:'Figtree'; font-size:42px; font-weight:900; color:#1DB954; margin-bottom:5px; line-height:1;">${a.n1_spotify}</div>
-                    <div style="font-size:10px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:2px;">#1 Spotify</div>
-                </div>
-                <div style="background:#111; padding:25px; border-radius:16px; text-align:center; border:1px solid rgba(255,0,0,0.15);">
-                    <div style="font-family:'Figtree'; font-size:42px; font-weight:900; color:#ff0000; margin-bottom:5px; line-height:1;">${a.n1_youtube}</div>
-                    <div style="font-size:10px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:2px;">#1 YouTube</div>
-                </div>
-                <div style="background:#111; padding:25px; border-radius:16px; text-align:center; border:1px solid rgba(212,175,55,0.15);">
-                    <div style="font-family:'Figtree'; font-size:42px; font-weight:900; color:#d4af37; margin-bottom:5px; line-height:1;">${a.n1_bb200}</div>
-                    <div style="font-size:10px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:2px;">#1 BB 200</div>
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:40px; margin-bottom:60px;">
-                <div>
-                    <h2 style="font-family:'Figtree'; font-size:22px; font-weight:900; border-bottom:2px solid #ff0000; padding-bottom:12px; margin-bottom:20px; color:#fff; text-transform:uppercase; letter-spacing:1px;">YouTube Highlights</h2>
-                    <div style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:16px; padding:15px; margin-bottom:35px;">${renderList(a.yt, '#ff0000')}</div>
-                    
-                    <h2 style="font-family:'Figtree'; font-size:22px; font-weight:900; border-bottom:2px solid #d4af37; padding-bottom:12px; margin-bottom:20px; color:#fff; text-transform:uppercase; letter-spacing:1px;">Top Albums</h2>
-                    <div style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:16px; padding:15px;">${renderList(a.alb, '#d4af37')}</div>
-                </div>
-                
-                <div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:35px;">
-                        <div>
-                            <h2 style="font-family:'Figtree'; font-size:16px; font-weight:900; border-bottom:2px solid #1DB954; padding-bottom:10px; margin-bottom:15px; color:#fff; text-transform:uppercase;">Spotify</h2>
-                            <div style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:16px; padding:10px;">${renderList(a.sp, '#1DB954')}</div>
-                        </div>
-                        <div>
-                            <h2 style="font-family:'Figtree'; font-size:16px; font-weight:900; border-bottom:2px solid #FA243C; padding-bottom:10px; margin-bottom:15px; color:#fff; text-transform:uppercase;">Apple</h2>
-                            <div style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:16px; padding:10px;">${renderList(a.am, '#FA243C')}</div>
+                <div style="display:flex; align-items:center; gap:35px; background:linear-gradient(135deg, #111 0%, #050505 100%); padding:40px; border-radius:24px; border:1px solid rgba(212,175,55,0.2); margin-bottom:35px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                    <img src="${a.img}" onerror="this.src='https://via.placeholder.com/180'" style="width:160px; height:160px; border-radius:50%; object-fit:cover; border:5px solid #d4af37; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
+                    <div>
+                        <h1 style="font-family:'Figtree', sans-serif; font-size:50px; font-weight:900; margin:0 0 10px 0; text-transform:uppercase; color:#fff; letter-spacing:-2px; line-height:1;">${a.name}</h1>
+                        <div style="display:flex; gap:10px;">
+                            <span style="background:rgba(212,175,55,0.1); padding:6px 15px; border-radius:30px; font-size:11px; font-weight:800; color:#d4af37; border:1px solid rgba(212,175,55,0.3); text-transform:uppercase; letter-spacing:1px;">🌎 ${a.country}</span>
+                            <span style="background:rgba(255,255,255,0.05); padding:6px 15px; border-radius:30px; font-size:11px; font-weight:800; color:#aaa; border:1px solid rgba(255,255,255,0.1); text-transform:uppercase; letter-spacing:1px;">🎵 ${a.style}</span>
                         </div>
                     </div>
+                </div>
 
-                    <h2 style="font-family:'Figtree'; font-size:22px; font-weight:900; border-bottom:2px solid #d4af37; padding-bottom:12px; margin-bottom:20px; color:#fff; text-transform:uppercase; letter-spacing:1px;">Hot 100 History</h2>
-                    <div style="max-height: 450px; overflow-y: auto; padding-right: 8px;">
-                        ${renderRuns(a.runs)}
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom:40px;">
+                    <div style="background:#111; padding:20px; border-radius:16px; text-align:center; border:1px solid rgba(212,175,55,0.15);">
+                        <div style="font-family:'Figtree'; font-size:36px; font-weight:900; color:#d4af37; margin-bottom:3px; line-height:1;">${a.n1_hot100}</div>
+                        <div style="font-size:9px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:1px;">#1 Hot 100</div>
+                    </div>
+                    <div style="background:#111; padding:20px; border-radius:16px; text-align:center; border:1px solid rgba(29,185,84,0.15);">
+                        <div style="font-family:'Figtree'; font-size:36px; font-weight:900; color:#1DB954; margin-bottom:3px; line-height:1;">${a.n1_spotify}</div>
+                        <div style="font-size:9px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:1px;">#1 Spotify</div>
+                    </div>
+                    <div style="background:#111; padding:20px; border-radius:16px; text-align:center; border:1px solid rgba(255,0,0,0.15);">
+                        <div style="font-family:'Figtree'; font-size:36px; font-weight:900; color:#ff0000; margin-bottom:3px; line-height:1;">${a.n1_youtube}</div>
+                        <div style="font-size:9px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:1px;">#1 YouTube</div>
+                    </div>
+                    <div style="background:#111; padding:20px; border-radius:16px; text-align:center; border:1px solid rgba(212,175,55,0.15);">
+                        <div style="font-family:'Figtree'; font-size:36px; font-weight:900; color:#d4af37; margin-bottom:3px; line-height:1;">${a.n1_bb200}</div>
+                        <div style="font-size:9px; color:#666; text-transform:uppercase; font-weight:800; letter-spacing:1px;">#1 BB 200</div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; margin-bottom:40px;">
+                    <div>
+                        <h2 style="font-family:'Figtree'; font-size:18px; font-weight:900; border-bottom:2px solid #ff0000; padding-bottom:8px; margin-bottom:15px; color:#fff; text-transform:uppercase;">YouTube</h2>
+                        <div style="background:#0a0a0a; border-radius:16px; padding:10px;">${renderList(a.yt, '#ff0000')}</div>
+                    </div>
+                    <div>
+                        <h2 style="font-family:'Figtree'; font-size:18px; font-weight:900; border-bottom:2px solid #1DB954; padding-bottom:8px; margin-bottom:15px; color:#fff; text-transform:uppercase;">Spotify</h2>
+                        <div style="background:#0a0a0a; border-radius:16px; padding:10px;">${renderList(a.sp, '#1DB954')}</div>
+                    </div>
+                    <div>
+                        <h2 style="font-family:'Figtree'; font-size:18px; font-weight:900; border-bottom:2px solid #FA243C; padding-bottom:8px; margin-bottom:15px; color:#fff; text-transform:uppercase;">Apple Music</h2>
+                        <div style="background:#0a0a0a; border-radius:16px; padding:10px;">${renderList(a.am, '#FA243C')}</div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:30px; margin-bottom:50px;">
+                    <div>
+                        <h2 style="font-family:'Figtree'; font-size:18px; font-weight:900; border-bottom:2px solid #d4af37; padding-bottom:8px; margin-bottom:15px; color:#fff; text-transform:uppercase;">Top Albums</h2>
+                        <div style="background:#0a0a0a; border-radius:16px; padding:10px;">${renderList(a.alb, '#d4af37')}</div>
+                    </div>
+                    <div>
+                        <h2 style="font-family:'Figtree'; font-size:18px; font-weight:900; border-bottom:2px solid #d4af37; padding-bottom:8px; margin-bottom:15px; color:#fff; text-transform:uppercase;">Hot 100 History</h2>
+                        <div style="max-height: 450px; overflow-y: auto; padding-right: 10px;">
+                            ${renderRuns(a.runs)}
+                        </div>
                     </div>
                 </div>
             </div>`;
-    } catch(e) { app.innerHTML = `<p style="text-align:center; color:red; padding:50px;">Ocorreu um erro ao carregar o perfil.</p>`; }
+    } catch(e) { app.innerHTML = `<p style="text-align:center; color:red; padding:50px;">Erro ao carregar perfil.</p>`; }
 }
 
-// === FUNÇÕES ANTIGAS (SPOTIFY, APPLE, YOUTUBE, REALTIME) MANTIDAS IGUAIS ===
+// === FUNÇÕES ANTIGAS MANTIDAS ===
 
 async function loadRealTime() {
     const app = document.getElementById('app');
@@ -202,12 +203,7 @@ async function initChart(tab, hasStyle) {
         if (tab.toUpperCase().includes('YOUTUBE')) {
             headerHTML = `<div style="display:flex; justify-content:center; align-items:center; font-weight:900; font-size:20px; margin-bottom:20px;"><span style="background:#ff0000; color:#fff; padding:2px 6px; border-radius:4px; margin-right:8px; font-size:14px;">▶</span> YouTube ${hasStyle ? 'Styles' : 'Music'}</div>`;
         }
-        app.innerHTML = `
-            ${headerHTML}
-            <div class="filters">
-                <select id="dateS" onchange="renderChart('${tab}', ${hasStyle})">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
-                ${hasStyle ? `<select id="styleS" onchange="renderChart('${tab}', true)"><option value="">TODOS OS ESTILOS</option>${f.styles.map(s => `<option value="${s}">${s}</option>`).join('')}</select>` : ''}
-            </div><div id="chart-area"></div>`;
+        app.innerHTML = `${headerHTML}<div class="filters"><select id="dateS" onchange="renderChart('${tab}', ${hasStyle})">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>${hasStyle ? `<select id="styleS" onchange="renderChart('${tab}', true)"><option value="">TODOS OS ESTILOS</option>${f.styles.map(s => `<option value="${s}">${s}</option>`).join('')}</select>` : ''}</div><div id="chart-area"></div>`;
         renderChart(tab, hasStyle);
     } catch(e) { app.innerHTML = `<p style="text-align:center;">Erro ao carregar os filtros.</p>`; }
 }
@@ -223,19 +219,7 @@ async function renderChart(tab, hasStyle) {
         area.innerHTML = res.map((i, index) => {
             if (tab.toUpperCase().includes('YOUTUBE')) {
                 let rankNumber = hasStyle && style === "" ? (index + 1) : i.pos;
-                return `
-                <div class="yt-row">
-                    <div class="yt-rank">${rankNumber}</div>
-                    <img src="${i.capa}" class="yt-thumb" onerror="this.src='https://via.placeholder.com/150'">
-                    <div class="yt-info">
-                        <div class="yt-title">${i.tit}</div>
-                        <div class="yt-artist">${i.art}</div>
-                    </div>
-                    <div class="yt-stats">
-                        <div class="yt-now">${i.val} VIEWS</div>
-                        <div class="yt-total">Acumulado: ${i.tot || 0}</div>
-                    </div>
-                </div>`;
+                return `<div class="yt-row"><div class="yt-rank">${rankNumber}</div><img src="${i.capa}" class="yt-thumb" onerror="this.src='https://via.placeholder.com/150'"><div class="yt-info"><div class="yt-title">${i.tit}</div><div class="yt-artist">${i.art}</div></div><div class="yt-stats"><div class="yt-now">${i.val} VIEWS</div><div class="yt-total">Acumulado: ${i.tot || 0}</div></div></div>`;
             } else {
                 let stClass = "neutral"; let stIcon = "-";
                 if(i.st && i.st.toUpperCase().includes("NEW")) { stClass = "new"; stIcon = "NEW"; }
