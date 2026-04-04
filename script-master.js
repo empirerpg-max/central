@@ -77,15 +77,15 @@ async function loadRealTime() {
     try {
         const d = await fetch(API + "?action=getRealTime").then(r => r.json());
         
-        // Ajustado para manter o título perfeitamente na linha sem estourar o card
+        // Ajuste: A fonte foi reduzida para 12px, white-space: normal permite quebrar a linha, e line-height dá um respiro entre as linhas.
         const row = (l, color) => l.map(i => `
             <div class="chart-row" style="grid-template-columns:30px 45px 1fr 85px; background:transparent; border-bottom:1px solid #222; padding: 12px 15px;">
                 <div class="rank" style="font-size:16px; color:#aaa; text-align:center; font-weight:900;">${i.p}</div>
                 <img src="${i.c}" onerror="this.src='https://via.placeholder.com/150'" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
                 <div class="info-box" style="padding-left:10px; min-width: 0;">
-                    <b style="font-size:13px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">${i.t}</b>
+                    <b style="font-size:12px; color:#fff; white-space:normal; word-wrap:break-word; line-height:1.3; display:block;">${i.t}</b>
                 </div>
-                <div style="text-align:right; color:${color}; font-weight:900; font-size:14px;">${i.s}</div>
+                <div style="text-align:right; color:${color}; font-weight:900; font-size:13px;">${i.s}</div>
             </div>`).join('');
             
         app.innerHTML = `<div class="rt-grid">
