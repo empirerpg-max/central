@@ -7,7 +7,7 @@
     --up: #1DB954; --down: #FA243C; --new: #00bfff;
 }
 
-body { margin: 0; padding-top: 130px; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
+body { margin: 0; padding-top: 130px; transition: background 0.3s, color 0.3s; overflow-x: hidden; font-family: 'Inter', sans-serif; }
 
 /* --- CABEÇALHO E MENU --- */
 header { position: fixed; top: 0; width: 100%; z-index: 2000; padding: 20px 0; text-align: center; background: #000; border-bottom: 2px solid var(--empire); }
@@ -23,146 +23,68 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 
 #app { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-/* --- FILTROS MODERNOS (PÍLULAS) --- */
+/* --- FILTROS EM PÍLULAS --- */
 .filter-group { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 40px; }
 .pill-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; max-width: 100%; scrollbar-width: none; }
 .pill-container::-webkit-scrollbar { display: none; }
-
-.pill { 
-    background: #111; color: #888; padding: 10px 22px; border-radius: 30px; border: 1px solid #333; 
-    cursor: pointer; font-weight: 700; font-size: 12px; white-space: nowrap; transition: 0.3s; 
-}
+.pill { background: #111; color: #888; padding: 10px 22px; border-radius: 30px; border: 1px solid #333; cursor: pointer; font-weight: 700; font-size: 12px; white-space: nowrap; transition: 0.3s; }
 .pill:hover { border-color: var(--empire); color: #fff; }
 .pill.active { background: var(--empire); color: #fff; border-color: var(--empire); box-shadow: 0 0 15px rgba(138, 43, 226, 0.3); }
+#aS { width: 100%; max-width: 400px; background: #000; color: #fff; border: 2px solid #222; padding: 12px; border-radius: 12px; font-weight: 700; outline: none; text-align: center; }
 
-.artist-select-container { width: 100%; max-width: 400px; margin-top: 10px; }
-#aS { 
-    width: 100%; background: #000; color: #fff; border: 2px solid #222; padding: 12px; 
-    border-radius: 12px; font-weight: 700; cursor: pointer; text-align: center; outline: none;
-}
-#aS:focus { border-color: var(--empire); }
-
-/* --- CHARTS GERAIS --- */
+/* --- TABELAS --- */
 .chart-row { display: grid; grid-template-columns: 50px 50px 70px 1fr 140px; align-items: center; padding: 15px 20px; transition: 0.2s; }
-.chart-row img { width: 60px; height: 60px; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-.info-box { padding-left: 15px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-.info-box b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; }
-.info-box span { font-size: 13px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.chart-row img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+.info-box { padding-left: 15px; overflow: hidden; min-width: 0; }
+.info-box b { font-size: 16px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .stats-box { text-align: right; }
-.stats-box b { font-size: 16px; display: block; }
-.stats-box small { font-size: 10px; text-transform: uppercase; font-weight: 700; margin-top: 4px; display: block; }
 
-.status { font-weight: 900; font-size: 11px; text-align: center; }
-.status.up { color: var(--up); } 
-.status.down { color: var(--down); } 
-.status.new { background: var(--new); color: black; padding: 2px 4px; border-radius: 3px; font-size: 9px; }
+/* --- BOTÃO HAMBÚRGUER --- */
+.menu-toggle { display: none; }
 
-/* --- TEMAS --- */
-.theme-spotify { background: #121212; color: #fff; font-family: 'Inter', sans-serif; }
-.theme-spotify .chart-row { background: #121212; border-bottom: 1px solid #282828; }
-.theme-spotify .stats-box b { color: #1DB954; }
-
-.theme-apple { background: #fbfbfd; color: #1d1d1f; font-family: 'Inter', sans-serif; }
-.theme-apple .chart-row { background: transparent; border-bottom: 1px solid #e5e5ea; }
-.theme-apple .stats-box b { color: #FA243C; }
-
-.theme-youtube { background: #0f0f0f; color: #fff; font-family: 'Roboto', sans-serif; }
-.theme-youtube .chart-row { background: transparent; border-bottom: 1px solid #272727; }
-
-.theme-billboard { background: #ffffff; color: #000; font-family: 'Archivo', sans-serif; }
-.theme-billboard .rank { font-weight: 900; font-size: 32px; font-style: italic; color: #000; text-align: center; }
-
-.theme-digital { background: #0a0a0a; color: white; font-family: 'Inter', sans-serif; }
-.theme-digital .rank { font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; color: var(--gold); font-style: italic; text-align: center; }
-.theme-digital .info-box b { color: var(--gold); font-family: 'Bricolage Grotesque'; }
-
-/* --- PERFIS MENSAIS --- */
-.sp-banner { height: 340px; background-size: cover; background-position: center 20%; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
-.sp-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 10%, rgba(18,18,18,0.9) 95%, #121212 100%); }
-.sp-banner-content { position: relative; z-index: 2; width: 100%; color: white; }
-.sp-artist-name { font-family: 'Figtree', sans-serif; font-size: 80px; font-weight: 900; margin: 0; letter-spacing: -3px; line-height: 1; }
-.sp-main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 0 20px; }
-.sp-song-row { display: grid; grid-template-columns: 30px 45px 1fr 100px; align-items: center; padding: 8px; gap: 15px; }
-
-.am-hero { height: 400px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
-.am-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%); }
-
-.channel-header { margin: -20px -20px 0 -20px; position: relative; }
-.yt-banner { height: 250px; background-size: cover; background-position: center; border-bottom: 1px solid #333; }
-.channel-meta { display: flex; align-items: center; padding: 25px 50px; position: relative; background: #0f0f0f; }
-.avatar { width: 120px; height: 120px; border-radius: 50%; margin-right: 30px; border: 4px solid #0f0f0f; margin-top: -80px; object-fit: cover; z-index: 5; }
-
-/* --- SKELETONS --- */
-.skeleton { background: #161616; height: 75px; margin-bottom: 1px; animation: pulse 1.5s infinite; border-radius: 8px; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-/* ======================================================================
-   AJUSTES EXCLUSIVOS PARA MOBILE ( Empire Mobile Experience )
-   ====================================================================== */
-
+/* ==========================================
+   MOBILE EXPERIENCE (CSS FINAL)
+   ========================================== */
 @media (max-width: 768px) {
-    /* Ajuste de Padding Geral do App */
-    body { padding-top: 150px; }
-    #app { padding: 10px; }
+    body { padding-top: 80px; }
+    
+    .menu-toggle {
+        display: block; position: fixed; top: 20px; left: 20px; z-index: 2100;
+        background: #111; padding: 10px; border-radius: 8px; border: 1px solid var(--empire);
+    }
+    .menu-toggle div { width: 22px; height: 2px; background: #fff; margin: 5px 0; }
 
-    /* Cabeçalho Empire menor no celular */
-    header h1 { font-size: 18px; letter-spacing: 4px; }
-    nav { top: 60px; overflow-x: auto; justify-content: flex-start; padding: 0 10px; }
-    .menu-item { padding: 12px 10px; font-size: 10px; white-space: nowrap; }
+    nav {
+        position: fixed; top: 0; left: -100%; width: 260px; height: 100vh;
+        background: #0a0a0a; flex-direction: column; justify-content: flex-start;
+        padding: 80px 20px; transition: 0.4s; z-index: 2050; border-right: 2px solid var(--empire);
+        overflow-y: auto;
+    }
+    nav.active { left: 0; }
+    .menu-item { width: 100%; padding: 15px 0; font-size: 14px; border-bottom: 1px solid #1a1a1a; }
+    .submenu { display: block !important; position: static; background: transparent; padding-left: 15px; border: none; box-shadow: none; }
+    .sub-btn { padding: 10px 0; color: #666; font-size: 12px; }
 
-    /* Tabelas de Charts: Escondendo o excesso para não vazar */
+    /* Correção Real Time e Tabelas Mobile */
+    .rt-grid { grid-template-columns: 1fr; gap: 15px; }
     .chart-row { 
-        grid-template-columns: 35px 40px 1fr 80px; /* Reduzi as colunas */
-        gap: 8px;
+        grid-template-columns: 35px 50px 1fr 80px !important; 
+        gap: 15px !important; 
+        font-family: 'Inter', sans-serif !important; 
         padding: 10px;
     }
-    .chart-row img { width: 45px; height: 45px; }
-    .status { display: none; } /* Esconde o ícone de subiu/desceu no mobile para caber o resto */
-    .info-box b { font-size: 13px; }
-    .info-box span { font-size: 11px; }
-    .stats-box b { font-size: 13px; }
-    .stats-box small { display: none; } /* Esconde o texto "Total" pequeno */
+    .info-box b { font-size: 13px !important; white-space: normal !important; line-height: 1.2; }
+    .status { display: none; }
+    .stats-box small { display: none; }
 
-    /* Filtros em Pílulas: Scroll mais suave */
-    .pill { padding: 8px 18px; font-size: 11px; }
-
-    /* --- PÁGINAS DE ARTISTAS MENSAL --- */
-    
-    /* Spotify */
-    .sp-artist-name { font-size: 40px; letter-spacing: -1px; }
-    .sp-banner { height: 250px; padding: 20px; }
-    .sp-main-grid { grid-template-columns: 1fr; gap: 20px; } /* Vira coluna única */
-
-    /* Apple Music */
-    .am-hero { height: 250px; }
-    .am-artist-name { font-size: 28px; }
-    /* Ajustando o grid de 1.2fr 2fr para 1fr */
-    [style*="grid-template-columns: 1.2fr 2fr"] { grid-template-columns: 1fr !important; }
-
-    /* YouTube */
-    .avatar { width: 90px; height: 90px; margin-top: -60px; margin-right: 15px; }
-    .c-name { font-size: 24px; }
-    .main-grid { grid-template-columns: 1fr; padding: 15px; }
-    .v-thumb { width: 120px; height: 68px; }
-
-    /* --- HALL OF FAME / PERFIL DO ARTISTA --- */
-    
-    /* Header do Perfil */
-    [style*="padding:50px"], [style*="padding:40px"] { padding: 20px !important; flex-direction: column; text-align: center; }
-    [style*="font-size:50px"], [style*="font-size:60px"] { font-size: 32px !important; }
-    [style*="width:180px"], [style*="width:160px"] { width: 120px !important; height: 120px !important; }
-
-    /* Títulos #1 (2 por linha em vez de 4) */
+    /* Perfil Mobile */
+    .sp-artist-name { font-size: 40px; }
+    .sp-main-grid, .am-main-grid, .main-grid { grid-template-columns: 1fr !important; }
+    .avatar { width: 90px; height: 90px; margin-top: -60px; }
     [style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-
-    /* Grids de Listas (1 por linha em vez de 3) */
-    [style*="grid-template-columns: 1fr 1fr 1fr"],
-    [style*="grid-template-columns: 1fr 1fr"],
-    [style*="grid-template-columns: 1fr 1.5fr"] { 
-        grid-template-columns: 1fr !important; 
-        gap: 20px !important;
-    }
-
-    /* Ajuste fino em textos de listas */
-    .h-title, [style*="font-size:14px"] { font-size: 13px !important; }
+    [style*="grid-template-columns: 1fr 1fr 1fr"], [style*="grid-template-columns: 1fr 2fr"] { grid-template-columns: 1fr !important; }
 }
+
+/* SKELETONS */
+.skeleton { background: #161616; height: 75px; margin-bottom: 1px; animation: pulse 1.5s infinite; border-radius: 8px; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
