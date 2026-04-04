@@ -95,3 +95,74 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 /* --- SKELETONS --- */
 .skeleton { background: #161616; height: 75px; margin-bottom: 1px; animation: pulse 1.5s infinite; border-radius: 8px; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ======================================================================
+   AJUSTES EXCLUSIVOS PARA MOBILE ( Empire Mobile Experience )
+   ====================================================================== */
+
+@media (max-width: 768px) {
+    /* Ajuste de Padding Geral do App */
+    body { padding-top: 150px; }
+    #app { padding: 10px; }
+
+    /* Cabeçalho Empire menor no celular */
+    header h1 { font-size: 18px; letter-spacing: 4px; }
+    nav { top: 60px; overflow-x: auto; justify-content: flex-start; padding: 0 10px; }
+    .menu-item { padding: 12px 10px; font-size: 10px; white-space: nowrap; }
+
+    /* Tabelas de Charts: Escondendo o excesso para não vazar */
+    .chart-row { 
+        grid-template-columns: 35px 40px 1fr 80px; /* Reduzi as colunas */
+        gap: 8px;
+        padding: 10px;
+    }
+    .chart-row img { width: 45px; height: 45px; }
+    .status { display: none; } /* Esconde o ícone de subiu/desceu no mobile para caber o resto */
+    .info-box b { font-size: 13px; }
+    .info-box span { font-size: 11px; }
+    .stats-box b { font-size: 13px; }
+    .stats-box small { display: none; } /* Esconde o texto "Total" pequeno */
+
+    /* Filtros em Pílulas: Scroll mais suave */
+    .pill { padding: 8px 18px; font-size: 11px; }
+
+    /* --- PÁGINAS DE ARTISTAS MENSAL --- */
+    
+    /* Spotify */
+    .sp-artist-name { font-size: 40px; letter-spacing: -1px; }
+    .sp-banner { height: 250px; padding: 20px; }
+    .sp-main-grid { grid-template-columns: 1fr; gap: 20px; } /* Vira coluna única */
+
+    /* Apple Music */
+    .am-hero { height: 250px; }
+    .am-artist-name { font-size: 28px; }
+    /* Ajustando o grid de 1.2fr 2fr para 1fr */
+    [style*="grid-template-columns: 1.2fr 2fr"] { grid-template-columns: 1fr !important; }
+
+    /* YouTube */
+    .avatar { width: 90px; height: 90px; margin-top: -60px; margin-right: 15px; }
+    .c-name { font-size: 24px; }
+    .main-grid { grid-template-columns: 1fr; padding: 15px; }
+    .v-thumb { width: 120px; height: 68px; }
+
+    /* --- HALL OF FAME / PERFIL DO ARTISTA --- */
+    
+    /* Header do Perfil */
+    [style*="padding:50px"], [style*="padding:40px"] { padding: 20px !important; flex-direction: column; text-align: center; }
+    [style*="font-size:50px"], [style*="font-size:60px"] { font-size: 32px !important; }
+    [style*="width:180px"], [style*="width:160px"] { width: 120px !important; height: 120px !important; }
+
+    /* Títulos #1 (2 por linha em vez de 4) */
+    [style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+
+    /* Grids de Listas (1 por linha em vez de 3) */
+    [style*="grid-template-columns: 1fr 1fr 1fr"],
+    [style*="grid-template-columns: 1fr 1fr"],
+    [style*="grid-template-columns: 1fr 1.5fr"] { 
+        grid-template-columns: 1fr !important; 
+        gap: 20px !important;
+    }
+
+    /* Ajuste fino em textos de listas */
+    .h-title, [style*="font-size:14px"] { font-size: 13px !important; }
+}
