@@ -2,9 +2,10 @@
 const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec"; 
 
 function buildMenu() {
-    const nav = document.getElementById('menu-nav');
-    if(!nav) return;
-    nav.innerHTML = `
+    const navMenu = document.getElementById('menu-nav');
+    if(!navMenu) return;
+
+    navMenu.innerHTML = `
     <a href="index.html" class="menu-item">Início / Real Time</a>
     <div class="menu-item">Billboard Hot 100 Charts
         <div class="submenu">
@@ -45,54 +46,54 @@ function buildMenu() {
     </div>`;
 }
 
-// === A MÁGICA DOS TEMAS ACONTECE AQUI ===
 function applyTheme(tab) {
     const body = document.body;
-    body.className = ''; // Limpa temas anteriores
+    body.className = ''; 
     if (!tab) return;
-    
     const t = tab.toUpperCase();
     if(t.includes('SPOTIFY')) body.classList.add('theme-spotify');
     else if(t.includes('APPLE')) body.classList.add('theme-apple');
     else if(t.includes('YOUTUBE')) body.classList.add('theme-youtube');
     else if(t.includes('DIGITAL SALES')) body.classList.add('theme-digital');
     else if(t.includes('BILLBOARD') || t.includes('ÁLBUNS')) body.classList.add('theme-billboard');
-    else body.classList.add('theme-spotify'); // Padrão
+    else body.classList.add('theme-spotify');
 }
 
-// Retorna os textos de status de acordo com o docx
 function getStatsText(val, total, tab) {
     const t = tab.toUpperCase();
     if(t.includes('BILLBOARD HOT 100')) return `<b>${val} PTS</b><small></small>`;
     if(t.includes('ÁLBUNS')) return `<b>${val} UNIDADES</b><small>Total: ${total || 0}</small>`;
-    if(t.includes('YOUTUBE')) return `<b>${val} VIEWS</b><small>Acumulado: ${total || 0}</small>`;
     if(t.includes('APPLE') || t.includes('SPOTIFY')) return `<b>${val}</b><small>Total: ${total || 0}</small>`;
     if(t.includes('DIGITAL SALES')) return `<b>${val}</b><small>Total: ${total || 0}</small>`;
     return `<b>${val}</b><small>Total: ${total || 0}</small>`;
 }
 
+// === O AJUSTE DO REAL TIME ACONTECE AQUI ===
 async function loadRealTime() {
     const app = document.getElementById('app');
     if(!app) return;
-    document.body.classList.add('theme-spotify'); // Fundo escuro pro Real Time
+    document.body.classList.add('theme-spotify'); 
     app.innerHTML = '<div class="skeleton"></div>'.repeat(6);
-    
     try {
         const d = await fetch(API + "?action=getRealTime").then(r => r.json());
-        const row = (l, color) => l.map(i => `
-            <div class="chart-row" style="grid-template-columns:30px 50px 1fr 90px; background:transparent; border-bottom:1px solid #222;">
-                <div class="rank" style="font-size:16px; color:#aaa;">${i.p}</div>
-                <img src="${i.c}" onerror="this.src='https://via.placeholder.com/150'">
-                <div class="info-box"><b style="font-size:13px; color:#fff;">${i.t}</b></div>
-                <div style="text-align:right; color:${color}; font-weight:900;">${i.s}</div>
-            </div>`).join('');
         
+        // Ajustado para manter o título perfeitamente na linha sem estourar o card
+        const row = (l, color) => l.map(i => `
+            <div class="chart-row" style="grid-template-columns:30px 45px 1fr 85px; background:transparent; border-bottom:1px solid #222; padding: 12px 15px;">
+                <div class="rank" style="font-size:16px; color:#aaa; text-align:center; font-weight:900;">${i.p}</div>
+                <img src="${i.c}" onerror="this.src='https://via.placeholder.com/150'" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
+                <div class="info-box" style="padding-left:10px; min-width: 0;">
+                    <b style="font-size:13px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">${i.t}</b>
+                </div>
+                <div style="text-align:right; color:${color}; font-weight:900; font-size:14px;">${i.s}</div>
+            </div>`).join('');
+            
         app.innerHTML = `<div class="rt-grid">
             <div class="rt-col"><div class="rt-head" style="background:#1DB954; color:#000;">Spotify</div>${row(d.spotify, '#1DB954')}</div>
             <div class="rt-col"><div class="rt-head" style="background:#fff; color:#FA243C;">Apple</div>${row(d.apple, '#FA243C')}</div>
             <div class="rt-col"><div class="rt-head" style="background:#FF0000; color:#fff;">YouTube</div>${row(d.youtube, '#fff')}</div>
         </div>`;
-    } catch (e) { app.innerHTML = `<p style="text-align:center; color:red;">Erro de conexão. Tente atualizar a página.</p>`; }
+    } catch (e) { app.innerHTML = `<p style="text-align:center; color:red;">Erro de conexão.</p>`; }
 }
 
 async function initChart(tab, hasStyle) {
@@ -100,11 +101,16 @@ async function initChart(tab, hasStyle) {
     if(!app) return;
     applyTheme(tab);
     app.innerHTML = '<div class="skeleton"></div>'.repeat(8);
-    
     try {
         const f = await fetch(`${API}?action=getFilters&tab=${tab}`).then(r => r.json());
+        
+        let headerHTML = `<h2 style="text-align:center; font-weight:900; text-transform:uppercase; margin-bottom:20px;">${tab}</h2>`;
+        if (tab.toUpperCase().includes('YOUTUBE')) {
+            headerHTML = `<div style="display:flex; justify-content:center; align-items:center; font-weight:900; font-size:20px; margin-bottom:20px;"><span style="background:#ff0000; color:#fff; padding:2px 6px; border-radius:4px; margin-right:8px; font-size:14px;">▶</span> YouTube ${hasStyle ? 'Styles' : 'Music'}</div>`;
+        }
+
         app.innerHTML = `
-            <h2 style="text-align:center; font-weight:900; text-transform:uppercase; margin-bottom:20px;">${tab}</h2>
+            ${headerHTML}
             <div class="filters">
                 <select id="dateS" onchange="renderChart('${tab}', ${hasStyle})">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
                 ${hasStyle ? `<select id="styleS" onchange="renderChart('${tab}', true)"><option value="">TODOS OS ESTILOS</option>${f.styles.map(s => `<option value="${s}">${s}</option>`).join('')}</select>` : ''}
@@ -117,26 +123,43 @@ async function renderChart(tab, hasStyle) {
     const area = document.getElementById('chart-area');
     if(!area) return;
     area.innerHTML = '<div class="skeleton"></div>'.repeat(5);
-    
     const date = document.getElementById('dateS').value;
     const style = hasStyle ? document.getElementById('styleS').value : "";
     
     try {
         const res = await fetch(`${API}?action=getChart&tab=${tab}&date=${date}&style=${style}`).then(r => r.json());
-        area.innerHTML = res.map(i => {
-            let stClass = "neutral"; let stIcon = "-";
-            if(i.st && i.st.toUpperCase().includes("NEW")) { stClass = "new"; stIcon = "NEW"; }
-            else if(i.st && (i.st.includes("↑") || i.st.toLowerCase().includes("subiu"))) { stClass = "up"; stIcon = `▲<br><span style="font-size:10px;">${i.q || ''}</span>`; }
-            else if(i.st && (i.st.includes("↓") || i.st.toLowerCase().includes("desceu"))) { stClass = "down"; stIcon = `▼<br><span style="font-size:10px;">${i.q || ''}</span>`; }
+        area.innerHTML = res.map((i, index) => {
+            if (tab.toUpperCase().includes('YOUTUBE')) {
+                let rankNumber = hasStyle && style === "" ? (index + 1) : i.pos;
+                return `
+                <div class="yt-row">
+                    <div class="yt-rank">${rankNumber}</div>
+                    <img src="${i.capa}" class="yt-thumb" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="yt-info">
+                        <div class="yt-title">${i.tit}</div>
+                        <div class="yt-artist">${i.art}</div>
+                    </div>
+                    <div class="yt-stats">
+                        <div class="yt-now">${i.val} VIEWS</div>
+                        <div class="yt-total">Acumulado: ${i.tot || 0}</div>
+                    </div>
+                </div>`;
+            } 
+            else {
+                let stClass = "neutral"; let stIcon = "-";
+                if(i.st && i.st.toUpperCase().includes("NEW")) { stClass = "new"; stIcon = "NEW"; }
+                else if(i.st && (i.st.includes("↑") || i.st.toLowerCase().includes("subiu"))) { stClass = "up"; stIcon = `▲<br><span style="font-size:10px;">${i.q || ''}</span>`; }
+                else if(i.st && (i.st.includes("↓") || i.st.toLowerCase().includes("desceu"))) { stClass = "down"; stIcon = `▼<br><span style="font-size:10px;">${i.q || ''}</span>`; }
 
-            return `
-            <div class="chart-row">
-                <div class="rank">${i.pos}</div>
-                <div class="status ${stClass}">${stIcon}</div>
-                <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/150'">
-                <div class="info-box"><b>${i.tit}</b><span>${i.art}</span></div>
-                <div class="stats-box">${getStatsText(i.val, i.tot, tab)}</div>
-            </div>`;
+                return `
+                <div class="chart-row">
+                    <div class="rank">${i.pos}</div>
+                    <div class="status ${stClass}">${stIcon}</div>
+                    <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="info-box"><b>${i.tit}</b><span>${i.art}</span></div>
+                    <div class="stats-box">${getStatsText(i.val, i.tot, tab)}</div>
+                </div>`;
+            }
         }).join('');
     } catch(e) { area.innerHTML = `<p style="text-align:center;">Erro ao carregar a lista.</p>`; }
 }
@@ -146,11 +169,16 @@ async function initCountry(tab) {
     if(!app) return;
     applyTheme(tab);
     app.innerHTML = '<div class="skeleton"></div>'.repeat(5);
-    
     try {
         const f = await fetch(`${API}?action=getFilters&tab=${tab}`).then(r => r.json());
+        
+        let headerHTML = `<h2 style="text-align:center; font-weight:900; text-transform:uppercase; margin-bottom:20px;">${tab}</h2>`;
+        if (tab.toUpperCase().includes('YOUTUBE')) {
+            headerHTML = `<div style="display:flex; justify-content:center; align-items:center; font-weight:900; font-size:20px; margin-bottom:20px;"><span style="background:#ff0000; color:#fff; padding:2px 6px; border-radius:4px; margin-right:8px; font-size:14px;">▶</span> YouTube Countries</div>`;
+        }
+
         app.innerHTML = `
-            <h2 style="text-align:center; font-weight:900; text-transform:uppercase; margin-bottom:20px;">${tab}</h2>
+            ${headerHTML}
             <div class="filters">
                 <select id="countryS" onchange="renderCountry('${tab}')">${f.countries.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
                 <select id="dateS" onchange="renderCountry('${tab}')">${f.dates.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
@@ -164,16 +192,29 @@ async function renderCountry(tab) {
     if(!area) return;
     const c = document.getElementById('countryS').value;
     const d = document.getElementById('dateS').value;
-    
     try {
         const res = await fetch(`${API}?action=getChart&tab=${tab}&country=${c}&date=${d}`).then(r => r.json());
-        area.innerHTML = res.map(i => `
+        area.innerHTML = res.map(i => {
+            if (tab.toUpperCase().includes('YOUTUBE')) {
+                return `
+                <div class="yt-row" style="grid-template-columns: 50px 80px 1fr 140px;">
+                    <div class="yt-rank">${i.pos}</div>
+                    <img src="${i.capa}" class="yt-thumb" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="yt-info">
+                        <div class="yt-title">${i.tit}</div>
+                        <div class="yt-artist">${i.art}</div>
+                    </div>
+                    <div class="yt-stats"><div class="yt-now">${i.val} VIEWS</div></div>
+                </div>`;
+            }
+            return `
             <div class="chart-row" style="grid-template-columns: 50px 70px 1fr 130px;">
                 <div class="rank">${i.pos}</div>
                 <img src="${i.capa}" onerror="this.src='https://via.placeholder.com/150'">
                 <div class="info-box"><b>${i.tit}</b><span>${i.art}</span></div>
                 <div class="stats-box"><b>${i.val}</b><small>STREAMS/VIEWS</small></div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     } catch(e) { area.innerHTML = `<p style="text-align:center;">Erro ao carregar dados do país.</p>`; }
 }
 
@@ -182,7 +223,6 @@ async function initMonthly(p) {
     if(!app) return;
     applyTheme(p);
     app.innerHTML = '<div id="monthly-filters" class="filters"></div><div id="profile-area"></div>';
-    
     try {
         const years = await fetch(`${API}?action=getMonthlyYears`).then(r => r.json());
         document.getElementById('monthly-filters').innerHTML = `
@@ -212,7 +252,6 @@ async function renderM(p) {
     const profile = document.getElementById('profile-area');
     if(!profile) return;
     profile.innerHTML = '<div class="skeleton" style="height:300px;"></div>';
-    
     const y = document.getElementById('yS').value;
     const m = document.getElementById('mS').value;
     const a = document.getElementById('aS').value;
@@ -221,7 +260,39 @@ async function renderM(p) {
         const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&year=${y}&artist=${a}`).then(r => r.json());
         const art = data[0];
 
-        profile.innerHTML = `
+        if (p.toUpperCase().includes('YOUTUBE')) {
+            profile.innerHTML = `
+            <div class="channel-header">
+                <div class="yt-banner" style="background-image: url('${art.capa}');"></div>
+                <div class="channel-meta">
+                    <img src="${art.capa}" class="avatar" onerror="this.src='https://via.placeholder.com/120'">
+                    <div>
+                        <h2 class="c-name">${a}</h2>
+                        <div class="c-stats">${art.ov} visualizações mensais</div>
+                        ${art.rank !== '-' ? `<span style="background:#ff0000; color:#fff; padding:2px 6px; border-radius:4px; font-size:12px; margin-top:5px; display:inline-block;">TOP ${art.rank}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+            <div class="main-grid">
+                <div>
+                    <div class="section-label">Vídeos Populares</div>
+                    ${art.m.map(mus => `
+                        <div class="v-item">
+                            <img src="${mus.c}" class="v-thumb" onerror="this.src='https://via.placeholder.com/180x101'">
+                            <div>
+                                <div style="font-weight:700; font-size:16px; color:#fff;">${mus.t}</div>
+                                <div style="color:#aaa; font-size:13px; margin-top:5px;">${mus.s} views</div>
+                            </div>
+                        </div>`).join('')}
+                </div>
+                <div>
+                    <div class="section-label">Informações</div>
+                    <div class="about-content">${art.bio}</div>
+                </div>
+            </div>`;
+        } 
+        else {
+            profile.innerHTML = `
             <div style="text-align:center; padding: 40px; margin-bottom:30px; border-bottom:1px solid var(--border-dark);">
                 <img src="${art.capa}" style="width:200px; height:200px; border-radius:50%; object-fit:cover; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
                 <h2 style="font-size:45px; margin:0; font-weight:900;">${a}</h2>
@@ -234,7 +305,7 @@ async function renderM(p) {
                     ${art.m.map((mus, idx) => `
                         <div class="chart-row" style="grid-template-columns:30px 50px 1fr 100px; padding:10px 0;">
                             <div class="rank" style="font-size:16px;">${idx+1}</div>
-                            <img src="${mus.c}">
+                            <img src="${mus.c}" onerror="this.src='https://via.placeholder.com/150'">
                             <div class="info-box"><b>${mus.t}</b></div>
                             <div class="stats-box"><b style="font-size:14px;">${mus.s}</b></div>
                         </div>`).join('')}
@@ -244,5 +315,6 @@ async function renderM(p) {
                     <p style="line-height:1.6; font-size:14px;">${art.bio}</p>
                 </div>
             </div>`;
+        }
     } catch(e) { profile.innerHTML = `<p style="text-align:center;">Erro ao carregar o artista.</p>`; }
 }
