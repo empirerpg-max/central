@@ -289,8 +289,6 @@ async function renderM(p) {
                 </div>
             </div>`;
         } 
-        
-        // === O "TCHAN" DO SPOTIFY ARTISTS FOI ADICIONADO AQUI ===
         else if (p.toUpperCase().includes('SPOTIFY')) {
             profile.innerHTML = `
             <div class="sp-banner" style="background-image: url('${art.capa}');">
@@ -329,7 +327,41 @@ async function renderM(p) {
             </div>`;
         }
         
-        // PADRÃO PARA APPLE MUSIC
+        // === O AJUSTE PARA O APPLE MUSIC ESTÁ AQUI ===
+        else if (p.toUpperCase().includes('APPLE')) {
+            profile.innerHTML = `
+            <div class="am-hero" style="background-image: url('${art.capa}');">
+                <div class="am-hero-content">
+                    <div class="am-play-icon">
+                        <svg height="18" width="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+                    </div>
+                    <h1 class="am-artist-name">${a}</h1>
+                </div>
+            </div>
+            <div class="am-main-grid">
+                <div>
+                    <h2 class="am-section-title">Sobre</h2>
+                    <div class="am-about-card">
+                        <b>${art.ov} ouvintes mensais</b>
+                        ${art.rank !== '-' ? `<span style="color:#fa243c; font-weight:600; font-size:12px; margin-bottom:10px; display:block;">TOP ${art.rank} MENSAL</span>` : ''}
+                        <p style="margin-top: 10px;">${art.bio}</p>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="am-section-title">Top Songs <span>Ver tudo &gt;</span></h2>
+                    ${art.m.map(mus => `
+                        <div class="am-song-row">
+                            <img src="${mus.c}" onerror="this.src='https://via.placeholder.com/150'">
+                            <div style="min-width:0;">
+                                <span class="am-song-title">${mus.t}</span>
+                            </div>
+                            <div class="am-song-streams">${mus.s} reproduções</div>
+                        </div>`).join('')}
+                </div>
+            </div>`;
+        }
+        // FIM DO AJUSTE DO APPLE MUSIC
+        
         else {
             profile.innerHTML = `
             <div style="text-align:center; padding: 40px; margin-bottom:30px; border-bottom:1px solid var(--border-dark);">
