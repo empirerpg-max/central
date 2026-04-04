@@ -68,7 +68,6 @@ function getStatsText(val, total, tab) {
     return `<b>${val}</b><small>Total: ${total || 0}</small>`;
 }
 
-// === O AJUSTE DO REAL TIME ACONTECE AQUI ===
 async function loadRealTime() {
     const app = document.getElementById('app');
     if(!app) return;
@@ -77,7 +76,6 @@ async function loadRealTime() {
     try {
         const d = await fetch(API + "?action=getRealTime").then(r => r.json());
         
-        // Ajuste: A fonte foi reduzida para 12px, white-space: normal permite quebrar a linha, e line-height dá um respiro entre as linhas.
         const row = (l, color) => l.map(i => `
             <div class="chart-row" style="grid-template-columns:30px 45px 1fr 85px; background:transparent; border-bottom:1px solid #222; padding: 12px 15px;">
                 <div class="rank" style="font-size:16px; color:#aaa; text-align:center; font-weight:900;">${i.p}</div>
@@ -291,6 +289,47 @@ async function renderM(p) {
                 </div>
             </div>`;
         } 
+        
+        // === O "TCHAN" DO SPOTIFY ARTISTS FOI ADICIONADO AQUI ===
+        else if (p.toUpperCase().includes('SPOTIFY')) {
+            profile.innerHTML = `
+            <div class="sp-banner" style="background-image: url('${art.capa}');">
+                <div class="sp-banner-content">
+                    <h1 class="sp-artist-name">${a}</h1>
+                    <p class="sp-listeners">${art.ov} ouvintes mensais</p>
+                </div>
+            </div>
+            <div class="sp-action-bar">
+                <button class="sp-play-btn">
+                    <svg height="24" width="24" viewBox="0 0 24 24" fill="currentColor"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg>
+                </button>
+                <button class="sp-follow-btn">Seguindo</button>
+                <span class="sp-dots">•••</span>
+            </div>
+            <div class="sp-main-grid">
+                <div>
+                    <h2 class="sp-section-title">Populares</h2>
+                    ${art.m.map((mus, idx) => `
+                        <div class="sp-song-row">
+                            <div class="sp-song-rank">${idx+1}</div>
+                            <img src="${mus.c}" onerror="this.src='https://via.placeholder.com/150'">
+                            <div style="min-width:0;">
+                                <div class="sp-song-title">${mus.t}</div>
+                            </div>
+                            <div class="sp-song-streams">${mus.s}</div>
+                        </div>`).join('')}
+                </div>
+                <div>
+                    <h2 class="sp-section-title">Sobre o artista</h2>
+                    <div class="sp-about-card">
+                        ${art.rank !== '-' ? `<div style="color:#1DB954; font-weight:700; font-size:18px; margin-bottom:15px;">#${art.rank} no mundo</div>` : ''}
+                        ${art.bio}
+                    </div>
+                </div>
+            </div>`;
+        }
+        
+        // PADRÃO PARA APPLE MUSIC
         else {
             profile.innerHTML = `
             <div style="text-align:center; padding: 40px; margin-bottom:30px; border-bottom:1px solid var(--border-dark);">
