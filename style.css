@@ -8,7 +8,7 @@
 
 body { margin: 0; padding-top: 130px; transition: background 0.3s, color 0.3s; }
 
-/* MENU FIXO E CABEÇALHO */
+/* CABEÇALHO E MENU */
 header { position: fixed; top: 0; width: 100%; z-index: 2000; padding: 20px 0; text-align: center; background: #000; border-bottom: 2px solid var(--empire); }
 header h1 { font-family: 'Figtree', sans-serif; font-weight: 900; letter-spacing: 8px; margin: 0; font-size: 26px; text-transform: uppercase; color: #fff; }
 
@@ -23,7 +23,7 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 #app { max-width: 1000px; margin: 0 auto; padding: 20px; }
 .filters { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
 
-/* ESTRUTURA GERAL DAS TABELAS */
+/* TABELAS GERAIS */
 .chart-row { display: grid; grid-template-columns: 50px 50px 70px 1fr 140px; align-items: center; padding: 15px 20px; transition: 0.2s; }
 .chart-row img { width: 60px; height: 60px; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 .info-box { padding-left: 15px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
@@ -38,124 +38,64 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .status.down { color: var(--down); } 
 .status.new { background: var(--new); color: black; padding: 2px 4px; border-radius: 3px; font-size: 9px; }
 
-/* TEMAS DOS CHARTS */
+/* TEMAS POR PLATAFORMA */
 .theme-spotify { background: #121212; color: #fff; font-family: 'Inter', sans-serif; }
 .theme-spotify .chart-row { background: #121212; border-bottom: 1px solid #282828; }
-.theme-spotify .chart-row:hover { background: #1a1a1a; }
 .theme-spotify .rank { color: #b3b3b3; font-weight: 900; font-size: 18px; text-align: center; }
-.theme-spotify .info-box b { font-weight: 700; color: #fff; font-size: 16px; }
-.theme-spotify .info-box span { color: #b3b3b3; }
 .theme-spotify .stats-box b { color: #1DB954; }
-.theme-spotify select { background: #282828; color: white; border: 1px solid #444; border-radius: 50px; }
 
 .theme-apple { background: #fbfbfd; color: #1d1d1f; font-family: 'Inter', sans-serif; }
 .theme-apple .chart-row { background: transparent; border-bottom: 1px solid #e5e5ea; }
-.theme-apple .chart-row:hover { background: #f5f5f7; }
 .theme-apple .rank { color: #8e8e93; font-weight: 600; font-size: 16px; text-align: center; }
-.theme-apple .info-box b { font-weight: 600; color: #1d1d1f; }
-.theme-apple .info-box span { color: #8e8e93; }
 .theme-apple .stats-box b { color: #FA243C; }
-.theme-apple select { background: #f5f5f7; color: #FA243C; border: 1px solid #eee; border-radius: 8px; }
 
 .theme-youtube { background: #0f0f0f; color: #fff; font-family: 'Roboto', sans-serif; }
 .theme-youtube .chart-row { background: transparent; border-bottom: 1px solid #272727; }
-.theme-youtube .chart-row:hover { background: #1f1f1f; }
 .theme-youtube .rank { color: #aaa; font-weight: 700; font-size: 20px; text-align: center; }
-.theme-youtube .info-box b { font-weight: 500; color: #fff; }
-.theme-youtube .info-box span { color: #aaa; }
-.theme-youtube .stats-box b { color: #fff; }
-.theme-youtube select { background: #212121; color: white; border: 1px solid #444; border-radius: 20px; }
 
 .theme-billboard { background: #ffffff; color: #000; font-family: 'Archivo', sans-serif; }
-.theme-billboard .chart-row { background: #ffffff; border-bottom: 1px solid #eee; }
-.theme-billboard .chart-row:hover { background: #f8f8f8; }
 .theme-billboard .rank { font-weight: 900; font-size: 32px; font-style: italic; color: #000; text-align: center; }
-.theme-billboard .info-box b { font-weight: 900; text-transform: uppercase; color: #000; }
-.theme-billboard .info-box span { color: #555; }
-.theme-billboard .stats-box b { color: #000; font-weight: 900; }
-.theme-billboard select { background: #fff; color: #000; border: 1px solid #ccc; border-radius: 4px; }
 
 .theme-digital { background: #0a0a0a; color: white; font-family: 'Inter', sans-serif; }
-.theme-digital .chart-row { background: transparent; border-bottom: 1px solid #222; }
 .theme-digital .rank { font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; color: #d4af37; font-style: italic; text-align: center; }
-.theme-digital .info-box b { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; color: #d4af37; text-transform: uppercase; }
-.theme-digital .info-box span { color: #aaa; }
-.theme-digital .stats-box b { color: #fff; font-size: 20px; }
-.theme-digital .chart-row img { border: 1px solid #d4af37; }
-.theme-digital select { background: #000; color: #d4af37; border: 1px solid #d4af37; border-radius: 4px; }
+.theme-digital .info-box b { color: #d4af37; font-family: 'Bricolage Grotesque'; }
 
-/* REAL TIME */
+/* EXTRAS */
 .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 .rt-col { background: #111; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-dark); }
 .rt-head { padding: 15px; text-align: center; font-weight: 900; font-family: 'Figtree', sans-serif; text-transform: uppercase; color: #fff; }
 .skeleton { background: #161616; height: 75px; margin-bottom: 1px; animation: pulse 1.5s infinite; border-radius: 8px; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-/* LAYOUT EXCLUSIVO YOUTUBE */
-.theme-youtube select { background: #212121; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 20px; font-weight: 700; outline: none; }
-.theme-youtube .yt-row { display: grid; grid-template-columns: 50px 80px 1fr 140px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #1a1a1a; }
-.theme-youtube .yt-row:hover { background: #1f1f1f; }
-.theme-youtube .yt-rank { font-size: 20px; font-weight: 700; color: #aaa; text-align: center; }
-.theme-youtube .yt-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; }
-.theme-youtube .yt-info { padding: 0 15px; text-align: left; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-.theme-youtube .yt-title { font-weight: 500; font-size: 16px; color: #fff; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.theme-youtube .yt-artist { color: #aaa; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.theme-youtube .yt-stats { text-align: right; }
-.theme-youtube .yt-now { font-weight: 700; font-size: 15px; color: #fff; }
-.theme-youtube .yt-total { font-size: 11px; color: #aaa; display: block; margin-top: 2px; }
-.theme-youtube .channel-header { margin: -20px -20px 0 -20px; }
-.theme-youtube .yt-banner { height: 250px; background-size: cover; background-position: center; border-bottom: 1px solid #333; border-radius: 0; }
-.theme-youtube .channel-meta { display: flex; align-items: center; padding: 25px 50px; position: relative; }
-.theme-youtube .avatar { width: 120px; height: 120px; border-radius: 50%; margin-right: 30px; border: 4px solid #030303; margin-top: -80px; object-fit: cover; }
-.theme-youtube .c-name { font-size: 36px; font-weight: 700; margin: 0; letter-spacing: -1px; color: #fff; }
-.theme-youtube .c-stats { color: #aaa; font-size: 16px; margin-top: 5px; }
-.theme-youtube .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 20px 50px 50px; max-width: 1300px; margin: 0 auto; text-align: left; }
-.theme-youtube .v-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; }
-.theme-youtube .v-thumb { width: 180px; height: 101px; object-fit: cover; border-radius: 12px; }
-.theme-youtube .section-label { color: #fff; font-weight: 700; margin-bottom: 25px; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; border-left: 3px solid #ff0000; padding-left: 10px; text-align: left; }
-.theme-youtube .about-content { color: #aaa; font-size: 15px; line-height: 1.6; background: #0f0f0f; padding: 20px; border-radius: 12px; text-align: left; }
+/* LAYOUT YOUTUBE */
+.yt-row { display: grid; grid-template-columns: 50px 80px 1fr 140px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #1a1a1a; }
+.yt-rank { font-size: 20px; font-weight: 700; color: #aaa; text-align: center; }
+.yt-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; }
+.yt-info { padding: 0 15px; text-align: left; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.yt-title { font-weight: 500; font-size: 16px; color: #fff; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.yt-artist { color: #aaa; font-size: 14px; }
+.yt-stats { text-align: right; }
+.yt-now { font-weight: 700; font-size: 15px; color: #fff; }
+.yt-total { font-size: 11px; color: #aaa; display: block; margin-top: 2px; }
 
-/* LAYOUT EXCLUSIVO SPOTIFY ARTISTS */
+/* SPOTIFY ARTIST TCHAN */
 .sp-banner { height: 340px; background-size: cover; background-position: center 20%; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .sp-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 10%, rgba(18,18,18,0.9) 95%, #121212 100%); }
 .sp-banner-content { position: relative; z-index: 2; width: 100%; }
 .sp-artist-name { font-family: 'Figtree', sans-serif; font-size: 80px; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -3px; line-height: 1; color: #fff; }
-.sp-listeners { font-family: 'Inter', sans-serif; font-size: 16px; color: #fff; margin: 0; font-weight: 500; }
-.sp-action-bar { display: flex; align-items: center; gap: 20px; padding: 10px 20px 30px 20px; }
-.sp-play-btn { width: 56px; height: 56px; background: #1DB954; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; color: #000; transition: transform 0.1s, background 0.1s; }
-.sp-play-btn:hover { transform: scale(1.05); background: #1ed760; }
-.sp-follow-btn { background: transparent; border: 1px solid #878787; color: #fff; padding: 7px 15px; border-radius: 4px; font-weight: 700; font-size: 13px; cursor: pointer; letter-spacing: 1px; transition: border 0.1s; }
-.sp-follow-btn:hover { border-color: #fff; }
-.sp-dots { color: #878787; font-size: 20px; cursor: pointer; letter-spacing: 2px; font-weight: 900; }
-.sp-dots:hover { color: #fff; }
-.sp-main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 0 20px; }
-.sp-section-title { font-family: 'Figtree', sans-serif; font-size: 24px; font-weight: 900; margin-bottom: 20px; margin-top: 0; color: #fff; }
-.sp-song-row { display: grid; grid-template-columns: 30px 45px 1fr 100px; align-items: center; padding: 8px 15px; border-radius: 4px; gap: 15px; transition: background 0.2s; }
-.sp-song-row:hover { background: rgba(255,255,255,0.1); }
-.sp-song-row img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
-.sp-song-rank { color: #a7a7a7; font-size: 16px; font-weight: 500; }
-.sp-song-title { font-size: 16px; font-weight: 400; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sp-song-streams { color: #a7a7a7; font-size: 14px; text-align: right; }
-.sp-about-card { background: #282828; padding: 30px; border-radius: 8px; color: #fff; font-size: 15px; line-height: 1.6; font-weight: 400; transition: background 0.3s; cursor: pointer; }
-.sp-about-card:hover { background: #333; }
 
-/* ======================================================================
-   LAYOUT EXCLUSIVO APPLE MUSIC ARTISTS (O visual novo e clean)
-   ====================================================================== */
+/* APPLE ARTIST LAYOUT */
 .am-hero { height: 400px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .am-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%); }
 .am-hero-content { position: relative; z-index: 2; display: flex; align-items: center; gap: 15px; width: 100%; }
-.am-play-icon { width: 40px; height: 40px; background: #fa243c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; }
+.am-play-icon { width: 40px; height: 40px; background: #fa243c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
 .am-artist-name { font-family: 'Inter', sans-serif; font-size: 44px; font-weight: 800; margin: 0; color: #fff; letter-spacing: -1px; }
 
-.am-main-grid { display: grid; grid-template-columns: 1.2fr 2fr; gap: 40px; padding: 20px 0; color: #1d1d1f; }
-.am-section-title { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 15px; margin-top: 0; color: #1d1d1f; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e5ea; padding-bottom: 10px; }
-.am-section-title span { color: #8e8e93; font-size: 14px; font-weight: 400; cursor: pointer; }
-
-.am-song-row { display: grid; grid-template-columns: 50px 1fr 100px; align-items: center; padding: 10px 0; border-bottom: 0.5px solid #e5e5ea; gap: 15px; }
-.am-song-row img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
-.am-song-title { font-size: 15px; font-weight: 600; color: #1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-.am-song-streams { color: #8e8e93; font-size: 13px; text-align: right; font-weight: 500; }
-
-.am-about-card { font-size: 14px; line-height: 1.6; color: #666; }
-.am-about-card b { color: #1d1d1f; display: block; margin-bottom: 6px; font-size: 17px; font-weight: 700; }
+/* YOUTUBE CHANNEL LAYOUT */
+.channel-header { margin: -20px -20px 0 -20px; }
+.yt-banner { height: 250px; background-size: cover; background-position: center; border-bottom: 1px solid #333; }
+.channel-meta { display: flex; align-items: center; padding: 25px 50px; position: relative; }
+.avatar { width: 120px; height: 120px; border-radius: 50%; margin-right: 30px; border: 4px solid #030303; margin-top: -80px; object-fit: cover; }
+.c-name { font-size: 36px; font-weight: 700; margin: 0; color: #fff; }
+.main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 20px 50px 50px; max-width: 1300px; margin: 0 auto; text-align: left; }
+.section-label { color: #fff; font-weight: 700; margin-bottom: 25px; text-transform: uppercase; font-size: 14px; border-left: 3px solid #ff0000; padding-left: 10px; }
