@@ -23,7 +23,7 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 #app { max-width: 1000px; margin: 0 auto; padding: 20px; }
 .filters { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
 
-/* ESTRUTURA GERAL DAS TABELAS (Spotify, Apple, Billboard) */
+/* ESTRUTURA GERAL DAS TABELAS */
 .chart-row { display: grid; grid-template-columns: 50px 50px 70px 1fr 140px; align-items: center; padding: 15px 20px; transition: 0.2s; }
 .chart-row img { width: 60px; height: 60px; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 .info-box { padding-left: 15px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
@@ -38,7 +38,7 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .status.down { color: var(--down); } 
 .status.new { background: var(--new); color: black; padding: 2px 4px; border-radius: 3px; font-size: 9px; }
 
-/* TEMAS DOS CHARTS (Cores e Fontes) */
+/* TEMAS DOS CHARTS */
 .theme-spotify { background: #121212; color: #fff; font-family: 'Inter', sans-serif; }
 .theme-spotify .chart-row { background: #121212; border-bottom: 1px solid #282828; }
 .theme-spotify .chart-row:hover { background: #1a1a1a; }
@@ -56,6 +56,15 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .theme-apple .info-box span { color: #8e8e93; }
 .theme-apple .stats-box b { color: #FA243C; }
 .theme-apple select { background: #f5f5f7; color: #FA243C; border: 1px solid #eee; border-radius: 8px; }
+
+.theme-youtube { background: #0f0f0f; color: #fff; font-family: 'Roboto', sans-serif; }
+.theme-youtube .chart-row { background: transparent; border-bottom: 1px solid #272727; }
+.theme-youtube .chart-row:hover { background: #1f1f1f; }
+.theme-youtube .rank { color: #aaa; font-weight: 700; font-size: 20px; text-align: center; }
+.theme-youtube .info-box b { font-weight: 500; color: #fff; }
+.theme-youtube .info-box span { color: #aaa; }
+.theme-youtube .stats-box b { color: #fff; }
+.theme-youtube select { background: #212121; color: white; border: 1px solid #444; border-radius: 20px; }
 
 .theme-billboard { background: #ffffff; color: #000; font-family: 'Archivo', sans-serif; }
 .theme-billboard .chart-row { background: #ffffff; border-bottom: 1px solid #eee; }
@@ -75,20 +84,16 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .theme-digital .chart-row img { border: 1px solid #d4af37; }
 .theme-digital select { background: #000; color: #d4af37; border: 1px solid #d4af37; border-radius: 4px; }
 
-/* EXTRAS / REAL TIME */
+/* REAL TIME */
 .rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-.rt-col { background: #111; border-radius: 15px; overflow: hidden; border: 1px solid var(--border-dark); }
+.rt-col { background: #111; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-dark); }
 .rt-head { padding: 15px; text-align: center; font-weight: 900; font-family: 'Figtree', sans-serif; text-transform: uppercase; color: #fff; }
 .skeleton { background: #161616; height: 75px; margin-bottom: 1px; animation: pulse 1.5s infinite; border-radius: 8px; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-/* ======================================================================
-   LAYOUT EXCLUSIVO YOUTUBE
-   ====================================================================== */
-.theme-youtube { background: #0f0f0f; color: #fff; font-family: 'Roboto', sans-serif; }
+/* LAYOUT EXCLUSIVO YOUTUBE */
 .theme-youtube select { background: #212121; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 20px; font-weight: 700; outline: none; }
-
-.theme-youtube .yt-row { display: grid; grid-template-columns: 50px 80px 1fr 140px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #272727; }
+.theme-youtube .yt-row { display: grid; grid-template-columns: 50px 80px 1fr 140px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #1a1a1a; }
 .theme-youtube .yt-row:hover { background: #1f1f1f; }
 .theme-youtube .yt-rank { font-size: 20px; font-weight: 700; color: #aaa; text-align: center; }
 .theme-youtube .yt-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; }
@@ -99,7 +104,6 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .theme-youtube .yt-now { font-weight: 700; font-size: 15px; color: #fff; }
 .theme-youtube .yt-total { font-size: 11px; color: #aaa; display: block; margin-top: 2px; }
 
-/* Painel Mensal do YouTube */
 .theme-youtube .channel-header { margin: -20px -20px 0 -20px; }
 .theme-youtube .yt-banner { height: 250px; background-size: cover; background-position: center; border-bottom: 1px solid #333; border-radius: 0; }
 .theme-youtube .channel-meta { display: flex; align-items: center; padding: 25px 50px; position: relative; }
@@ -111,3 +115,33 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .theme-youtube .v-thumb { width: 180px; height: 101px; object-fit: cover; border-radius: 12px; }
 .theme-youtube .section-label { color: #fff; font-weight: 700; margin-bottom: 25px; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; border-left: 3px solid #ff0000; padding-left: 10px; text-align: left; }
 .theme-youtube .about-content { color: #aaa; font-size: 15px; line-height: 1.6; background: #0f0f0f; padding: 20px; border-radius: 12px; text-align: left; }
+
+/* ======================================================================
+   LAYOUT EXCLUSIVO SPOTIFY ARTISTS (O "TCHAN")
+   ====================================================================== */
+.sp-banner { height: 340px; background-size: cover; background-position: center 20%; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
+.sp-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 10%, rgba(18,18,18,0.9) 95%, #121212 100%); }
+.sp-banner-content { position: relative; z-index: 2; width: 100%; }
+.sp-artist-name { font-family: 'Figtree', sans-serif; font-size: 80px; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -3px; line-height: 1; color: #fff; }
+.sp-listeners { font-family: 'Inter', sans-serif; font-size: 16px; color: #fff; margin: 0; font-weight: 500; }
+
+.sp-action-bar { display: flex; align-items: center; gap: 20px; padding: 10px 20px 30px 20px; }
+.sp-play-btn { width: 56px; height: 56px; background: #1DB954; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; color: #000; transition: transform 0.1s, background 0.1s; }
+.sp-play-btn:hover { transform: scale(1.05); background: #1ed760; }
+.sp-follow-btn { background: transparent; border: 1px solid #878787; color: #fff; padding: 7px 15px; border-radius: 4px; font-weight: 700; font-size: 13px; cursor: pointer; letter-spacing: 1px; transition: border 0.1s; }
+.sp-follow-btn:hover { border-color: #fff; }
+.sp-dots { color: #878787; font-size: 20px; cursor: pointer; letter-spacing: 2px; font-weight: 900; }
+.sp-dots:hover { color: #fff; }
+
+.sp-main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 0 20px; }
+.sp-section-title { font-family: 'Figtree', sans-serif; font-size: 24px; font-weight: 900; margin-bottom: 20px; margin-top: 0; color: #fff; }
+
+.sp-song-row { display: grid; grid-template-columns: 30px 45px 1fr 100px; align-items: center; padding: 8px 15px; border-radius: 4px; gap: 15px; transition: background 0.2s; }
+.sp-song-row:hover { background: rgba(255,255,255,0.1); }
+.sp-song-row img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+.sp-song-rank { color: #a7a7a7; font-size: 16px; font-weight: 500; }
+.sp-song-title { font-size: 16px; font-weight: 400; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-song-streams { color: #a7a7a7; font-size: 14px; text-align: right; }
+
+.sp-about-card { background: #282828; padding: 30px; border-radius: 8px; color: #fff; font-size: 15px; line-height: 1.6; font-weight: 400; transition: background 0.3s; cursor: pointer; }
+.sp-about-card:hover { background: #333; }
