@@ -530,61 +530,110 @@ async function renderM(p) {
   const data = await fetchCached(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&year=${y}&artist=${a}`);
   const art = data[0];
 
+  const rank = art.rank && art.rank !== '-' ? art.rank : null;
+
+  // Ícone de play SVG decorativo — cor e estilo por plataforma
+  const playBtn = (color, bg) => `
+    <div style="width:36px;height:36px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:default;">
+      <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 1.5L11.5 7L2 12.5V1.5Z" fill="${color}"/>
+      </svg>
+    </div>`;
+
+  // Badge de ranking mensal
+  const rankBadge = (color, label) => rank ? `
+    <div style="display:inline-flex;align-items:center;gap:8px;background:${color}18;border:1px solid ${color}33;border-radius:50px;padding:6px 16px;margin-top:12px;">
+      <span style="font-size:18px;font-weight:900;color:${color};">#${rank}</span>
+      <span style="font-size:10px;color:${color}99;letter-spacing:2px;text-transform:uppercase;">${label}</span>
+    </div>` : '';
+
   if (p.includes('SPOTIFY')) {
-    profile.innerHTML = `<div class="sp-banner" style="background-image:url('${art.capaArtista || art.capa}')"><div style="position:relative;z-index:2;">
-      <h1 style="font-size:80px;font-weight:900;margin:0;letter-spacing:-4px;text-transform:uppercase;">${a}</h1>
-      <p style="font-weight:700;font-size:18px;margin-top:5px;">${art.totalOuvintes || art.ov} ouvintes mensais</p>
-    </div></div>
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:40px;max-width:1100px;margin:0 auto;">
-      <div><h3 style="font-size:20px;margin-bottom:20px;">Populares</h3>
-        ${(art.musicas || art.m).map((mus, i) => `<div class="chart-row" style="grid-template-columns:30px 60px 1fr 100px;">
-          <span style="color:#b3b3b3;font-weight:700;">${i + 1}</span><img src="${mus.capaMusica || mus.c}">
-          <b>${mus.titulo || mus.t}</b>
-          <span style="text-align:right;color:#b3b3b3;">${mus.streams || mus.s}</span>
-        </div>`).join('')}
+    profile.innerHTML = `
+      <div class="sp-banner" style="background-image:url('${art.capaArtista || art.capa}')">
+        <div style="position:relative;z-index:2;">
+          <h1 style="font-size:80px;font-weight:900;margin:0;letter-spacing:-4px;text-transform:uppercase;">${a}</h1>
+          <p style="font-weight:700;font-size:18px;margin-top:5px;">${art.totalOuvintes || art.ov} ouvintes mensais</p>
+          ${rankBadge('#1DB954', `Top ${rank} em ${m} ${y}`)}
+        </div>
       </div>
-      <div><h3 style="font-size:20px;margin-bottom:20px;">Sobre</h3>
-        <div style="background:#181818;padding:25px;border-radius:8px;color:#aaa;line-height:1.6;">${art.sobre || art.bio}</div>
-      </div>
-    </div>`;
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:40px;max-width:1100px;margin:0 auto;">
+        <div>
+          <h3 style="font-size:20px;margin-bottom:20px;">Populares</h3>
+          ${(art.musicas || art.m).map((mus, i) => `
+            <div class="chart-row" style="grid-template-columns:30px 60px 1fr auto 90px;gap:0;align-items:center;">
+              <span style="color:#b3b3b3;font-weight:700;font-size:14px;">${i + 1}</span>
+              <img src="${mus.capaMusica || mus.c}">
+              <b style="padding-left:14px;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${mus.titulo || mus.t}</b>
+              ${playBtn('#1DB954', 'rgba(29,185,84,0.12)')}
+              <span style="text-align:right;color:#b3b3b3;font-size:13px;">${mus.streams || mus.s}</span>
+            </div>`).join('')}
+        </div>
+        <div>
+          <h3 style="font-size:20px;margin-bottom:20px;">Sobre</h3>
+          <div style="background:#181818;padding:25px;border-radius:8px;color:#aaa;line-height:1.6;">${art.sobre || art.bio}</div>
+        </div>
+      </div>`;
+
   } else if (p.includes('APPLE')) {
-    profile.innerHTML = `<div class="am-profile-header"><img src="${art.capaArtista || art.capa}" class="am-artist-img">
-      <div style="padding-left:45px;">
-        <h1 style="font-size:56px;font-weight:900;margin:0;">${a}</h1>
-        <div style="color:var(--apple);font-weight:700;font-size:20px;margin-top:8px;">${art.totalOuvintes || art.ov} ouvintes mensais</div>
-      </div></div>
-    <div style="display:grid;grid-template-columns:1fr 300px;gap:50px;">
-      <div><h3 style="border-bottom:1px solid #eee;padding-bottom:10px;">Top Songs</h3>
-        ${(art.musicas || art.m).slice(0, 5).map(mus => `<div class="chart-row" style="grid-template-columns:60px 1fr 100px;padding:15px 0;">
-          <img src="${mus.capaMusica || mus.c}"><b>${mus.titulo || mus.t}</b>
-          <span style="text-align:right;color:#8e8e93;">${mus.streams || mus.s}</span>
-        </div>`).join('')}
+    profile.innerHTML = `
+      <div class="am-profile-header">
+        <img src="${art.capaArtista || art.capa}" class="am-artist-img">
+        <div style="padding-left:45px;">
+          <h1 style="font-size:56px;font-weight:900;margin:0;">${a}</h1>
+          <div style="color:var(--apple);font-weight:700;font-size:20px;margin-top:8px;">${art.totalOuvintes || art.ov} ouvintes mensais</div>
+          ${rankBadge('#fa243c', `Top ${rank} em ${m} ${y}`)}
+        </div>
       </div>
-      <div><h3 style="border-bottom:1px solid #eee;padding-bottom:10px;">Sobre</h3>
-        <div style="color:#444;line-height:1.6;">${art.sobre || art.bio}</div>
-      </div>
-    </div>`;
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:50px;">
+        <div>
+          <h3 style="border-bottom:1px solid #eee;padding-bottom:10px;">Top Songs</h3>
+          ${(art.musicas || art.m).slice(0, 5).map(mus => `
+            <div class="chart-row" style="grid-template-columns:60px 1fr auto 90px;padding:12px 0;gap:0;align-items:center;">
+              <img src="${mus.capaMusica || mus.c}" style="border-radius:6px;">
+              <b style="padding-left:14px;font-size:15px;">${mus.titulo || mus.t}</b>
+              ${playBtn('#fa243c', 'rgba(250,36,60,0.08)')}
+              <span style="text-align:right;color:#8e8e93;font-size:13px;padding-left:10px;">${mus.streams || mus.s}</span>
+            </div>`).join('')}
+        </div>
+        <div>
+          <h3 style="border-bottom:1px solid #eee;padding-bottom:10px;">Sobre</h3>
+          <div style="color:#444;line-height:1.6;">${art.sobre || art.bio}</div>
+        </div>
+      </div>`;
+
   } else if (p.includes('YOUTUBE')) {
-    profile.innerHTML = `<div class="yt-banner" style="background-image:url('${art.capaArtista || art.capa}')"></div>
-    <div style="display:flex;align-items:center;padding:20px 0 40px 0;">
-      <img src="${art.capaArtista || art.capa}" class="yt-avatar">
-      <div style="padding-left:30px;">
-        <h2 style="font-size:36px;margin:0;">${a}</h2>
-        <div style="color:#aaa;">${art.totalOuvintes || art.ov} visualizações mensais</div>
+    profile.innerHTML = `
+      <div class="yt-banner" style="background-image:url('${art.capaArtista || art.capa}')"></div>
+      <div style="display:flex;align-items:center;padding:20px 0 40px 0;">
+        <img src="${art.capaArtista || art.capa}" class="yt-avatar">
+        <div style="padding-left:30px;">
+          <h2 style="font-size:36px;margin:0;">${a}</h2>
+          <div style="color:#aaa;">${art.totalOuvintes || art.ov} visualizações mensais</div>
+          ${rankBadge('#ff0000', `Top ${rank} em ${m} ${y}`)}
+        </div>
       </div>
-    </div>
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:40px;">
-      <div><h4 style="border-left:3px solid var(--youtube);padding-left:10px;">VÍDEOS POPULARES</h4>
-        ${(art.musicas || art.m).slice(0, 5).map(mus => `<div style="display:flex;gap:15px;margin-bottom:20px;">
-          <img src="${mus.capaMusica || mus.c}" style="width:180px;height:101px;object-fit:cover;border-radius:12px;">
-          <div><b style="display:block;font-size:16px;">${mus.titulo || mus.t}</b>
-          <span style="color:#aaa;font-size:13px;">${mus.streams || mus.s} views</span></div>
-        </div>`).join('')}
-      </div>
-      <div><h4 style="border-left:3px solid var(--youtube);padding-left:10px;">INFORMAÇÕES</h4>
-        <div style="background:#0f0f0f;padding:20px;border-radius:12px;color:#aaa;line-height:1.6;">${art.sobre || art.bio}</div>
-      </div>
-    </div>`;
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:40px;">
+        <div>
+          <h4 style="border-left:3px solid var(--youtube);padding-left:10px;">VÍDEOS POPULARES</h4>
+          ${(art.musicas || art.m).slice(0, 5).map(mus => `
+            <div style="display:flex;gap:15px;margin-bottom:20px;align-items:center;">
+              <div style="position:relative;flex-shrink:0;">
+                <img src="${mus.capaMusica || mus.c}" style="width:180px;height:101px;object-fit:cover;border-radius:12px;display:block;">
+                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                  ${playBtn('#fff', 'rgba(0,0,0,0.55)')}
+                </div>
+              </div>
+              <div>
+                <b style="display:block;font-size:16px;">${mus.titulo || mus.t}</b>
+                <span style="color:#aaa;font-size:13px;">${mus.streams || mus.s} views</span>
+              </div>
+            </div>`).join('')}
+        </div>
+        <div>
+          <h4 style="border-left:3px solid var(--youtube);padding-left:10px;">INFORMAÇÕES</h4>
+          <div style="background:#0f0f0f;padding:20px;border-radius:12px;color:#aaa;line-height:1.6;">${art.sobre || art.bio}</div>
+        </div>
+      </div>`;
   }
 }
 
