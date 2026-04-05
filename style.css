@@ -23,13 +23,24 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 
 #app { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
+/* --- FILTROS --- */
+.filters { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
+.filters select { background: #111; color: #fff; border: 1px solid #333; padding: 8px 15px; border-radius: 5px; font-weight: 700; cursor: pointer; }
+
 /* --- CHARTS GERAIS --- */
 .chart-row { display: grid; grid-template-columns: 50px 50px 70px 1fr 140px; align-items: center; padding: 15px 20px; border-bottom: 1px solid #1a1a1a; transition: 0.2s; }
 .chart-row img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 .info-box { padding-left: 15px; overflow: hidden; min-width: 0; }
 .info-box b { font-size: 16px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.info-box span { font-size: 13px; color: #888; }
 .stats-box { text-align: right; }
-.stats-box b { font-size: 16px; }
+.stats-box b { font-size: 16px; color: #fff; }
+.stats-box small { font-size: 10px; text-transform: uppercase; font-weight: 700; color: #666; margin-top: 4px; display: block; }
+
+.status { font-weight: 900; font-size: 11px; text-align: center; }
+.status.up { color: var(--up); } 
+.status.down { color: var(--down); } 
+.status.new { background: var(--new); color: black; padding: 2px 4px; border-radius: 3px; font-size: 9px; }
 
 /* --- TEMAS --- */
 .theme-spotify { background: #121212; color: #fff; }
@@ -37,8 +48,11 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .theme-apple { background: #fbfbfd; color: #1d1d1f; }
 .theme-apple .chart-row { border-bottom: 1px solid #e5e5ea; }
 .theme-apple .stats-box b { color: #FA243C; }
+.theme-youtube { background: #0f0f0f; color: #fff; }
+.theme-digital { background: #0a0a0a; color: white; }
+.theme-digital .rank { font-family: 'Bricolage Grotesque'; font-size: 30px; color: var(--gold); font-style: italic; text-align: center; }
 
-/* --- BANNERS DAS PLATAFORMAS --- */
+/* --- BANNERS --- */
 .sp-banner { height: 340px; background-size: cover; background-position: center 20%; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .sp-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 10%, rgba(18,18,18,0.9) 95%, #121212 100%); }
 .sp-artist-name { font-family: 'Figtree'; font-size: 80px; font-weight: 900; margin: 0; letter-spacing: -3px; line-height: 1; z-index: 2; }
@@ -46,9 +60,15 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .am-hero { height: 400px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .am-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%); }
 
+.channel-header { margin: -20px -20px 0 -20px; position: relative; }
 .yt-banner { height: 250px; background-size: cover; background-position: center; border-bottom: 1px solid #333; }
+.channel-meta { display: flex; align-items: center; padding: 25px 50px; background: #0f0f0f; }
 .avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #0f0f0f; margin-top: -80px; object-fit: cover; z-index: 5; margin-right: 30px; }
 
-/* --- SKELETONS --- */
+/* --- REAL TIME --- */
+.rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.rt-col { background: #111; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-dark); }
+.rt-head { padding: 15px; text-align: center; font-weight: 900; text-transform: uppercase; color: #fff; }
+
 .skeleton { background: #161616; height: 75px; margin-bottom: 1px; animation: pulse 1.5s infinite; border-radius: 8px; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
