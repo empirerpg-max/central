@@ -6,104 +6,76 @@
     --glass: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
     --bg: #050505;
+    --up: #1DB954; --down: #FA243C; --new: #00bfff;
 }
 
 body { 
-    background-color: var(--bg);
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    margin: 0; 
-    padding-top: 140px; 
-    transition: background 0.5s;
-    overflow-x: hidden;
+    background-color: var(--bg); color: #fff; font-family: 'Inter', sans-serif;
+    margin: 0; padding-top: 150px; transition: background 0.5s; overflow-x: hidden;
 }
 
-/* --- HEADER & NAV (CHIQUE) --- */
+/* --- HEADER & NAV (DROPDOWN) --- */
 header { 
-    position: fixed; top: 0; width: 100%; z-index: 2000; 
-    padding: 25px 0; text-align: center; 
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--glass-border);
+    position: fixed; top: 0; width: 100%; z-index: 2000; padding: 25px 0; 
+    background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); text-align: center;
 }
 header h1 { 
-    font-family: 'Plus Jakarta Sans', sans-serif; 
-    font-weight: 800; letter-spacing: 12px; margin: 0; 
-    font-size: 22px; text-transform: uppercase; 
-    background: linear-gradient(to right, #fff, #888);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; letter-spacing: 12px; margin: 0; 
+    font-size: 22px; text-transform: uppercase; color: #fff;
 }
 
 nav { 
-    background: rgba(10,10,10,0.5); backdrop-filter: blur(15px);
-    display: flex; justify-content: center; position: fixed; 
-    top: 80px; width: 100%; z-index: 1999; 
+    background: rgba(10,10,10,0.8); backdrop-filter: blur(15px); display: flex; 
+    justify-content: center; position: fixed; top: 82px; width: 100%; z-index: 1999; 
     border-bottom: 1px solid var(--glass-border);
 }
+
 .menu-item { 
-    padding: 18px 22px; cursor: pointer; font-size: 10px; 
-    font-weight: 700; text-transform: uppercase; color: #777; 
-    text-decoration: none; letter-spacing: 1.5px; transition: 0.3s;
+    position: relative; padding: 20px 22px; cursor: pointer; font-size: 10px; 
+    font-weight: 700; text-transform: uppercase; color: #666; text-decoration: none; 
+    letter-spacing: 1.5px; transition: 0.3s;
 }
-.menu-item:hover, .menu-item.active { color: #fff; }
+.menu-item:hover { color: #fff; }
 
-/* --- FILTROS (PÍLULAS MODERNAS) --- */
-.filter-group { margin-bottom: 50px; text-align: center; }
-.pill-container { 
-    display: flex; gap: 12px; justify-content: center; 
-    padding: 15px; overflow-x: auto; scrollbar-width: none;
+.submenu {
+    display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    background: rgba(10, 10, 10, 0.98); min-width: 200px; border: 1px solid var(--glass-border);
+    border-top: 2px solid var(--empire); box-shadow: 0 15px 30px rgba(0,0,0,0.5); padding: 10px 0;
 }
+.menu-item:hover .submenu { display: block; }
+.sub-btn { padding: 12px 20px; font-size: 9px; color: #888; display: block; text-decoration: none; transition: 0.2s; letter-spacing: 1px; }
+.sub-btn:hover { background: rgba(255, 255, 255, 0.05); color: var(--empire); padding-left: 25px; }
+
+/* --- FILTROS (PÍLULAS) --- */
+.filter-group { margin-bottom: 40px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.pill-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px; max-width: 90%; scrollbar-width: none; }
+.pill-container::-webkit-scrollbar { display: none; }
 .pill { 
-    background: var(--glass); color: #888; padding: 12px 28px; 
-    border-radius: 50px; border: 1px solid var(--glass-border); 
-    cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.4s;
-    text-transform: uppercase; letter-spacing: 1px;
+    background: var(--glass); color: #888; padding: 10px 25px; border-radius: 50px; 
+    border: 1px solid var(--glass-border); cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.4s;
 }
-.pill:hover { background: rgba(255,255,255,0.1); color: #fff; }
-.pill.active { 
-    background: #fff; color: #000; border-color: #fff;
-    box-shadow: 0 0 20px rgba(255,255,255,0.2);
-}
+.pill.active { background: #fff; color: #000; border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
 
-/* --- CARDS & GRIDS --- */
-.rt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto; }
-.rt-col { 
-    background: var(--glass); border-radius: 24px; 
-    border: 1px solid var(--glass-border); overflow: hidden;
-    transition: 0.3s;
-}
-.rt-head { 
-    padding: 20px; text-align: center; font-weight: 800; 
-    font-size: 12px; text-transform: uppercase; letter-spacing: 3px;
-    border-bottom: 1px solid var(--glass-border);
-}
-
-/* --- LINHAS DE CHART (SUBTIL) --- */
-.chart-row { 
-    display: grid; grid-template-columns: 40px 50px 1fr 100px; 
-    align-items: center; padding: 15px 20px; 
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-}
-.chart-row:hover { background: rgba(255,255,255,0.02); }
-.chart-row img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
-.rank { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: #444; font-size: 14px; }
-.info-box b { font-size: 14px; color: #fff; display: block; margin-bottom: 3px; }
-.info-box span { font-size: 12px; color: #666; font-weight: 400; }
-
-/* --- PERFIL DO ARTISTA (MODERNO) --- */
+/* --- ARTIST HERO (MODERNO) --- */
 .artist-hero {
-    position: relative; height: 450px; border-radius: 32px;
-    margin-bottom: 40px; overflow: hidden;
-    background-size: cover; background-position: center;
-    border: 1px solid var(--glass-border);
+    position: relative; height: 400px; border-radius: 32px; margin-bottom: 40px; 
+    overflow: hidden; background-size: cover; background-position: center; border: 1px solid var(--glass-border);
 }
-.hero-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, #050505 5%, transparent 70%);
-}
-.hero-content {
-    position: absolute; bottom: 40px; left: 40px;
-}
-.hero-content h1 { 
-    font-size: 72px; margin: 0; font-weight: 800; 
-    letter-spacing: -3px; line-height: 0.9;
-}
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #050505 5%, transparent 80%); }
+.hero-content { position: absolute; bottom: 40px; left: 40px; }
+.hero-content h1 { font-family: 'Plus Jakarta Sans'; font-size: 60px; font-weight: 800; margin: 0; letter-spacing: -2px; line-height: 1; }
+
+/* --- GRID E ROWS --- */
+#app { max-width: 1100px; margin: 0 auto; padding: 20px; }
+.rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.rt-col { background: var(--glass); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden; }
+.rt-head { padding: 15px; text-align: center; font-weight: 800; font-size: 11px; letter-spacing: 2px; border-bottom: 1px solid var(--glass-border); }
+
+.chart-row { display: grid; grid-template-columns: 40px 50px 1fr 100px; align-items: center; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+.chart-row img { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; }
+.rank { font-weight: 800; color: #333; font-size: 14px; }
+.info-box b { font-size: 13px; color: #fff; display: block; }
+.info-box span { font-size: 11px; color: #666; }
+
+.skeleton { background: #111; height: 60px; margin-bottom: 2px; border-radius: 12px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 50% { opacity: 0.5; } }
