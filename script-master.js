@@ -135,39 +135,44 @@ async function loadHOFProfile(name) {
   const d = await fetchCached(`${API}?action=getHOFProfile&artist=${encodeURIComponent(name)}`);
   if (!d || !d.name) { app.innerHTML = '<p style="text-align:center;color:#555;">Perfil não encontrado.</p>'; return; }
 
-  // Tabela de runs: música | plataforma | semanas no topo
+  // Tabela de chart runs — r.v contém posições separadas por " - "
   const runs = d.runs || [];
 
   let runsTable = '';
   if (runs.length) {
-    // Ordena por semanas (decrescente)
-    const sorted = [...runs].sort((a, b) => (Number(b.v) || 0) - (Number(a.v) || 0));
-    const maxV = Number(sorted[0]?.v) || 1;
+    const parsed = runs.map(r => {
+      const positions = String(r.v).split('-').map(s => Number(s.trim())).filter(n => !isNaN(n) && n > 0);
+      const peak = positions.length ? Math.min(...positions) : 999;
+      const weeks = positions.length;
+      return { title: r.t, peak, weeks };
+    });
+
+    parsed.sort((a, b) => a.peak !== b.peak ? a.peak - b.peak : b.weeks - a.weeks);
+    const maxWeeks = Math.max(...parsed.map(r => r.weeks));
+    const peakColor = p => p === 1 ? 'var(--gold)' : p <= 10 ? '#aaa' : '#555';
+    const peakLabel = p => p === 1 ? '#1' : '#' + p;
 
     runsTable = `
-    <div style="margin-top:40px;max-width:700px;">
-      <h3 style="font-size:12px;letter-spacing:3px;color:#555;margin-bottom:20px;text-transform:uppercase;">Semanas no Topo</h3>
+    <div style="margin-top:40px;max-width:800px;">
+      <h3 style="font-size:12px;letter-spacing:3px;color:#555;margin-bottom:20px;text-transform:uppercase;">Chart Runs</h3>
       <table style="width:100%;border-collapse:collapse;">
         <thead>
           <tr style="border-bottom:1px solid #222;">
-            <th style="text-align:left;font-size:10px;letter-spacing:2px;color:#444;padding:0 0 10px;font-weight:600;">MÚSICA / PERÍODO</th>
-            <th style="text-align:center;font-size:10px;letter-spacing:2px;color:#444;padding:0 12px 10px;font-weight:600;">SEMANAS</th>
-            <th style="text-align:left;font-size:10px;letter-spacing:2px;color:#444;padding:0 0 10px;font-weight:600;width:40%;"></th>
+            <th style="text-align:left;font-size:10px;letter-spacing:2px;color:#444;padding:0 0 12px;font-weight:600;">MUSICA</th>
+            <th style="text-align:center;font-size:10px;letter-spacing:2px;color:#444;padding:0 16px 12px;font-weight:600;white-space:nowrap;">PICO</th>
+            <th style="text-align:center;font-size:10px;letter-spacing:2px;color:#444;padding:0 16px 12px;font-weight:600;white-space:nowrap;">SEMANAS</th>
+            <th style="padding:0 0 12px;width:35%;"></th>
           </tr>
         </thead>
         <tbody>
-          ${sorted.map(r => {
-            const weeks = Number(r.v) || 0;
-            const barW = Math.round((weeks / maxV) * 100);
-            return `<tr style="border-bottom:1px solid #111;">
-              <td style="padding:12px 0;font-size:14px;color:#ccc;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.t}">${r.t}</td>
-              <td style="padding:12px;text-align:center;font-size:16px;font-weight:900;color:var(--empire);">${weeks}</td>
-              <td style="padding:12px 0;">
-                <div style="background:#111;border-radius:3px;height:6px;width:100%;">
-                  <div style="background:var(--empire);height:6px;border-radius:3px;width:${barW}%;opacity:0.7;"></div>
-                </div>
-              </td>
-            </tr>`;
+          ${parsed.map(r => {
+            const barW = Math.round((r.weeks / maxWeeks) * 100);
+            return '<tr style="border-bottom:1px solid #111;">'
+              + '<td style="padding:12px 0;font-size:13px;color:#ccc;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + r.title + '">' + r.title + '</td>'
+              + '<td style="padding:12px 16px;text-align:center;font-size:15px;font-weight:900;color:' + peakColor(r.peak) + ';white-space:nowrap;">' + peakLabel(r.peak) + '</td>'
+              + '<td style="padding:12px 16px;text-align:center;font-size:15px;font-weight:700;color:var(--empire);">' + r.weeks + '</td>'
+              + '<td style="padding:12px 0;"><div style="background:#111;border-radius:3px;height:5px;"><div style="background:var(--empire);height:5px;border-radius:3px;width:' + barW + '%;opacity:0.6;"></div></div></td>'
+              + '</tr>';
           }).join('')}
         </tbody>
       </table>
@@ -180,7 +185,7 @@ async function loadHOFProfile(name) {
     { label: 'Spotify', val: d.n1_spotify, color: 'var(--spotify)' },
     { label: 'YouTube', val: d.n1_youtube, color: 'var(--youtube)' },
     { label: 'BB 200', val: d.n1_bb200, color: 'var(--gold)' },
-  ].filter(x => x.val && x.val !== '-' && x.val !== '0' && x.val !== '');
+  ].filter(x => x.val && x.val !== '-' && x.val !== '' && Number(x.val) !== 0);
 
   // Top músicas por plataforma
   const platformSection = (title, color, items) => {
