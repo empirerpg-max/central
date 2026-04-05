@@ -21,6 +21,8 @@ async function fetchCached(url) {
 function buildMenu() {
   const navMenu = document.getElementById('menu-nav');
   if (!navMenu) return;
+
+  // Menu horizontal — desktop
   navMenu.innerHTML = `
     <a href="index.html" class="menu-item">Início</a>
     <div class="menu-item" onclick="window.location.href='artists.html'">🌟 Artists</div>
@@ -58,6 +60,85 @@ function buildMenu() {
       </div>
     </div>
     <a href="charts.html?tab=DIGITAL SALES" class="menu-item">Sales</a>`;
+
+  // Hambúrguer no header — mobile
+  const header = document.querySelector('header');
+  if (header && !header.querySelector('.nav-hamburger')) {
+    const btn = document.createElement('div');
+    btn.className = 'nav-hamburger';
+    btn.innerHTML = '<span></span><span></span><span></span>';
+    btn.onclick = toggleDrawer;
+    header.appendChild(btn);
+  }
+
+  // Drawer lateral — mobile
+  if (!document.getElementById('nav-drawer')) {
+    const overlay = document.createElement('div');
+    overlay.className = 'nav-overlay';
+    overlay.id = 'nav-overlay';
+    overlay.onclick = closeDrawer;
+
+    const drawer = document.createElement('div');
+    drawer.className = 'nav-drawer';
+    drawer.id = 'nav-drawer';
+    drawer.innerHTML = `
+      <a href="index.html" class="drawer-item">Início</a>
+      <a href="artists.html" class="drawer-item" style="color:var(--gold)">🌟 Artists</a>
+      <div class="drawer-item" onclick="toggleDrawerSub(this)">Hot 100
+        <div class="drawer-sub">
+          <a href="charts.html?tab=BILLBOARD HOT 100">Billboard Hot 100</a>
+          <a href="charts.html?tab=BILLBOARD HOT 100&style=true">Hot 100 by Style</a>
+        </div>
+      </div>
+      <div class="drawer-item" style="color:var(--spotify)" onclick="toggleDrawerSub(this)">Spotify
+        <div class="drawer-sub">
+          <a href="charts.html?tab=SPOTIFY">Global Charts</a>
+          <a href="countries.html?tab=SPOTIFY COUNTRIES">By Country</a>
+          <a href="monthly.html?p=SPOTIFY">Monthly Artists</a>
+        </div>
+      </div>
+      <div class="drawer-item" style="color:var(--apple)" onclick="toggleDrawerSub(this)">Apple Music
+        <div class="drawer-sub">
+          <a href="charts.html?tab=APPLE MUSIC">Global Charts</a>
+          <a href="countries.html?tab=APPLE MUSIC COUNTRIES">By Country</a>
+          <a href="monthly.html?p=APPLE MUSIC">Monthly Artists</a>
+        </div>
+      </div>
+      <div class="drawer-item" style="color:var(--youtube)" onclick="toggleDrawerSub(this)">YouTube
+        <div class="drawer-sub">
+          <a href="charts.html?tab=YOUTUBE">Global Charts</a>
+          <a href="countries.html?tab=YOUTUBE COUNTRIES">By Country</a>
+          <a href="monthly.html?p=YOUTUBE">Monthly Artists</a>
+        </div>
+      </div>
+      <div class="drawer-item" onclick="toggleDrawerSub(this)">Albums
+        <div class="drawer-sub">
+          <a href="charts.html?tab=DADOS ÁLBUNS">Billboard 200</a>
+          <a href="charts.html?tab=DADOS ÁLBUNS&style=true">Albums by Style</a>
+        </div>
+      </div>
+      <a href="charts.html?tab=DIGITAL SALES" class="drawer-item">Sales</a>`;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(drawer);
+  }
+}
+
+function toggleDrawer() {
+  document.getElementById('nav-drawer').classList.toggle('open');
+  document.getElementById('nav-overlay').classList.toggle('open');
+}
+
+function closeDrawer() {
+  document.getElementById('nav-drawer').classList.remove('open');
+  document.getElementById('nav-overlay').classList.remove('open');
+}
+
+function toggleDrawerSub(el) {
+  const sub = el.querySelector('.drawer-sub');
+  if (!sub) return;
+  sub.classList.toggle('open');
+  el.classList.toggle('open');
 }
 
 // ============================================================
