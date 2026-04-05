@@ -18,7 +18,7 @@ nav { background: rgba(10,10,10,0.95); backdrop-filter: blur(15px); display: fle
 .menu-item:hover .submenu { display: block; }
 .sub-btn { padding: 12px 20px; font-size: 9px; color: #aaa; display: block; text-decoration: none; }
 
-/* --- FILTROS (PÍLULAS LINDAS MANTIDAS) --- */
+/* --- FILTROS (PÍLULAS) --- */
 .filter-group { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 40px; }
 .pill-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px; max-width: 1000px; scrollbar-width: none; }
 .pill { background: #111; color: #555; padding: 10px 25px; border-radius: 50px; border: 1px solid #222; cursor: pointer; font-size: 10px; font-weight: 700; transition: 0.3s; white-space: nowrap; }
@@ -38,14 +38,14 @@ nav { background: rgba(10,10,10,0.95); backdrop-filter: blur(15px); display: fle
 .theme-apple { background: #fff !important; color: #1d1d1f !important; font-family: 'Inter', sans-serif !important; }
 .theme-youtube { background: #030303 !important; color: #fff !important; font-family: 'Roboto', sans-serif !important; }
 
-/* --- REAL TIME (INTACTO - 3 COLUNAS) --- */
+/* --- REAL TIME (3 COLUNAS) --- */
 .rt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .rt-col { background: var(--glass); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden; backdrop-filter: blur(10px); }
 .rt-head { padding: 15px; text-align: center; font-weight: 800; border-bottom: 1px solid var(--glass-border); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
 
-/* --- ROWS GERAIS E TRAVA DE IMAGEM --- */
+/* --- ROWS GERAIS E TRAVA DE IMAGEM (45px ABSOLUTO) --- */
 .chart-row { display: grid; grid-template-columns: 50px 60px 1fr 120px; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); max-width: 1000px; margin: 0 auto; }
-.chart-row img, .rt-item img { width: 50px !important; height: 50px !important; border-radius: 4px; object-fit: cover; }
+.chart-row img, .rt-item img { width: 45px !important; height: 45px !important; border-radius: 6px; object-fit: cover; }
 .rank { font-weight: 900; font-size: 22px; text-align: center; }
 .st-tag { font-size: 10px; font-weight: 800; text-align: center; margin-top: 2px; }
 .up { color: #1DB954; } .down { color: #e31c23; } .new { color: #1d75ff; }
@@ -59,4 +59,5 @@ nav { background: rgba(10,10,10,0.95); backdrop-filter: blur(15px); display: fle
 .yt-avatar { width: 120px; height: 120px; border-radius: 50%; margin-top: -60px; border: 4px solid #030303; object-fit: cover; margin-left: 40px; }
 
 #app { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.skeleton { background: #111; height: 60px; margin-bottom: 5px; border-radius: 12px; }
+.skeleton { background: #111; height: 60px; margin-bottom: 5px; border-radius: 12px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 50% { opacity: 0.5; } }
