@@ -1,4 +1,5 @@
-const API = "AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe"; 
+// LINK REAL DA TUA API RESTAURADO - NADA DE PLACEHOLDERS
+const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec"; 
 
 window.onload = () => {
     buildMenu();
@@ -6,14 +7,15 @@ window.onload = () => {
     const tab = params.get('tab');
     const p = params.get('p');
     
-    if (window.location.pathname.includes('index') || document.getElementById('sp-list')) {
-        loadRealTime();
+    // Roteador corrigido
+    if (window.location.pathname.includes('artists.html')) {
+        loadHOFList();
     } else if (tab) {
         initChart(tab, params.get('style'));
     } else if (p) {
         initMonthly(p);
     } else {
-        loadHOFList();
+        loadRealTime();
     }
 };
 
@@ -58,18 +60,25 @@ async function loadHOFList() {
     app.innerHTML = h + `</div>`;
 }
 
-// === REAL TIME (CHAVES CURTAS DA API: p, c, t, s) ===
+// === REAL TIME (BLINDADO CONTRA UNDEFINED) ===
 async function loadRealTime() {
     const app = document.getElementById('app');
     app.innerHTML = '<div class="skeleton"></div>'.repeat(3);
     document.body.className = '';
     const d = await fetch(API + "?action=getRealTime").then(r => r.json());
-    const row = (l, c) => l.map(i => `
-        <div class="chart-row" style="grid-template-columns: 35px 45px 1fr 90px; padding:10px; border-bottom:1px solid #1a1a1a;">
-            <div class="rank" style="font-size:14px;">${i.p}</div><img src="${i.c}">
-            <div style="padding-left:10px;"><b style="font-size:12px;">${i.t}</b></div>
-            <div style="color:${c}; font-weight:800; font-size:12px; text-align:right;">${i.s}</div>
-        </div>`).join('');
+    
+    const row = (l, c) => l.map(i => {
+        const pos = i.posicao || i.pos || i.p || "-";
+        const cover = i.capa || i.c || "https://via.placeholder.com/45";
+        const title = i.titulo || i.musica || i.tit || i.t || "-";
+        const val = i.streams || i.semana || i.val || i.s || "-";
+        return `<div class="chart-row" style="grid-template-columns: 35px 45px 1fr 90px; padding:10px; border-bottom:1px solid #1a1a1a;">
+            <div class="rank" style="font-size:14px;">${pos}</div><img src="${cover}">
+            <div style="padding-left:10px;"><b style="font-size:12px;">${title}</b></div>
+            <div style="color:${c}; font-weight:800; font-size:12px; text-align:right;">${val}</div>
+        </div>`;
+    }).join('');
+
     app.innerHTML = `
         <h2 style="text-align:center; font-family:'Plus Jakarta Sans'; margin-bottom:30px;">LIVE PREVIEWS</h2>
         <div class="rt-grid">
@@ -79,7 +88,7 @@ async function loadRealTime() {
         </div>`;
 }
 
-// === CHARTS GERAIS (CHAVES CURTAS: pos, st, capa, tit, art, val) ===
+// === CHARTS GERAIS (BLINDADO CONTRA UNDEFINED) ===
 let chartCache = [];
 async function initChart(tab, hasStyle) {
     const app = document.getElementById('app');
@@ -127,24 +136,31 @@ function renderRows(data, tab) {
     const isYT = tab.includes('YOUTUBE');
     
     area.innerHTML = data.map(i => {
-        let stClass = i.st == '↑' ? 'up' : (i.st == '↓' ? 'down' : (i.st == 'NEW' ? 'new' : ''));
-        let stIcon = i.st == '↑' ? '▲' : (i.st == '↓' ? '▼' : (i.st == 'NEW' ? 'NEW' : '='));
+        // LEITURA À PROVA DE FALHAS
+        const pos = i.posicao || i.pos || i.p || "-";
+        const cover = i.capa || i.c || "https://via.placeholder.com/45";
+        const title = i.musica || i.titulo || i.album || i.tit || i.t || "-";
+        const artist = i.artista || i.art || i.a || "";
+        const val = i.semana || i.streams || i.pontos || i.vendas || i.val || i.s || "0";
+        const st = i.status || i.st || "=";
+
+        let stClass = st == '↑' ? 'up' : (st == '↓' ? 'down' : (st == 'NEW' ? 'new' : ''));
+        let stIcon = st == '↑' ? '▲' : (st == '↓' ? '▼' : (st == 'NEW' ? 'NEW' : '='));
         let label = isYT ? 'VIEWS' : (isBB ? 'PTS' : (tab.includes('ÁLBUNS') ? 'UNIDADES' : ''));
         
-        // Uso as chaves CURTAS da API que funcionavam no começo: i.pos, i.capa, i.tit, i.art, i.val
         return `<div class="chart-row">
-            <div><div class="rank">${i.pos}</div><div class="st-tag ${stClass}">${stIcon}</div></div>
-            <img src="${i.capa}">
+            <div><div class="rank">${pos}</div><div class="st-tag ${stClass}">${stIcon}</div></div>
+            <img src="${cover}">
             <div style="padding-left:15px; overflow:hidden;">
-                <b style="font-size:16px; white-space:nowrap; text-transform:${isBB ? 'uppercase' : 'none'};">${i.tit}</b>
-                <br><span style="color:#888; font-size:13px;">${i.art}</span>
+                <b style="font-size:16px; white-space:nowrap; text-transform:${isBB ? 'uppercase' : 'none'};">${title}</b>
+                <br><span style="color:#888; font-size:13px;">${artist}</span>
             </div>
-            <div style="text-align:right;"><b style="font-size:16px;">${i.val} ${label}</b></div>
+            <div style="text-align:right;"><b style="font-size:16px;">${val} ${label}</b></div>
         </div>`;
     }).join('');
 }
 
-// === MONTHLY (CHAVES CURTAS: art.capa, art.ov, art.m, mus.c, mus.t, mus.s, art.bio) ===
+// === MONTHLY (MANTIDO O EDITORIAL LIMPO E BLINDADO) ===
 async function initMonthly(p) {
     const app = document.getElementById('app');
     app.innerHTML = `<div class="filter-group"><div id="year-pills" class="pill-container"></div><div id="month-pills" class="pill-container"></div><div style="text-align:center;"><select id="aS" onchange="renderM('${p}')" style="padding:10px; border-radius:10px; background:#111; color:#fff; border:1px solid #333; display:none; outline:none;"></select></div></div><div id="profile-area"></div>`;
@@ -176,28 +192,28 @@ async function renderM(p) {
     const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&year=${y}&artist=${a}`).then(r => r.json());
     const art = data[0];
 
-    // Aplicação da Identidade Visual exigida [cite: 1044, 1120, 1193]
+    // Identidade Visual Exigida
     if (p.includes('SPOTIFY')) {
-        profile.innerHTML = `<div class="sp-banner" style="background-image: url('${art.capa}')"><div style="position:relative; z-index:2;">
+        profile.innerHTML = `<div class="sp-banner" style="background-image: url('${art.capaArtista || art.capa}')"><div style="position:relative; z-index:2;">
             <h1 style="font-size:80px; font-weight:900; margin:0; letter-spacing:-4px; text-transform:uppercase;">${a}</h1>
-            <p style="font-weight:700; font-size:18px; margin-top:5px;">${art.ov} ouvintes mensais</p></div></div>
+            <p style="font-weight:700; font-size:18px; margin-top:5px;">${art.totalOuvintes || art.ov} ouvintes mensais</p></div></div>
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:40px; max-width:1100px; margin:0 auto;">
-            <div><h3 style="font-size:20px; margin-bottom:20px;">Populares</h3>${art.m.map((mus,i) => `<div class="chart-row" style="grid-template-columns: 30px 60px 1fr 100px;"><span style="color:#b3b3b3; font-weight:700;">${i+1}</span><img src="${mus.c}"><b>${mus.t}</b><span style="text-align:right; color:#b3b3b3;">${mus.s}</span></div>`).join('')}</div>
-            <div><h3 style="font-size:20px; margin-bottom:20px;">Sobre</h3><div style="background:#181818; padding:25px; border-radius:8px; color:#aaa; line-height:1.6;">${art.bio}</div></div></div>`;
+            <div><h3 style="font-size:20px; margin-bottom:20px;">Populares</h3>${(art.musicas || art.m).map((mus,i) => `<div class="chart-row" style="grid-template-columns: 30px 60px 1fr 100px;"><span style="color:#b3b3b3; font-weight:700;">${i+1}</span><img src="${mus.capaMusica || mus.c}"><b>${mus.titulo || mus.t}</b><span style="text-align:right; color:#b3b3b3;">${mus.streams || mus.s}</span></div>`).join('')}</div>
+            <div><h3 style="font-size:20px; margin-bottom:20px;">Sobre</h3><div style="background:#181818; padding:25px; border-radius:8px; color:#aaa; line-height:1.6;">${art.sobre || art.bio}</div></div></div>`;
     } else if (p.includes('APPLE')) {
-        profile.innerHTML = `<div class="am-profile-header"><img src="${art.capa}" class="am-artist-img"><div style="padding-left:45px;">
+        profile.innerHTML = `<div class="am-profile-header"><img src="${art.capaArtista || art.capa}" class="am-artist-img"><div style="padding-left:45px;">
             <h1 style="font-size:56px; font-weight:900; margin:0;">${a}</h1>
-            <div style="color:var(--apple); font-weight:700; font-size:20px; margin-top:8px;">${art.ov} ouvintes mensais</div></div></div>
+            <div style="color:var(--apple); font-weight:700; font-size:20px; margin-top:8px;">${art.totalOuvintes || art.ov} ouvintes mensais</div></div></div>
             <div style="display:grid; grid-template-columns: 1fr 300px; gap:50px;">
-            <div><h3 style="border-bottom:1px solid #eee; padding-bottom:10px;">Top Songs</h3>${art.m.slice(0,5).map(mus => `<div class="chart-row" style="grid-template-columns: 60px 1fr 100px; padding:15px 0;"><img src="${mus.c}"><b>${mus.t}</b><span style="text-align:right; color:#8e8e93;">${mus.s}</span></div>`).join('')}</div>
-            <div><h3 style="border-bottom:1px solid #eee; padding-bottom:10px;">Sobre</h3><div style="color:#444; line-height:1.6;">${art.bio}</div></div></div>`;
+            <div><h3 style="border-bottom:1px solid #eee; padding-bottom:10px;">Top Songs</h3>${(art.musicas || art.m).slice(0,5).map(mus => `<div class="chart-row" style="grid-template-columns: 60px 1fr 100px; padding:15px 0;"><img src="${mus.capaMusica || mus.c}"><b>${mus.titulo || mus.t}</b><span style="text-align:right; color:#8e8e93;">${mus.streams || mus.s}</span></div>`).join('')}</div>
+            <div><h3 style="border-bottom:1px solid #eee; padding-bottom:10px;">Sobre</h3><div style="color:#444; line-height:1.6;">${art.sobre || art.bio}</div></div></div>`;
     } else if (p.includes('YOUTUBE')) {
-        profile.innerHTML = `<div class="yt-banner" style="background-image: url('${art.capa}')"></div>
-            <div style="display:flex; align-items:center; padding:20px 0 40px 0;"><img src="${art.capa}" class="yt-avatar">
-            <div style="padding-left:30px;"><h2 style="font-size:36px; margin:0;">${a}</h2><div style="color:#aaa;">${art.ov} visualizações mensais</div></div></div>
+        profile.innerHTML = `<div class="yt-banner" style="background-image: url('${art.capaArtista || art.capa}')"></div>
+            <div style="display:flex; align-items:center; padding:20px 0 40px 0;"><img src="${art.capaArtista || art.capa}" class="yt-avatar">
+            <div style="padding-left:30px;"><h2 style="font-size:36px; margin:0;">${a}</h2><div style="color:#aaa;">${art.totalOuvintes || art.ov} visualizações mensais</div></div></div>
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:40px;">
-            <div><h4 style="border-left:3px solid var(--youtube); padding-left:10px;">VÍDEOS POPULARES</h4>${art.m.slice(0,5).map(mus => `<div style="display:flex; gap:15px; margin-bottom:20px;"><img src="${mus.c}" style="width:180px; height:101px; object-fit:cover; border-radius:12px;"><div><b style="display:block; font-size:16px;">${mus.t}</b><span style="color:#aaa; font-size:13px;">${mus.s} views</span></div></div>`).join('')}</div>
-            <div><h4 style="border-left:3px solid var(--youtube); padding-left:10px;">INFORMAÇÕES</h4><div style="background:#0f0f0f; padding:20px; border-radius:12px; color:#aaa; line-height:1.6;">${art.bio}</div></div></div>`;
+            <div><h4 style="border-left:3px solid var(--youtube); padding-left:10px;">VÍDEOS POPULARES</h4>${(art.musicas || art.m).slice(0,5).map(mus => `<div style="display:flex; gap:15px; margin-bottom:20px;"><img src="${mus.capaMusica || mus.c}" style="width:180px; height:101px; object-fit:cover; border-radius:12px;"><div><b style="display:block; font-size:16px;">${mus.titulo || mus.t}</b><span style="color:#aaa; font-size:13px;">${mus.streams || mus.s} views</span></div></div>`).join('')}</div>
+            <div><h4 style="border-left:3px solid var(--youtube); padding-left:10px;">INFORMAÇÕES</h4><div style="background:#0f0f0f; padding:20px; border-radius:12px; color:#aaa; line-height:1.6;">${art.sobre || art.bio}</div></div></div>`;
     }
 }
 
