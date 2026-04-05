@@ -1,81 +1,83 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Inter:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Inter:wght@400;700&display=swap');
 
 :root { 
     --empire: #8a2be2; 
     --gold: #d4af37;
-    --glass: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --bg: #050505;
-    --up: #1DB954; --down: #FA243C; --new: #00bfff;
+    --spotify: #1DB954;
+    --apple: #fa243c;
+    --youtube: #ff0000;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 body { 
-    background-color: var(--bg); color: #fff; font-family: 'Inter', sans-serif;
-    margin: 0; padding-top: 150px; transition: background 0.5s; overflow-x: hidden;
+    background-color: #050505; color: #fff; font-family: 'Inter', sans-serif;
+    margin: 0; padding-top: 150px; overflow-x: hidden;
 }
 
-/* --- HEADER & NAV (DROPDOWN) --- */
+/* --- HEADER & NAV (RESTAURADO) --- */
 header { 
     position: fixed; top: 0; width: 100%; z-index: 2000; padding: 25px 0; 
-    background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); text-align: center;
+    background: #000; border-bottom: 2px solid var(--empire); text-align: center;
 }
 header h1 { 
-    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; letter-spacing: 12px; margin: 0; 
-    font-size: 22px; text-transform: uppercase; color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; letter-spacing: 10px; margin: 0; 
+    font-size: 24px; text-transform: uppercase; color: #fff;
 }
 
 nav { 
-    background: rgba(10,10,10,0.8); backdrop-filter: blur(15px); display: flex; 
+    background: rgba(10,10,10,0.95); backdrop-filter: blur(15px); display: flex; 
     justify-content: center; position: fixed; top: 82px; width: 100%; z-index: 1999; 
     border-bottom: 1px solid var(--glass-border);
 }
 
 .menu-item { 
-    position: relative; padding: 20px 22px; cursor: pointer; font-size: 10px; 
-    font-weight: 700; text-transform: uppercase; color: #666; text-decoration: none; 
-    letter-spacing: 1.5px; transition: 0.3s;
+    position: relative; padding: 20px 22px; cursor: pointer; font-size: 11px; 
+    font-weight: 700; text-transform: uppercase; color: #888; text-decoration: none; 
+    letter-spacing: 1px; transition: 0.3s;
 }
 .menu-item:hover { color: #fff; }
 
+/* Cores específicas no menu */
+.menu-item[onclick*="loadHOFList"] { color: var(--gold); }
+.menu-item:nth-child(4) { color: var(--spotify); }
+.menu-item:nth-child(5) { color: var(--apple); }
+.menu-item:nth-child(6) { color: var(--youtube); }
+
 .submenu {
     display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-    background: rgba(10, 10, 10, 0.98); min-width: 200px; border: 1px solid var(--glass-border);
-    border-top: 2px solid var(--empire); box-shadow: 0 15px 30px rgba(0,0,0,0.5); padding: 10px 0;
+    background: #0a0a0a; min-width: 200px; border: 1px solid var(--glass-border);
+    border-top: 2px solid var(--empire); box-shadow: 0 15px 30px rgba(0,0,0,0.8); padding: 10px 0;
 }
 .menu-item:hover .submenu { display: block; }
-.sub-btn { padding: 12px 20px; font-size: 9px; color: #888; display: block; text-decoration: none; transition: 0.2s; letter-spacing: 1px; }
-.sub-btn:hover { background: rgba(255, 255, 255, 0.05); color: var(--empire); padding-left: 25px; }
+.sub-btn { padding: 12px 20px; font-size: 10px; color: #aaa; display: block; text-decoration: none; transition: 0.2s; }
+.sub-btn:hover { background: var(--glass); color: #fff; padding-left: 25px; }
 
-/* --- FILTROS (PÍLULAS) --- */
-.filter-group { margin-bottom: 40px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-.pill-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px; max-width: 90%; scrollbar-width: none; }
-.pill-container::-webkit-scrollbar { display: none; }
+/* --- FILTROS PÍLULAS --- */
+.pill-container { display: flex; gap: 10px; overflow-x: auto; padding: 15px; scrollbar-width: none; justify-content: center; }
 .pill { 
-    background: var(--glass); color: #888; padding: 10px 25px; border-radius: 50px; 
-    border: 1px solid var(--glass-border); cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.4s;
+    background: #111; color: #666; padding: 10px 25px; border-radius: 50px; 
+    border: 1px solid #222; cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.3s;
 }
-.pill.active { background: #fff; color: #000; border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+.pill.active { background: var(--empire); color: #fff; border-color: var(--empire); }
 
-/* --- ARTIST HERO (MODERNO) --- */
+/* --- CARDS DO DIRETÓRIO (VOLTARAM!) --- */
+.hof-card {
+    background: #111; border: 1px solid #222; border-radius: 20px; padding: 25px;
+    text-align: center; cursor: pointer; transition: 0.3s;
+}
+.hof-card:hover { border-color: var(--gold); transform: translateY(-5px); background: #161616; }
+.hof-card img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid var(--gold); }
+
+/* --- PERFIL ARTISTA --- */
 .artist-hero {
-    position: relative; height: 400px; border-radius: 32px; margin-bottom: 40px; 
+    position: relative; height: 400px; border-radius: 30px; margin-bottom: 40px; 
     overflow: hidden; background-size: cover; background-position: center; border: 1px solid var(--glass-border);
 }
-.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #050505 5%, transparent 80%); }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #050505 5%, transparent 90%); }
 .hero-content { position: absolute; bottom: 40px; left: 40px; }
-.hero-content h1 { font-family: 'Plus Jakarta Sans'; font-size: 60px; font-weight: 800; margin: 0; letter-spacing: -2px; line-height: 1; }
+.hero-content h1 { font-family: 'Plus Jakarta Sans'; font-size: 55px; font-weight: 800; margin: 0; letter-spacing: -2px; }
 
-/* --- GRID E ROWS --- */
-#app { max-width: 1100px; margin: 0 auto; padding: 20px; }
-.rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-.rt-col { background: var(--glass); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden; }
-.rt-head { padding: 15px; text-align: center; font-weight: 800; font-size: 11px; letter-spacing: 2px; border-bottom: 1px solid var(--glass-border); }
-
-.chart-row { display: grid; grid-template-columns: 40px 50px 1fr 100px; align-items: center; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.02); }
-.chart-row img { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; }
-.rank { font-weight: 800; color: #333; font-size: 14px; }
-.info-box b { font-size: 13px; color: #fff; display: block; }
-.info-box span { font-size: 11px; color: #666; }
-
-.skeleton { background: #111; height: 60px; margin-bottom: 2px; border-radius: 12px; animation: pulse 1.5s infinite; }
-@keyframes pulse { 50% { opacity: 0.5; } }
+.chart-row { display: grid; grid-template-columns: 40px 50px 1fr 100px; align-items: center; padding: 12px 0; border-bottom: 1px solid #111; }
+.chart-row img { width: 42px; height: 42px; border-radius: 6px; }
+.rank { font-weight: 800; color: #222; font-size: 16px; }
