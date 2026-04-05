@@ -1,4 +1,3 @@
-// ATENÇÃO: COLOQUE A SUA API DO GOOGLE AQUI
 const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNPDm2eeQsvZRwmHnCb_sCKLyc8wuwhuNZxEWjGEiYe/exec"; 
 
 function buildMenu() {
@@ -49,14 +48,15 @@ function buildMenu() {
 
 function toggleMenu() { if(window.innerWidth <= 768) document.getElementById('menu-nav').classList.toggle('active'); }
 
-// === FILTROS FLUIDOS (YEAR -> MONTH -> ARTIST) ===
-
+// === FILTROS EM CASCATA ===
 async function initMonthly(p) {
     const app = document.getElementById('app'); applyTheme(p);
     app.innerHTML = `<div class="filter-group"><div id="year-pills" class="pill-container"></div><div id="month-pills" class="pill-container"></div>
     <div id="artist-select-wrap" style="display:none; width:100%; max-width:400px;"><select id="aS" onchange="renderM('${p}')"></select></div></div><div id="profile-area"></div>`;
-    const years = await fetch(`${API}?action=getMonthlyYears`).then(r => r.json());
-    document.getElementById('year-pills').innerHTML = years.map(y => `<div class="pill year-pill" onclick="handleYearClick(this, '${y}', '${p}')">${y}</div>`).join('');
+    try {
+        const years = await fetch(`${API}?action=getMonthlyYears`).then(r => r.json());
+        document.getElementById('year-pills').innerHTML = years.map(y => `<div class="pill year-pill" onclick="handleYearClick(this, '${y}', '${p}')">${y}</div>`).join('');
+    } catch(e) { console.error(e); }
 }
 
 async function handleYearClick(el, year, p) {
@@ -73,37 +73,32 @@ async function handleMonthClick(el, month, year, p) {
     document.getElementById('aS').innerHTML = `<option value="">SELECT ARTIST</option>` + artists.map(a => `<option value="${a}">${a}</option>`).join('');
 }
 
-// === PERFIS MENSAL (SPOTIFY / YT / APPLE) ===
-
+// === RENDERIZAÇÃO DOS PERFIS ===
 async function renderM(p) {
     const profile = document.getElementById('profile-area');
     const a = document.getElementById('aS').value;
     const y = document.querySelector('.year-pill.active').innerText;
     const m = document.querySelector('.month-pill.active').innerText;
-    if(!a) return; profile.innerHTML = '<div class="skeleton" style="height:400px;"></div>';
-    const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&year=${y}&artist=${a}`).then(r => r.json());
-    const art = data[0];
-
-    if (p.toUpperCase().includes('SPOTIFY')) {
-        profile.innerHTML = `
-        <div class="sp-banner" style="background-image: url('${art.capa}');"><div class="sp-banner-content"><h1 class="sp-artist-name">${a}</h1><p style="color:#fff; font-weight:700;">${art.ov} ouvintes mensais • ${art.rank !== '-' ? `<span style="color:#1DB954;">#${art.rank} no mundo</span>` : ''}</p></div></div>
-        <div class="sp-action-bar"><button class="sp-play-btn">▶</button><button class="sp-follow-btn">Seguindo</button></div>
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:40px;">
-            <div><h2>Populares</h2>${art.m.map((mus, idx) => `<div class="rt-row" style="background:transparent; border-bottom:1px solid #222;"><span>${idx+1}</span><img src="${mus.c}"><b>${mus.t}</b><span style="text-align:right; color:#1DB954; font-weight:900;">${mus.s}</span></div>`).join('')}</div>
-            <div><h2>Sobre</h2><div class="sp-about-card">${art.bio}</div></div>
-        </div>`;
-    } else if (p.toUpperCase().includes('YOUTUBE')) {
-        profile.innerHTML = `
-        <div class="channel-header"><div class="yt-banner" style="background-image: url('${art.capa}');"></div>
-            <div class="channel-meta"><img src="${art.capa}" class="avatar"><div><h2 style="font-size:40px;">${a}</h2><p style="color:#aaa;">${art.ov} visualizações • ${art.rank !== '-' ? `TOP ${art.rank}` : ''}</p></div></div>
-        </div>
-        <div style="display:grid; grid-template-columns:2fr 1fr; gap:40px; padding:20px;"><div><h2 style="border-left:4px solid #f00; padding-left:15px;">VÍDEOS POPULARES</h2>${art.m.map(mus => `<div style="display:flex; gap:15px; margin-bottom:20px;"><img src="${mus.c}" style="width:160px; border-radius:8px;"><div><b>${mus.t}</b><br><small style="color:#888;">${mus.s} views</small></div></div>`).join('')}</div>
-        <div><h2>BIO</h2><p style="color:#aaa; line-height:1.6;">${art.bio}</p></div></div>`;
-    }
+    if(!a) return; profile.innerHTML = '<div class="skeleton" style="height:300px;"></div>';
+    try {
+        const data = await fetch(`${API}?action=getMonthlyStats&platform=${p}&month=${m}&year=${y}&artist=${a}`).then(r => r.json());
+        const art = data[0];
+        if (p.includes('SPOTIFY')) {
+            profile.innerHTML = `<div class="sp-banner" style="background-image: url('${art.capa}');"><div class="sp-banner-content"><h1 class="sp-artist-name">${a}</h1><p style="color:#fff; font-weight:700;">${art.ov} ouvintes mensais • ${art.rank !== '-' ? `<span style="color:#1DB954;">#${art.rank} no mundo</span>` : ''}</p></div></div>
+            <div class="sp-action-bar"><button class="sp-play-btn">▶</button></div>
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:40px;">
+                <div><h2>Populares</h2>${art.m.map((mus, idx) => `<div class="chart-row" style="background:transparent; grid-template-columns: 30px 45px 1fr 100px; border-bottom:1px solid #222;"><span>${idx+1}</span><img src="${mus.c}"><b>${mus.t}</b><span style="text-align:right; color:#1DB954; font-weight:900;">${mus.s}</span></div>`).join('')}</div>
+                <div><h2>Sobre</h2><div style="background:#181818; padding:20px; border-radius:12px; color:#ccc;">${art.bio}</div></div>
+            </div>`;
+        } else if (p.includes('YOUTUBE')) {
+            profile.innerHTML = `<div class="channel-header"><div class="yt-banner" style="background-image: url('${art.capa}');"></div><div class="channel-meta"><img src="${art.capa}" class="avatar"><div><h2>${a}</h2><p style="color:#aaa;">${art.ov} views mensais • ${art.rank !== '-' ? `TOP ${art.rank}` : ''}</p></div></div></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr; gap:40px; padding:20px;"><div><h2 style="border-left:4px solid #f00; padding-left:15px;">VÍDEOS POPULARES</h2>${art.m.map(mus => `<div style="display:flex; gap:15px; margin-bottom:20px;"><img src="${mus.c}" style="width:160px; border-radius:8px;"><div><b>${mus.t}</b><br><small style="color:#888;">${mus.s} views</small></div></div>`).join('')}</div>
+            <div><h2>BIO</h2><p style="color:#aaa; line-height:1.6;">${art.bio}</p></div></div>`;
+        }
+    } catch(e) { console.error(e); }
 }
 
-// === HALL OF FAME: DIRETÓRIO E PERFIL DELUXE ===
-
+// === HALL OF FAME ===
 async function loadHOFList() {
     const app = document.getElementById('app'); document.body.className = 'theme-digital'; 
     const list = await fetch(API + "?action=getHOFList").then(r => r.json());
@@ -121,33 +116,31 @@ async function loadHOFProfile(artistName) {
     const a = await fetch(`${API}?action=getHOFProfile&artist=${encodeURIComponent(artistName)}`).then(r => r.json());
     const renderList = (list, color) => list.map((i, idx) => `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #1a1a1a;"><div style="display:flex; gap:10px;"><span style="color:#444;">${idx+1}</span><span style="color:#fff;">${i.t}</span></div><span style="color:${color}; font-weight:900;">${i.v}</span></div>`).join('');
     
-    app.innerHTML = `
-        <div style="max-width:1000px; margin:0 auto;"><button onclick="loadHOFList()" style="background:transparent; border:none; color:var(--gold); cursor:pointer; font-weight:900; margin-bottom:20px;">← VOLTAR</button>
-            <div style="display:flex; align-items:center; gap:35px; background:linear-gradient(135deg, #111 0%, #050505 100%); padding:40px; border-radius:24px; border:1px solid rgba(212,175,55,0.2); margin-bottom:35px;"><img src="${a.img}" style="width:160px; height:160px; border-radius:50%; object-fit:cover; border:5px solid var(--gold);">
-            <div><h1 style="font-family:'Figtree'; font-size:50px; font-weight:900; margin:0; color:#fff;">${a.name}</h1><p style="color:#888;">${a.country} • ${a.style}</p></div></div>
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom:40px;">
-                <div class="info-card" style="text-align:center;"><div style="color:var(--gold); font-size:32px; font-weight:900;">${a.n1_hot100}</div><small>#1 HOT 100</small></div>
-                <div class="info-card" style="text-align:center;"><div style="color:#1DB954; font-size:32px; font-weight:900;">${a.n1_spotify}</div><small>#1 SPOTIFY</small></div>
-                <div class="info-card" style="text-align:center;"><div style="color:#ff0000; font-size:32px; font-weight:900;">${a.n1_youtube}</div><small>#1 YOUTUBE</small></div>
-                <div class="info-card" style="text-align:center;"><div style="color:var(--gold); font-size:32px; font-weight:900;">${a.n1_bb200}</div><small>#1 BB 200</small></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:25px; margin-bottom:40px;">
-                <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid #ff0000; padding-bottom:8px;">YOUTUBE</h2>${renderList(a.yt, '#ff0000')}</div>
-                <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid #1DB954; padding-bottom:8px;">SPOTIFY</h2>${renderList(a.sp, '#1DB954')}</div>
-                <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid #FA243C; padding-bottom:8px;">APPLE</h2>${renderList(a.am, '#FA243C')}</div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:30px;">
-                <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid var(--gold); padding-bottom:8px;">TOP ÁLBUNS</h2>${renderList(a.alb, var(--gold))}</div>
-                <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid var(--gold); padding-bottom:8px;">HISTORY</h2>
-                    <div style="max-height: 400px; overflow-y: auto;">
-                        ${a.runs.map(i => `<div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; margin-bottom:8px; border-left:3px solid var(--gold);"><b style="font-size:13px;">${i.t}</b><div style="color:var(--gold); font-family:monospace; font-size:12px; overflow-x:auto;">${i.v}</div></div>`).join('')}
-                    </div>
+    app.innerHTML = `<div style="max-width:1000px; margin:0 auto;"><button onclick="loadHOFList()" style="background:transparent; border:none; color:var(--gold); cursor:pointer; font-weight:900; margin-bottom:20px;">← VOLTAR</button>
+        <div style="display:flex; align-items:center; gap:35px; background:linear-gradient(135deg, #111 0%, #050505 100%); padding:40px; border-radius:24px; border:1px solid rgba(212,175,55,0.2); margin-bottom:35px;"><img src="${a.img}" style="width:160px; height:160px; border-radius:50%; object-fit:cover; border:5px solid var(--gold);">
+        <div><h1 style="font-family:'Figtree'; font-size:50px; font-weight:900; margin:0;">${a.name}</h1><p style="color:#888;">${a.country} • ${a.style}</p></div></div>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom:40px;">
+            <div class="info-card" style="text-align:center;"><div style="color:var(--gold); font-size:36px; font-weight:900;">${a.n1_hot100}</div><small>#1 HOT 100</small></div>
+            <div class="info-card" style="text-align:center;"><div style="color:#1DB954; font-size:36px; font-weight:900;">${a.n1_spotify}</div><small>#1 SPOTIFY</small></div>
+            <div class="info-card" style="text-align:center;"><div style="color:#ff0000; font-size:36px; font-weight:900;">${a.n1_youtube}</div><small>#1 YOUTUBE</small></div>
+            <div class="info-card" style="text-align:center;"><div style="color:var(--gold); font-size:36px; font-weight:900;">${a.n1_bb200}</div><small>#1 BB 200</small></div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:25px; margin-bottom:40px;">
+            <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid #ff0000; padding-bottom:8px;">YOUTUBE</h2>${renderList(a.yt, '#ff0000')}</div>
+            <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid #1DB954; padding-bottom:8px;">SPOTIFY</h2>${renderList(a.sp, '#1DB954')}</div>
+            <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid #FA243C; padding-bottom:8px;">APPLE</h2>${renderList(a.am, '#FA243C')}</div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:30px;">
+            <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid var(--gold); padding-bottom:8px;">TOP ÁLBUNS</h2>${renderList(a.alb, 'var(--gold)')}</div>
+            <div><h2 style="color:#fff; font-size:16px; border-bottom:2px solid var(--gold); padding-bottom:8px;">HISTORY</h2>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${a.runs.map(i => `<div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; margin-bottom:8px; border-left:3px solid var(--gold);"><b style="font-size:13px;">${i.t}</b><div style="color:var(--gold); font-family:monospace; font-size:12px; overflow-x:auto;">${i.v}</div></div>`).join('')}
                 </div>
-            </div></div>`;
+            </div>
+        </div></div>`;
 }
 
-// === CHARTS & REAL TIME (ORIGINAIS) ===
-
+// === CHARTS & REAL TIME ===
 async function loadRealTime() {
     const app = document.getElementById('app'); applyTheme('SPOTIFY');
     const d = await fetch(API + "?action=getRealTime").then(r => r.json());
@@ -159,14 +152,11 @@ async function initChart(tab, hasStyle) {
     const app = document.getElementById('app'); applyTheme(tab);
     const f = await fetch(`${API}?action=getFilters&tab=${tab}`).then(r => r.json());
     app.innerHTML = `<h2 style="text-align:center;">${tab}</h2><div class="filter-group"><div class="pill-container">${f.dates.map(d => `<div class="pill date-pill" onclick="this.parentElement.querySelectorAll('.pill').forEach(p=>p.classList.remove('active')); this.classList.add('active'); renderChart('${tab}', ${hasStyle})">${d}</div>`).join('')}</div></div><div id="chart-area"></div>`;
-    // Forçar a primeira data a ficar ativa
     const firstPill = document.querySelector('.date-pill'); if(firstPill) firstPill.click();
 }
 
 async function renderChart(tab, hasStyle) {
-    const area = document.getElementById('chart-area');
-    const date = document.querySelector('.date-pill.active')?.innerText;
-    if(!date) return;
+    const area = document.getElementById('chart-area'); const date = document.querySelector('.date-pill.active')?.innerText;
     const res = await fetch(`${API}?action=getChart&tab=${tab}&date=${date}`).then(r => r.json());
     area.innerHTML = res.map(i => `<div class="chart-row"><div class="rank">${i.pos}</div><div class="status ${i.st.includes('↑')?'up':i.st.includes('↓')?'down':'new'}">${i.st||'-'}</div><img src="${i.capa}"><div><b>${i.tit}</b><br><small>${i.art}</small></div><div class="stats-box"><b>${i.val}</b></div></div>`).join('');
 }
