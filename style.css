@@ -7,9 +7,9 @@
     --up: #1DB954; --down: #FA243C; --new: #00bfff;
 }
 
-body { margin: 0; padding-top: 130px; background: #000; color: #fff; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+body { margin: 0; padding-top: 130px; background: #000; color: #fff; transition: background 0.3s; overflow-x: hidden; font-family: 'Inter', sans-serif; }
 
-/* --- DESKTOP HEADER & NAV (INTOCADOS) --- */
+/* --- CABEÇALHO E MENU --- */
 header { position: fixed; top: 0; width: 100%; z-index: 2000; padding: 20px 0; text-align: center; background: #000; border-bottom: 2px solid var(--empire); }
 header h1 { font-family: 'Figtree', sans-serif; font-weight: 900; letter-spacing: 8px; margin: 0; font-size: 26px; text-transform: uppercase; color: #fff; }
 
@@ -21,76 +21,34 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .sub-btn { padding: 12px 20px; font-size: 10px; color: #aaa; border-bottom: 1px solid var(--border-dark); display: block; text-decoration: none; }
 .sub-btn:hover { background: var(--empire); color: white; }
 
-/* --- FILTROS EM PÍLULAS --- */
-.filter-group { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 40px; }
-.pill-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; }
-.pill-container::-webkit-scrollbar { display: none; }
-.pill { background: #111; color: #888; padding: 10px 22px; border-radius: 30px; border: 1px solid #333; cursor: pointer; font-weight: 700; font-size: 12px; white-space: nowrap; transition: 0.3s; }
-.pill.active { background: var(--empire); color: #fff; border-color: var(--empire); box-shadow: 0 0 15px rgba(138, 43, 226, 0.3); }
+#app { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-/* --- DESIGN PREMIUM DOS PERFIS (RESTORED) --- */
+/* --- CHARTS GERAIS --- */
+.chart-row { display: grid; grid-template-columns: 50px 50px 70px 1fr 140px; align-items: center; padding: 15px 20px; border-bottom: 1px solid #1a1a1a; transition: 0.2s; }
+.chart-row img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+.info-box { padding-left: 15px; overflow: hidden; min-width: 0; }
+.info-box b { font-size: 16px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stats-box { text-align: right; }
+.stats-box b { font-size: 16px; }
+
+/* --- TEMAS --- */
+.theme-spotify { background: #121212; color: #fff; }
+.theme-spotify .stats-box b { color: #1DB954; }
+.theme-apple { background: #fbfbfd; color: #1d1d1f; }
+.theme-apple .chart-row { border-bottom: 1px solid #e5e5ea; }
+.theme-apple .stats-box b { color: #FA243C; }
+
+/* --- BANNERS DAS PLATAFORMAS --- */
 .sp-banner { height: 340px; background-size: cover; background-position: center 20%; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .sp-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 10%, rgba(18,18,18,0.9) 95%, #121212 100%); }
 .sp-artist-name { font-family: 'Figtree'; font-size: 80px; font-weight: 900; margin: 0; letter-spacing: -3px; line-height: 1; z-index: 2; }
-.sp-main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
-.sp-about-card { background: #282828; padding: 25px; border-radius: 8px; line-height: 1.6; }
 
 .am-hero { height: 400px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .am-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%); }
 
-.channel-header { margin: -20px -20px 0 -20px; position: relative; }
 .yt-banner { height: 250px; background-size: cover; background-position: center; border-bottom: 1px solid #333; }
 .avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #0f0f0f; margin-top: -80px; object-fit: cover; z-index: 5; margin-right: 30px; }
 
-/* --- TABELAS & CHARTS --- */
-.chart-row { display: grid; grid-template-columns: 50px 50px 70px 1fr 140px; align-items: center; padding: 15px 20px; border-bottom: 1px solid #1a1a1a; }
-.chart-row img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
-.info-box { padding-left: 15px; overflow: hidden; min-width: 0; }
-.info-box b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-.stats-box { text-align: right; }
-.stats-box b { font-size: 16px; color: #fff; }
-
-.menu-toggle { display: none; }
-
-/* ======================================================================
-   MOBILE EXCLUSIVE (SÓ ATIVA EM TELAS PEQUENAS)
-   ====================================================================== */
-@media (max-width: 768px) {
-    body { padding-top: 80px; }
-    
-    /* Botão Hambúrguer Empire */
-    .menu-toggle { 
-        display: block; position: fixed; top: 20px; left: 20px; z-index: 2100; 
-        background: #111; padding: 10px; border-radius: 8px; border: 1px solid var(--empire); 
-    }
-    .menu-toggle div { width: 22px; height: 2px; background: #fff; margin: 5px 0; }
-
-    /* Menu Lateral Oculto */
-    nav { 
-        position: fixed; top: 0; left: -100%; width: 280px; height: 100vh; 
-        flex-direction: column; justify-content: flex-start; padding: 100px 20px; 
-        background: #0a0a0a; border-right: 2px solid var(--empire); z-index: 2050; 
-    }
-    nav.active { left: 0; }
-    .menu-item { width: 100%; padding: 18px 0; font-size: 14px; border-bottom: 1px solid #1a1a1a; color: #fff; }
-    .submenu { display: block !important; position: static; background: transparent; padding-left: 15px; box-shadow: none; border: none; }
-
-    /* Ajuste Real Time Mobile */
-    .rt-grid { grid-template-columns: 1fr; gap: 15px; }
-    .chart-row { 
-        grid-template-columns: 35px 55px 1fr 85px !important; 
-        gap: 15px !important; 
-        padding: 12px;
-    }
-    .info-box b { font-size: 13px !important; white-space: normal !important; line-height: 1.2; }
-    .status, .stats-box small { display: none; }
-
-    /* Ajustes Perfil Mobile (Redução de Fontes e Grids) */
-    .sp-artist-name { font-size: 40px !important; }
-    .sp-banner { height: 250px; }
-    .avatar { width: 90px; height: 90px; margin-top: -60px; }
-    [style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-    [style*="grid-template-columns: 1fr 1fr 1fr"], [style*="grid-template-columns: 1fr 2.2fr"], .sp-main-grid, .main-grid { 
-        grid-template-columns: 1fr !important; gap: 30px !important; 
-    }
-}
+/* --- SKELETONS --- */
+.skeleton { background: #161616; height: 75px; margin-bottom: 1px; animation: pulse 1.5s infinite; border-radius: 8px; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
