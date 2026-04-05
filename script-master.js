@@ -135,27 +135,42 @@ async function loadHOFProfile(name) {
   const d = await fetchCached(`${API}?action=getHOFProfile&artist=${encodeURIComponent(name)}`);
   if (!d || !d.name) { app.innerHTML = '<p style="text-align:center;color:#555;">Perfil não encontrado.</p>'; return; }
 
-  // Histograma de runs
+  // Tabela de runs: música | plataforma | semanas no topo
   const runs = d.runs || [];
-  const maxRun = runs.length ? Math.max(...runs.map(r => Number(r.v) || 0)) : 0;
 
-  let histogram = '';
+  let runsTable = '';
   if (runs.length) {
-    histogram = `
-    <div style="margin-top:40px;">
-      <h3 style="font-size:12px;letter-spacing:3px;color:#555;margin-bottom:16px;text-transform:uppercase;">Semanas no Topo</h3>
-      <div style="display:flex;align-items:flex-end;gap:6px;height:80px;overflow-x:auto;padding-bottom:4px;">
-        ${runs.map(r => {
-          const h = maxRun > 0 ? Math.max(4, Math.round((Number(r.v) / maxRun) * 72)) : 4;
-          return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">
-            <span style="font-size:9px;color:#555;">${r.v}</span>
-            <div title="${r.t}: ${r.v} semanas"
-              style="width:28px;height:${h}px;background:var(--empire);border-radius:4px 4px 0 0;opacity:0.85;cursor:default;transition:opacity .2s;"
-              onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85"></div>
-            <span style="font-size:9px;color:#444;white-space:nowrap;max-width:32px;overflow:hidden;text-overflow:ellipsis;" title="${r.t}">${r.t.split(' ')[0]}</span>
-          </div>`;
-        }).join('')}
-      </div>
+    // Ordena por semanas (decrescente)
+    const sorted = [...runs].sort((a, b) => (Number(b.v) || 0) - (Number(a.v) || 0));
+    const maxV = Number(sorted[0]?.v) || 1;
+
+    runsTable = `
+    <div style="margin-top:40px;max-width:700px;">
+      <h3 style="font-size:12px;letter-spacing:3px;color:#555;margin-bottom:20px;text-transform:uppercase;">Semanas no Topo</h3>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="border-bottom:1px solid #222;">
+            <th style="text-align:left;font-size:10px;letter-spacing:2px;color:#444;padding:0 0 10px;font-weight:600;">MÚSICA / PERÍODO</th>
+            <th style="text-align:center;font-size:10px;letter-spacing:2px;color:#444;padding:0 12px 10px;font-weight:600;">SEMANAS</th>
+            <th style="text-align:left;font-size:10px;letter-spacing:2px;color:#444;padding:0 0 10px;font-weight:600;width:40%;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sorted.map(r => {
+            const weeks = Number(r.v) || 0;
+            const barW = Math.round((weeks / maxV) * 100);
+            return `<tr style="border-bottom:1px solid #111;">
+              <td style="padding:12px 0;font-size:14px;color:#ccc;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.t}">${r.t}</td>
+              <td style="padding:12px;text-align:center;font-size:16px;font-weight:900;color:var(--empire);">${weeks}</td>
+              <td style="padding:12px 0;">
+                <div style="background:#111;border-radius:3px;height:6px;width:100%;">
+                  <div style="background:var(--empire);height:6px;border-radius:3px;width:${barW}%;opacity:0.7;"></div>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
     </div>`;
   }
 
@@ -200,8 +215,8 @@ async function loadHOFProfile(name) {
       </div>
     </div>
 
-    <!-- Histograma de runs -->
-    ${histogram}
+    <!-- Tabela de runs -->
+    ${runsTable}
 
     <!-- Top músicas e álbuns -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;margin-top:40px;">
