@@ -42,17 +42,20 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .status.down { color: var(--down); } 
 .status.new { background: var(--new); color: black; padding: 2px 4px; border-radius: 3px; font-size: 9px; }
 
-/* --- TEMAS --- */
+/* --- TEMAS DE PLATAFORMAS --- */
 .theme-spotify { background: #121212; color: #fff; }
 .theme-spotify .stats-box b { color: #1DB954; }
+
 .theme-apple { background: #fbfbfd; color: #1d1d1f; }
 .theme-apple .chart-row { border-bottom: 1px solid #e5e5ea; }
 .theme-apple .stats-box b { color: #FA243C; }
+
 .theme-youtube { background: #0f0f0f; color: #fff; }
+
 .theme-digital { background: #0a0a0a; color: white; }
 .theme-digital .rank { font-family: 'Bricolage Grotesque'; font-size: 30px; color: var(--gold); font-style: italic; text-align: center; }
 
-/* --- BANNERS --- */
+/* --- BANNERS PREMIUM --- */
 .sp-banner { height: 340px; background-size: cover; background-position: center 20%; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .sp-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 10%, rgba(18,18,18,0.9) 95%, #121212 100%); }
 .sp-artist-name { font-family: 'Figtree'; font-size: 80px; font-weight: 900; margin: 0; letter-spacing: -3px; line-height: 1; z-index: 2; }
@@ -60,9 +63,7 @@ nav { background: rgba(10,10,10,0.98); display: flex; justify-content: center; p
 .am-hero { height: 400px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 30px 40px; margin: -20px -20px 20px -20px; }
 .am-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%); }
 
-.channel-header { margin: -20px -20px 0 -20px; position: relative; }
 .yt-banner { height: 250px; background-size: cover; background-position: center; border-bottom: 1px solid #333; }
-.channel-meta { display: flex; align-items: center; padding: 25px 50px; background: #0f0f0f; }
 .avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #0f0f0f; margin-top: -80px; object-fit: cover; z-index: 5; margin-right: 30px; }
 
 /* --- REAL TIME --- */
