@@ -42,13 +42,14 @@ function buildMenu() {
     <a href="charts.html?tab=DIGITAL SALES" class="menu-item">Sales</a>`;
 }
 
-// === DIRETÓRIO DE ARTISTAS (CARDS RESTAURADOS) ===
+// === DIRETÓRIO DE ARTISTAS ===
 async function loadHOFList() {
     const app = document.getElementById('app');
-    app.innerHTML = '<div class="skeleton"></div>'.repeat(3);
+    app.innerHTML = '<div class="skeleton"></div>'.repeat(5);
     try {
-        const list = await fetch(API + "?action=getHOFList").then(r => r.json());
-        let html = `<h2 style="text-align:center; font-family:'Plus Jakarta Sans'; font-weight:800; font-size:24px; letter-spacing:5px; margin-bottom:40px;">DIRECTORY</h2>
+        const response = await fetch(API + "?action=getHOFList");
+        const list = await response.json();
+        let html = `<h2 style="text-align:center; font-family:'Plus Jakarta Sans'; letter-spacing:5px; margin-bottom:40px;">DIRECTORY</h2>
         <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:25px;">`;
         list.forEach(a => {
             html += `<div class="hof-card" onclick="loadHOFProfile('${a.name}')">
@@ -58,51 +59,63 @@ async function loadHOFList() {
             </div>`;
         });
         app.innerHTML = html + `</div>`;
-    } catch(e) { console.error(e); }
+    } catch(e) { app.innerHTML = "Erro ao carregar artistas."; }
 }
 
-// === PERFIL DO ARTISTA (ÁLBUNS E CORES VOLTARAM) ===
+// === PERFIL DO ARTISTA ===
 async function loadHOFProfile(artistName) {
     const app = document.getElementById('app');
-    app.innerHTML = '<div class="skeleton" style="height:400px; border-radius:30px;"></div>';
+    app.innerHTML = '<div class="skeleton" style="height:400px;"></div>';
     try {
-        const a = await fetch(`${API}?action=getHOFProfile&artist=${encodeURIComponent(artistName)}`).then(r => r.json());
-        const renderL = (l, c) => l.map((i, idx) => `<div class="chart-row"><div class="rank">${idx+1}</div><img src="${a.img}" style="width:35px; height:35px; border-radius:4px;"><div class="info-box"><b>${i.t}</b></div><span style="color:${c}; font-weight:800; font-size:12px; text-align:right;">${i.v}</span></div>`).join('');
+        const response = await fetch(`${API}?action=getHOFProfile&artist=${encodeURIComponent(artistName)}`);
+        const a = await response.json();
+        
+        const renderL = (l, c) => l.map((i, idx) => `
+            <div style="display:grid; grid-template-columns: 30px 1fr 80px; align-items:center; padding:10px 0; border-bottom:1px solid #111;">
+                <span style="color:#222; font-weight:800;">${idx+1}</span>
+                <b style="font-size:13px; color:#fff;">${i.t}</b>
+                <span style="color:${c}; font-weight:800; font-size:12px; text-align:right;">${i.v}</span>
+            </div>`).join('');
         
         app.innerHTML = `
             <button onclick="loadHOFList()" style="background:transparent; border:none; color:#444; cursor:pointer; font-weight:800; margin-bottom:20px;">← BACK</button>
-            <div class="artist-hero" style="background-image: url('${a.img}');"><div class="hero-overlay"></div><div class="hero-content"><h1>${a.name}</h1><p style="color:#888;">${a.country} • ${a.style}</p></div></div>
+            <div class="artist-hero" style="background-image: url('${a.img}');">
+                <div class="hero-overlay"></div>
+                <div class="hero-content"><h1>${a.name}</h1><p style="color:#888;">${a.country} • ${a.style}</p></div>
+            </div>
             
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom:40px;">
-                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; font-weight:800; color:var(--gold);">${a.n1_hot100}</div><div style="font-size:9px; color:#444;">HOT 100</div></div>
-                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; font-weight:800; color:#1DB954;">${a.n1_spotify}</div><div style="font-size:9px; color:#444;">SPOTIFY</div></div>
-                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; font-weight:800; color:#ff0000;">${a.n1_youtube}</div><div style="font-size:9px; color:#444;">YOUTUBE</div></div>
-                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; font-weight:800; color:var(--gold);">${a.n1_bb200}</div><div style="font-size:9px; color:#444;">BB 200</div></div>
+                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; color:var(--gold); font-weight:800;">${a.n1_hot100}</div><small style="color:#444;">HOT 100</small></div>
+                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; color:var(--spotify); font-weight:800;">${a.n1_spotify}</div><small style="color:#444;">SPOTIFY</small></div>
+                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; color:var(--youtube); font-weight:800;">${a.n1_youtube}</div><small style="color:#444;">YOUTUBE</small></div>
+                <div style="background:#111; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;"><div style="font-size:24px; color:var(--gold); font-weight:800;">${a.n1_bb200}</div><small style="color:#444;">BB 200</small></div>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:25px; margin-bottom:40px;">
-                <div><h4 style="font-size:11px; color:var(--youtube); letter-spacing:2px; border-bottom:1px solid #222; padding-bottom:10px;">YOUTUBE</h4>${renderL(a.yt, '#ff0000')}</div>
-                <div><h4 style="font-size:11px; color:var(--spotify); letter-spacing:2px; border-bottom:1px solid #222; padding-bottom:10px;">SPOTIFY</h4>${renderL(a.sp, '#1DB954')}</div>
-                <div><h4 style="font-size:11px; color:var(--apple); letter-spacing:2px; border-bottom:1px solid #222; padding-bottom:10px;">APPLE</h4>${renderL(a.am, '#FA243C')}</div>
+                <div><h4 style="color:var(--youtube); border-bottom:1px solid #222; padding-bottom:10px; font-size:11px;">YOUTUBE</h4>${renderL(a.yt, '#ff0000')}</div>
+                <div><h4 style="color:var(--spotify); border-bottom:1px solid #222; padding-bottom:10px; font-size:11px;">SPOTIFY</h4>${renderL(a.sp, '#1DB954')}</div>
+                <div><h4 style="color:var(--apple); border-bottom:1px solid #222; padding-bottom:10px; font-size:11px;">APPLE</h4>${renderL(a.am, '#FA243C')}</div>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 2fr; gap:40px;">
-                <div><h4 style="font-size:11px; color:var(--gold); letter-spacing:2px; border-bottom:1px solid #222; padding-bottom:10px;">TOP ALBUMS</h4>${renderL(a.alb, '#fff')}</div>
-                <div><h4 style="font-size:11px; color:#444; letter-spacing:2px; border-bottom:1px solid #222; padding-bottom:10px;">HOT 100 HISTORY</h4>
+                <div><h4 style="color:var(--gold); border-bottom:1px solid #222; padding-bottom:10px; font-size:11px;">TOP ALBUMS</h4>${renderL(a.alb, '#fff')}</div>
+                <div><h4 style="color:#444; border-bottom:1px solid #222; padding-bottom:10px; font-size:11px;">HISTORY</h4>
                     <div style="max-height: 400px; overflow-y: auto;">
                         ${a.runs.map(i => `<div style="background:#111; padding:12px; border-radius:10px; margin-bottom:10px; border-left:3px solid #fff;"><b style="font-size:12px;">${i.t}</b><div style="color:#666; font-size:11px; margin-top:5px; font-family:monospace;">${i.v}</div></div>`).join('')}
                     </div>
                 </div>
             </div>`;
-    } catch(e) { console.error(e); }
+    } catch(e) { app.innerHTML = "Erro ao carregar perfil."; }
 }
 
-// Funções de Inicialização (Cascata de Filtros)
+// === ARTISTAS MENSAIS (CASCATA) ===
 async function initMonthly(p) {
     const app = document.getElementById('app');
-    app.innerHTML = `<div class="filter-group"><div id="year-pills" class="pill-container"></div><div id="month-pills" class="pill-container"></div><div id="artist-select-wrap" style="display:none; width:100%; max-width:400px; margin: 0 auto;"><select id="aS" onchange="renderM('${p}')" style="width:100%; background:#111; color:#fff; border:1px solid #222; padding:12px; border-radius:12px;"></select></div></div><div id="profile-area"></div>`;
-    const years = await fetch(`${API}?action=getMonthlyYears`).then(r => r.json());
-    document.getElementById('year-pills').innerHTML = years.map(y => `<div class="pill year-pill" onclick="handleYearClick(this, '${y}', '${p}')">${y}</div>`).join('');
+    app.innerHTML = `<div class="filter-group"><div id="year-pills" class="pill-container"></div><div id="month-pills" class="pill-container"></div><div id="artist-select-wrap" style="display:none;"><select id="aS" onchange="renderM('${p}')" style="width:300px; background:#111; color:#fff; border:1px solid #222; padding:12px; border-radius:10px;"></select></div></div><div id="profile-area"></div>`;
+    try {
+        const years = await fetch(`${API}?action=getMonthlyYears`).then(r => r.json());
+        document.getElementById('year-pills').innerHTML = years.map(y => `<div class="pill year-pill" onclick="handleYearClick(this, '${y}', '${p}')">${y}</div>`).join('');
+    } catch(e) {}
 }
 
 async function handleYearClick(el, year, p) {
@@ -120,4 +133,28 @@ async function handleMonthClick(el, month, year, p) {
     document.getElementById('aS').innerHTML = `<option value="">SELECT ARTIST</option>` + artists.map(a => `<option value="${a}">${a}</option>`).join('');
 }
 
-// O restante das funções (loadRealTime, initChart, renderChart) segue a mesma lógica original de design chique.
+// === OUTRAS FUNÇÕES (REAL TIME E CHARTS) ===
+async function loadRealTime() {
+    const app = document.getElementById('app');
+    app.innerHTML = '<div class="skeleton"></div>'.repeat(3);
+    try {
+        const d = await fetch(API + "?action=getRealTime").then(r => r.json());
+        const row = (l, c) => l.map(i => `<div style="display:grid; grid-template-columns: 30px 45px 1fr 80px; align-items:center; padding:10px; border-bottom:1px solid #222;"><span style="color:#222; font-weight:800;">${i.p}</span><img src="${i.c}" style="width:35px; border-radius:4px;"><b style="font-size:12px; padding-left:10px;">${i.t}</b><span style="color:${c}; font-weight:800; text-align:right; font-size:11px;">${i.s}</span></div>`).join('');
+        app.innerHTML = `<div class="rt-grid"><div class="rt-col"><div class="rt-head" style="color:var(--spotify);">Spotify</div>${row(d.spotify, 'var(--spotify)')}</div><div class="rt-col"><div class="rt-head" style="color:var(--apple);">Apple Music</div>${row(d.apple, 'var(--apple)')}</div><div class="rt-col"><div class="rt-head" style="color:var(--youtube);">YouTube</div>${row(d.youtube, '#fff')}</div></div>`;
+    } catch(e) {}
+}
+
+async function initChart(tab, hasStyle) {
+    const app = document.getElementById('app');
+    const f = await fetch(`${API}?action=getFilters&tab=${tab}`).then(r => r.json());
+    app.innerHTML = `<h2 style="text-align:center; font-family:'Plus Jakarta Sans'; letter-spacing:5px;">${tab}</h2><div class="pill-container">${f.dates.map((d, idx) => `<div class="pill date-pill ${idx===0?'active':''}" onclick="renderC(this, '${tab}', '${d}')">${d}</div>`).join('')}</div><div id="chart-area"></div>`;
+    renderC(null, tab, f.dates[0]);
+}
+
+async function renderC(el, tab, date) {
+    if(el) { document.querySelectorAll('.date-pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); }
+    const area = document.getElementById('chart-area');
+    area.innerHTML = '<div class="skeleton"></div>'.repeat(5);
+    const res = await fetch(`${API}?action=getChart&tab=${tab}&date=${date}`).then(r => r.json());
+    area.innerHTML = res.map(i => `<div style="display:grid; grid-template-columns: 40px 50px 1fr 100px; align-items:center; padding:15px; border-bottom:1px solid #111;"><span style="font-weight:800; color:#222;">${i.pos}</span><span style="font-size:9px; color:#444;">${i.st || '-'}</span><img src="${i.capa}" style="width:40px; border-radius:4px;"><div style="padding-left:15px;"><b style="display:block; font-size:13px;">${i.tit}</b><span style="font-size:11px; color:#666;">${i.art}</span></div><div style="text-align:right; font-weight:800;">${i.val}</div></div>`).join('');
+}
