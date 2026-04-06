@@ -36,9 +36,9 @@ async function buildBanner() {
       { label: 'BB 200',      color: '#bbb',           d: data.bb200 },
     ];
     banner.innerHTML = items.filter(it => it.d).map(it => {
-      const cover = it.d.capa || it.d.c || '';
-      const title = it.d.musica || it.d.titulo || it.d.tit || it.d.t || '—';
-      const artist = it.d.artista || it.d.art || it.d.a || '';
+      const cover = it.d.capa || '';
+      const title = it.d.tit || it.d.musica || it.d.titulo || it.d.t || '—';
+      const artist = it.d.art || it.d.artista || it.d.a || '';
       return `<div class="banner-card">
         <span class="banner-platform" style="color:${it.color}">${it.label}</span>
         ${cover ? `<img src="${cover}" class="banner-cover" onerror="this.style.display='none'">` : ''}
