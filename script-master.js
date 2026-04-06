@@ -16,6 +16,113 @@ async function fetchCached(url) {
 }
 
 // ============================================================
+// BANNER FIXO — #1s da semana em todas as abas
+// ============================================================
+async function buildBanner() {
+  if (document.getElementById('empire-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'empire-banner';
+  banner.innerHTML = '<div style="padding:8px;color:#333;font-size:10px;text-align:center;letter-spacing:2px;">EMPIRE CHARTS</div>';
+  document.body.insertBefore(banner, document.body.firstChild);
+
+  try {
+    const data = await fetchCached(API + '?action=getBannerN1s');
+    const items = [
+      { label: 'HOT 100',     color: '#fff',           d: data.hot100 },
+      { label: 'SPOTIFY',     color: 'var(--spotify)', d: data.spotify },
+      { label: 'APPLE MUSIC', color: 'var(--apple)',   d: data.apple },
+      { label: 'YOUTUBE',     color: 'var(--youtube)', d: data.youtube },
+      { label: 'SALES',       color: 'var(--gold)',    d: data.sales },
+      { label: 'BB 200',      color: '#bbb',           d: data.bb200 },
+    ];
+    banner.innerHTML = items.filter(it => it.d).map(it => {
+      const cover = it.d.capa || it.d.c || '';
+      const title = it.d.musica || it.d.titulo || it.d.tit || it.d.t || '—';
+      const artist = it.d.artista || it.d.art || it.d.a || '';
+      return `<div class="banner-card">
+        <span class="banner-platform" style="color:${it.color}">${it.label}</span>
+        ${cover ? `<img src="${cover}" class="banner-cover" onerror="this.style.display='none'">` : ''}
+        <div class="banner-info">
+          <div class="banner-title">${title}</div>
+          ${artist ? `<div class="banner-artist">${artist}</div>` : ''}
+        </div>
+        <span class="banner-n1" style="color:${it.color}">#1</span>
+      </div>`;
+    }).join('');
+  } catch(e) { /* silently fail */ }
+}
+
+// ============================================================
+// HOME — capa estilo revista + lançamentos
+// ============================================================
+async function loadHome() {
+  const app = document.getElementById('app');
+  document.body.className = '';
+  app.innerHTML = '<div class="skeleton" style="height:520px;margin-bottom:12px;"></div>'
+    + '<div class="skeleton" style="height:80px;"></div>';
+
+  const [coverData, releases] = await Promise.all([
+    fetchCached(API + '?action=getTopArtistCover'),
+    fetchCached(API + '?action=getReleases')
+  ]);
+
+  const art = coverData || {};
+  const img = art.img || art.capa || '';
+  const name = art.name || art.artista || '';
+  const headline = art.headline || '';
+  const editorial = art.editorial || art.contexto || '';
+  const author = art.author || art.fonte || '';
+  const month = art.month || '';
+  const pts = art.pts || art.pontos || '';
+
+  const typeColor = t => {
+    t = (t || '').toUpperCase();
+    if (t.includes('LEAD'))  return '#8a2be2';
+    if (t.includes('PRÉ') || t.includes('PRE')) return '#1DB954';
+    if (t.includes('PÓS') || t.includes('POS')) return '#fa243c';
+    if (t.includes('PROMO')) return '#d4af37';
+    return '#555';
+  };
+
+  const releasesHtml = (releases && releases.length) ? `
+  <div class="home-releases">
+    <h2 class="home-section-title">MOST RECENT RELEASES</h2>
+    <div class="home-releases-track">
+      ${releases.map(r => `
+        <div class="release-card">
+          <div class="release-type" style="background:${typeColor(r.tipo)}">${r.tipo || 'SINGLE'}</div>
+          <div class="release-title">${r.musica || r.titulo || r.t || '—'}</div>
+          <div class="release-date">${r.data || ''}</div>
+        </div>`).join('')}
+    </div>
+  </div>` : '';
+
+  app.innerHTML = `
+  <div class="home-cover">
+    <div class="home-cover-img" style="background-image:url('${img}')">
+      <div class="home-cover-overlay"></div>
+      <div class="home-cover-top">
+        <img src="logo.png" class="home-logo" onerror="this.style.display='none'">
+        <span class="home-issue">${month}</span>
+      </div>
+      <div class="home-cover-badge">TOP ARTIST</div>
+      <div class="home-cover-content">
+        <h1 class="home-cover-name">${name}</h1>
+        ${pts ? `<div class="home-cover-pts">${pts} <span>PTS</span></div>` : ''}
+        ${headline ? `<p class="home-cover-headline">${headline}</p>` : ''}
+      </div>
+    </div>
+    ${editorial ? `
+    <div class="home-editorial">
+      <div class="home-editorial-label">EDITORIAL</div>
+      <div class="home-editorial-text">${editorial}</div>
+      ${author ? `<div class="home-editorial-author">— ${author}</div>` : ''}
+    </div>` : ''}
+  </div>
+  ${releasesHtml}`;
+}
+
+// ============================================================
 // MENU
 // ============================================================
 function buildMenu() {
@@ -24,7 +131,8 @@ function buildMenu() {
 
   // Menu horizontal — desktop
   navMenu.innerHTML = `
-    <a href="index.html" class="menu-item">Início</a>
+    <a href="index.html" class="menu-item">Home</a>
+    <a href="realtime.html" class="menu-item">🔴 Live</a>
     <div class="menu-item" onclick="window.location.href='artists.html'">🌟 Artists</div>
     <div class="menu-item">Hot 100
       <div class="submenu">
@@ -61,18 +169,23 @@ function buildMenu() {
     </div>
     <a href="charts.html?tab=DIGITAL SALES" class="menu-item">Sales</a>`;
 
-  // Hambúrguer no header — mobile
+  // Hambúrguer no header — sempre recria para garantir no primeiro carregamento
   const header = document.querySelector('header');
   if (header && !header.querySelector('.nav-hamburger')) {
     const btn = document.createElement('div');
     btn.className = 'nav-hamburger';
+    btn.setAttribute('aria-label', 'Menu');
     btn.innerHTML = '<span></span><span></span><span></span>';
     btn.onclick = toggleDrawer;
+    header.style.position = 'fixed';
     header.appendChild(btn);
   }
 
-  // Drawer lateral — mobile
-  if (!document.getElementById('nav-drawer')) {
+  // Remove drawer anterior se existir (garante re-render correto)
+  const oldDrawer = document.getElementById('nav-drawer');
+  const oldOverlay = document.getElementById('nav-overlay');
+  if (oldDrawer) oldDrawer.remove();
+  if (oldOverlay) oldOverlay.remove();
     const overlay = document.createElement('div');
     overlay.className = 'nav-overlay';
     overlay.id = 'nav-overlay';
@@ -82,7 +195,8 @@ function buildMenu() {
     drawer.className = 'nav-drawer';
     drawer.id = 'nav-drawer';
     drawer.innerHTML = `
-      <a href="index.html" class="drawer-item">Início</a>
+      <a href="index.html" class="drawer-item">Home</a>
+      <a href="realtime.html" class="drawer-item" style="color:#e00;">🔴 Live</a>
       <a href="artists.html" class="drawer-item" style="color:var(--gold)">🌟 Artists</a>
       <div class="drawer-item" onclick="toggleDrawerSub(this)">Hot 100
         <div class="drawer-sub">
@@ -121,7 +235,6 @@ function buildMenu() {
 
     document.body.appendChild(overlay);
     document.body.appendChild(drawer);
-  }
 }
 
 function toggleDrawer() {
