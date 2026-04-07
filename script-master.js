@@ -46,7 +46,7 @@ async function buildBanner() {
       const title = it.d.tit || '—';
       const artist = it.d.art || '';
       return '<div class="banner-card">'
-        + (cover ? '<img src="' + cover + '" class="banner-cover" onerror="this.style.display='none'">' : '')
+        + (cover ? '<img src="' + cover + '" class="banner-cover" onerror="this.style.display=\'none\'">' : '')
         + '<div class="banner-info">'
         + '<span class="banner-platform" style="color:' + it.color + '">' + it.label + '</span>'
         + '<div class="banner-title">' + title + '</div>'
