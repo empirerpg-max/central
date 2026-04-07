@@ -22,33 +22,44 @@ async function buildBanner() {
   if (document.getElementById('empire-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'empire-banner';
-  banner.innerHTML = '<div style="padding:8px;color:#333;font-size:10px;text-align:center;letter-spacing:2px;">EMPIRE CHARTS</div>';
+
+  // Logo à esquerda
+  banner.innerHTML = `
+    <div class="banner-logo"><img src="logo.png" onerror="this.parentElement.style.display='none'"></div>
+    <div class="banner-sep"></div>`;
+
   document.body.insertBefore(banner, document.body.firstChild);
 
   try {
     const data = await fetchCached(API + '?action=getBannerN1s');
     const items = [
-      { label: 'HOT 100',     color: '#fff',           d: data.hot100 },
-      { label: 'SPOTIFY',     color: 'var(--spotify)', d: data.spotify },
-      { label: 'APPLE MUSIC', color: 'var(--apple)',   d: data.apple },
-      { label: 'YOUTUBE',     color: 'var(--youtube)', d: data.youtube },
-      { label: 'SALES',       color: 'var(--gold)',    d: data.sales },
-      { label: 'BB 200',      color: '#bbb',           d: data.bb200 },
+      { label: 'billboard hot 100', color: 'var(--empire)', d: data.hot100 },
+      { label: 'spotify global',    color: 'var(--spotify)', d: data.spotify },
+      { label: 'apple music global',color: 'var(--apple)',   d: data.apple },
+      { label: 'youtube global',    color: 'var(--youtube)', d: data.youtube },
+      { label: 'digital sales',     color: 'var(--gold)',    d: data.sales },
+      { label: 'billboard 200',     color: '#bbb',           d: data.bb200 },
     ];
-    banner.innerHTML = items.filter(it => it.d).map(it => {
+
+    const cards = items.filter(it => it.d).map(it => {
       const cover = it.d.capa || '';
-      const title = it.d.tit || it.d.musica || it.d.titulo || it.d.t || '—';
-      const artist = it.d.art || it.d.artista || it.d.a || '';
+      const title = it.d.tit || '—';
+      const artist = it.d.art || '';
       return `<div class="banner-card">
-        <span class="banner-platform" style="color:${it.color}">${it.label}</span>
-        ${cover ? `<img src="${cover}" class="banner-cover" onerror="this.style.display='none'">` : ''}
+        <div class="banner-platform" style="background:${it.color === 'var(--empire)' ? '#8a2be2' : it.color === 'var(--spotify)' ? '#1DB954' : it.color === 'var(--apple)' ? '#fa243c' : it.color === 'var(--youtube)' ? '#ff0000' : it.color === 'var(--gold)' ? '#d4af37' : '#555'}">${it.label}</div>
         <div class="banner-info">
           <div class="banner-title">${title}</div>
           ${artist ? `<div class="banner-artist">${artist}</div>` : ''}
         </div>
-        <span class="banner-n1" style="color:${it.color}">#1</span>
+        ${cover ? `<img src="${cover}" class="banner-cover" onerror="this.style.display='none'">` : ''}
       </div>`;
     }).join('');
+
+    // Adiciona os cards mantendo a logo
+    banner.innerHTML = `
+      <div class="banner-logo"><img src="logo.png" onerror="this.parentElement.style.display='none'"></div>
+      <div class="banner-sep"></div>
+      ${cards}`;
   } catch(e) { /* silently fail */ }
 }
 
