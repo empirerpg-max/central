@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Empire – Artists</title>
+<title>Empire – Charts</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +15,8 @@
 window.onload = () => {
   buildBanner();
   buildMenu();
-  loadHOFList();
+  const p = new URLSearchParams(window.location.search);
+  initChart(p.get('tab'), p.get('style') === 'true');
 };
 </script>
 </body>
