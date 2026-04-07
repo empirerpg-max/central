@@ -45,21 +45,19 @@ async function buildBanner() {
       const cover = it.d.capa || '';
       const title = it.d.tit || '—';
       const artist = it.d.art || '';
-      return `<div class="banner-card">
-        <div class="banner-platform" style="background:${it.color === 'var(--empire)' ? '#8a2be2' : it.color === 'var(--spotify)' ? '#1DB954' : it.color === 'var(--apple)' ? '#fa243c' : it.color === 'var(--youtube)' ? '#ff0000' : it.color === 'var(--gold)' ? '#d4af37' : '#555'}">${it.label}</div>
-        <div class="banner-info">
-          <div class="banner-title">${title}</div>
-          ${artist ? `<div class="banner-artist">${artist}</div>` : ''}
-        </div>
-        ${cover ? `<img src="${cover}" class="banner-cover" onerror="this.style.display='none'">` : ''}
-      </div>`;
+      return '<div class="banner-card">'
+        + (cover ? '<img src="' + cover + '" class="banner-cover" onerror="this.style.display='none'">' : '')
+        + '<div class="banner-info">'
+        + '<span class="banner-platform" style="color:' + it.color + '">' + it.label + '</span>'
+        + '<div class="banner-title">' + title + '</div>'
+        + (artist ? '<div class="banner-artist">' + artist + '</div>' : '')
+        + '</div></div>';
     }).join('');
 
-    // Adiciona os cards mantendo a logo
     banner.innerHTML = `
       <div class="banner-logo"><img src="logo.png" onerror="this.parentElement.style.display='none'"></div>
       <div class="banner-sep"></div>
-      ${cards}`;
+      <div class="banner-cards">${cards}</div>`;
   } catch(e) { /* silently fail */ }
 }
 
@@ -72,19 +70,31 @@ async function loadHome() {
   app.innerHTML = '<div class="skeleton" style="height:520px;margin-bottom:12px;"></div>'
     + '<div class="skeleton" style="height:80px;"></div>';
 
-  const [coverData, releases] = await Promise.all([
-    fetchCached(API + '?action=getTopArtistCover'),
-    fetchCached(API + '?action=getReleases')
-  ]);
+  let coverData = {}, releases = [];
+  try {
+    [coverData, releases] = await Promise.all([
+      fetchCached(API + '?action=getTopArtistCover'),
+      fetchCached(API + '?action=getReleases')
+    ]);
+  } catch(e) {
+    app.innerHTML = '<p style="text-align:center;color:#555;padding:60px;">Erro ao carregar dados. Verifique a API.</p>';
+    return;
+  }
 
-  const art = coverData || {};
-  const img = art.img || art.capa || '';
-  const name = art.name || art.artista || '';
+  // Se voltou vazio, mostra mensagem útil
+  if (!coverData || !coverData.name) {
+    app.innerHTML = '<p style="text-align:center;color:#555;padding:60px;letter-spacing:2px;font-size:12px;">TOP ARTIST NÃO ENCONTRADO — verifique se a planilha TOP_50_ARTISTAS_MENSAL tem linhas com RANK = 1</p>';
+    return;
+  }
+
+  const art = coverData;
+  const img = art.img || '';
+  const name = art.name || '';
   const headline = art.headline || '';
-  const editorial = art.editorial || art.contexto || '';
-  const author = art.author || art.fonte || '';
+  const editorial = art.editorial || '';
+  const author = art.author || '';
   const month = art.month || '';
-  const pts = art.pts || art.pontos || '';
+  const pts = art.pts || '';
 
   const typeColor = t => {
     t = (t || '').toUpperCase();
