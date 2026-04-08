@@ -503,9 +503,36 @@ async function loadRealTime() {
 }
 
 // ============================================================
-// CHARTS GERAIS — com filtro de busca por artista/música
+// CHARTS GERAIS — filtros temáticos com setas
 // ============================================================
 let chartCache = [];
+
+// Retorna cores do tema ativo para usar nos filtros
+function getThemeAccent() {
+  const b = document.body.classList;
+  if (b.contains('theme-spotify'))   return { color: '#1DB954', bg: 'rgba(29,185,84,0.12)',  border: 'rgba(29,185,84,0.4)' };
+  if (b.contains('theme-apple'))     return { color: '#fa243c', bg: 'rgba(250,36,60,0.08)',   border: 'rgba(250,36,60,0.35)' };
+  if (b.contains('theme-youtube'))   return { color: '#ff0000', bg: 'rgba(255,0,0,0.1)',      border: 'rgba(255,0,0,0.35)' };
+  if (b.contains('theme-billboard')) return { color: '#e31c23', bg: 'rgba(227,28,35,0.08)',   border: 'rgba(227,28,35,0.3)' };
+  return { color: '#8a2be2', bg: 'rgba(138,43,226,0.12)', border: 'rgba(138,43,226,0.4)' };
+}
+
+// Renderiza um pill-container com setas
+function pillRow(id, pills, activeIndex = 0) {
+  return `
+  <div class="filter-row" id="row-${id}">
+    <button class="filter-arrow" onclick="scrollPills('${id}',-1)" aria-label="anterior">&#8249;</button>
+    <div class="pill-container" id="${id}">
+      ${pills}
+    </div>
+    <button class="filter-arrow" onclick="scrollPills('${id}',1)" aria-label="próximo">&#8250;</button>
+  </div>`;
+}
+
+function scrollPills(id, dir) {
+  const el = document.getElementById(id);
+  if (el) el.scrollBy({ left: dir * 200, behavior: 'smooth' });
+}
 
 async function initChart(tab, hasStyle) {
   const app = document.getElementById('app');
@@ -513,19 +540,29 @@ async function initChart(tab, hasStyle) {
   app.innerHTML = '<div class="skeleton"></div>'.repeat(5);
 
   const f = await fetchCached(`${API}?action=getFilters&tab=${tab}`);
+  const ac = getThemeAccent();
 
-  let h = `<h2 style="text-align:center;text-transform:uppercase;margin-bottom:30px;letter-spacing:2px;font-weight:900;">${tab}</h2>
+  const datePills = f.dates.map((d, i) =>
+    `<div class="pill date-pill ${i === 0 ? 'active' : ''}" onclick="updateChart(this,'${tab}','${d}',${hasStyle})">${d}</div>`
+  ).join('');
+
+  const stylePills = hasStyle
+    ? `<div class="pill style-pill active" onclick="applyGenre('ALL',event)">TODOS OS ESTILOS</div>`
+    : '';
+
+  const searchBg  = document.body.classList.contains('theme-billboard') || document.body.classList.contains('theme-apple') ? '#f2f2f2' : '#111';
+  const searchClr = document.body.classList.contains('theme-billboard') || document.body.classList.contains('theme-apple') ? '#000' : '#fff';
+
+  const h = `
+    <h2 style="text-align:center;text-transform:uppercase;margin-bottom:24px;letter-spacing:2px;font-weight:900;">${tab}</h2>
     <div class="filter-group">
-      <div class="pill-container" id="date-pills">
-        ${f.dates.map((d, i) => `<div class="pill date-pill ${i === 0 ? 'active' : ''}" onclick="updateChart(this,'${tab}','${d}',${hasStyle})">${d}</div>`).join('')}
-      </div>
-      ${hasStyle ? `<div class="pill-container" id="style-pills"><div class="pill style-pill active" onclick="applyGenre('ALL')">TODOS OS ESTILOS</div></div>` : ''}
-      <div style="display:flex;gap:10px;align-items:center;max-width:600px;width:100%;">
-        <input id="chart-search" type="text" placeholder="🔍  Filtrar por artista ou música..."
+      ${pillRow('date-pills', datePills)}
+      ${hasStyle ? pillRow('style-pills', stylePills) : ''}
+      <div class="filter-search-row">
+        <input id="chart-search" type="text" placeholder="🔍  Artista ou música..."
           oninput="applyChartSearch()"
-          style="flex:1;padding:10px 18px;border-radius:50px;border:1px solid #333;background:#111;color:#fff;font-size:12px;outline:none;">
-        <button onclick="document.getElementById('chart-search').value='';applyChartSearch()"
-          style="padding:10px 16px;border-radius:50px;border:1px solid #333;background:none;color:#666;font-size:11px;cursor:pointer;white-space:nowrap;">Limpar</button>
+          style="background:${searchBg};color:${searchClr};border-color:${ac.border};">
+        <button class="filter-clear" onclick="document.getElementById('chart-search').value='';applyChartSearch()">✕ Limpar</button>
       </div>
     </div>
     <div id="chart-area"></div>`;
@@ -549,21 +586,21 @@ async function updateChart(el, tab, date, hasStyle) {
     const styles = [...new Set(res.map(i => i.estilo || i.style))].filter(s => s).sort();
     const sContainer = document.getElementById('style-pills');
     if (sContainer) {
-      sContainer.innerHTML = `<div class="pill style-pill active" onclick="applyGenre('ALL')">TODOS OS ESTILOS</div>` +
-        styles.map(s => `<div class="pill style-pill" onclick="applyGenre('${s}')">${s}</div>`).join('');
+      sContainer.innerHTML =
+        `<div class="pill style-pill active" onclick="applyGenre('ALL',event)">TODOS OS ESTILOS</div>` +
+        styles.map(s => `<div class="pill style-pill" onclick="applyGenre('${s}',event)">${s}</div>`).join('');
     }
   }
 
-  // Limpa o campo de busca ao trocar de data
   const searchEl = document.getElementById('chart-search');
   if (searchEl) searchEl.value = '';
 
   renderRows(res, tab);
 }
 
-function applyGenre(genre) {
+function applyGenre(genre, ev) {
   document.querySelectorAll('.style-pill').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
+  if (ev && ev.target) ev.target.classList.add('active');
   const q = (document.getElementById('chart-search')?.value || '').toLowerCase().trim();
   let filtered = genre === 'ALL' ? chartCache : chartCache.filter(i => (i.estilo || i.style) === genre);
   if (q) filtered = filtered.filter(i => _matchSearch(i, q));
@@ -630,21 +667,27 @@ async function initCountry(tab) {
   app.innerHTML = '<div class="skeleton"></div>'.repeat(5);
 
   const f = await fetchCached(`${API}?action=getFilters&tab=${tab}`);
+  const ac = getThemeAccent();
+  const searchBg  = document.body.classList.contains('theme-apple') ? '#f2f2f2' : '#111';
+  const searchClr = document.body.classList.contains('theme-apple') ? '#000' : '#fff';
+
+  const datePills = f.dates.map((d, i) =>
+    `<div class="pill date-pill ${i === 0 ? 'active' : ''}" onclick="updateCountry(this,'${tab}','${d}')">${d}</div>`
+  ).join('');
 
   const h = `
-    <h2 style="text-align:center;text-transform:uppercase;margin-bottom:30px;letter-spacing:2px;font-weight:900;">${tab.replace(' COUNTRIES','')}: Por País</h2>
+    <h2 style="text-align:center;text-transform:uppercase;margin-bottom:24px;letter-spacing:2px;font-weight:900;">${tab.replace(' COUNTRIES','')}: Por País</h2>
     <div class="filter-group">
-      <div class="pill-container" id="date-pills">
-        ${f.dates.map((d, i) => `<div class="pill date-pill ${i === 0 ? 'active' : ''}" onclick="updateCountry(this,'${tab}','${d}')">${d}</div>`).join('')}
-      </div>
-      <div style="display:flex;gap:10px;align-items:center;max-width:600px;width:100%;">
-        <input id="country-filter" type="text" placeholder="🔍  Filtrar por país, artista ou música..."
+      ${pillRow('date-pills', datePills)}
+      <div class="filter-search-row">
+        <input id="country-filter" type="text" placeholder="🔍  País, artista ou música..."
           oninput="applyCountrySearch()"
-          style="flex:1;padding:10px 18px;border-radius:50px;border:1px solid #333;background:#111;color:#fff;font-size:12px;outline:none;">
+          style="background:${searchBg};color:${searchClr};border-color:${ac.border};">
         <select id="country-select" onchange="applyCountrySearch()"
-          style="padding:10px 18px;border-radius:50px;border:1px solid #333;background:#111;color:#aaa;font-size:12px;outline:none;cursor:pointer;">
+          style="padding:10px 16px;border-radius:50px;border:1px solid ${ac.border};background:${searchBg};color:${searchClr};font-size:12px;outline:none;cursor:pointer;">
           <option value="">🌍 Todos os países</option>
         </select>
+        <button class="filter-clear" onclick="document.getElementById('country-filter').value='';document.getElementById('country-select').value='';applyCountrySearch()">✕ Limpar</button>
       </div>
     </div>
     <div id="chart-area"></div>`;
