@@ -128,6 +128,22 @@ async function loadHome() {
     </div>
   </div>` : '';
 
+  // Formata o editorial: "site\n\n<b>TÍTULO</b>\n\ntexto" → HTML legível
+  function formatEditorial(text) {
+    if (!text) return '';
+    // Remove tags HTML existentes exceto <b>
+    text = text.replace(/<(?!b>|\/b>)[^>]+>/gi, '');
+    // Quebra em parágrafos por linha dupla ou \n
+    const lines = text.split(/\n/).map(l => l.trim()).filter(l => l);
+    return lines.map((line, i) => {
+      if (i === 0) return `<div class="home-editorial-site">${line}</div>`;
+      // Linha em negrito (tag <b> ou toda em maiúsculas curta)
+      if (line.startsWith('<b>') || (line === line.toUpperCase() && line.length < 120))
+        return `<div class="home-editorial-headline">${line.replace(/<\/?b>/g,'')}</div>`;
+      return `<p class="home-editorial-para">${line}</p>`;
+    }).join('');
+  }
+
   app.innerHTML = `
   <div class="home-cover">
     <div class="home-cover-img" style="background-image:url('${img}')">
@@ -140,14 +156,12 @@ async function loadHome() {
       <div class="home-cover-content">
         <h1 class="home-cover-name">${name}</h1>
         ${pts ? `<div class="home-cover-pts">${pts} <span>PTS</span></div>` : ''}
-        ${headline ? `<p class="home-cover-headline">${headline}</p>` : ''}
       </div>
     </div>
     ${editorial ? `
     <div class="home-editorial">
-      <div class="home-editorial-label">EDITORIAL</div>
-      <div class="home-editorial-text">${editorial}</div>
-      ${author ? `<div class="home-editorial-author">— ${author}</div>` : ''}
+      ${author ? `<div class="home-editorial-label">${author}</div>` : ''}
+      <div class="home-editorial-text">${formatEditorial(editorial)}</div>
     </div>` : ''}
   </div>
   ${releasesHtml}`;
