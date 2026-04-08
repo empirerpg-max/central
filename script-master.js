@@ -10,7 +10,7 @@ const API = "https://script.google.com/macros/s/AKfycbyDQK3x0fU5V6qnFgtRyf8IPTNP
 const _cache = {};
 async function fetchCached(url) {
   if (_cache[url]) return _cache[url];
-  const data = await fetch(url).then(r => r.json());
+  const data = await fetch(url, { redirect: 'follow' }).then(r => r.json());
   _cache[url] = data;
   return data;
 }
@@ -72,12 +72,22 @@ async function loadHome() {
 
   let coverData = {}, releases = [];
   try {
-    [coverData, releases] = await Promise.all([
-      fetchCached(API + '?action=getTopArtistCover'),
-      fetchCached(API + '?action=getReleases')
-    ]);
+    coverData = await fetchCached(API + '?action=getTopArtistCover');
   } catch(e) {
-    app.innerHTML = '<p style="text-align:center;color:#555;padding:60px;">Erro ao carregar dados. Verifique a API.</p>';
+    console.error('getTopArtistCover falhou:', e);
+  }
+  try {
+    releases = await fetchCached(API + '?action=getReleases');
+  } catch(e) {
+    console.error('getReleases falhou:', e);
+  }
+
+  // Se voltou erro da API (objeto com campo error)
+  if (coverData && coverData.error) {
+    app.innerHTML = `<p style="text-align:center;color:#555;padding:60px;letter-spacing:2px;font-size:12px;">
+      ERRO DA API: ${coverData.error}<br><br>
+      Verifique se o deploy do Apps Script foi republicado com as novas funções.
+    </p>`;
     return;
   }
 
