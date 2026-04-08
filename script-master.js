@@ -548,6 +548,7 @@ async function initChart(tab, hasStyle) {
 
   const stylePills = hasStyle
     ? `<div class="pill style-pill active" onclick="applyGenre('ALL',event)">TODOS OS ESTILOS</div>`
+      + (f.styles || []).map(s => `<div class="pill style-pill" onclick="applyGenre('${s.replace(/'/g,"\\'")}',event)">${s}</div>`).join('')
     : '';
 
   const searchBg  = document.body.classList.contains('theme-billboard') || document.body.classList.contains('theme-apple') ? '#f2f2f2' : '#111';
