@@ -712,10 +712,10 @@ async function updateCountry(el, tab, date) {
   const res = await fetchCached(`${API}?action=getChart&tab=${tab}&date=${date}`);
   countryCache = res;
 
-  // Popula o select de países
+  // Popula o select de países usando campo 'pais'
   const countrySel = document.getElementById('country-select');
   if (countrySel) {
-    const countries = [...new Set(res.map(i => i.country || i.pais || i.p2 || '').filter(Boolean))].sort();
+    const countries = [...new Set(res.map(i => i.pais || '').filter(Boolean))].sort();
     countrySel.innerHTML = `<option value="">🌍 Todos os países</option>` +
       countries.map(c => `<option value="${c}">${c}</option>`).join('');
   }
@@ -728,15 +728,15 @@ async function updateCountry(el, tab, date) {
 
 function applyCountrySearch() {
   const q = (document.getElementById('country-filter')?.value || '').toLowerCase().trim();
-  const country = (document.getElementById('country-select')?.value || '').toLowerCase();
+  const country = (document.getElementById('country-select')?.value || '');
   let filtered = countryCache;
-  if (country) filtered = filtered.filter(i => (i.country || i.pais || i.p2 || '').toLowerCase() === country);
+  if (country) filtered = filtered.filter(i => (i.pais || '') === country);
   if (q) {
     filtered = filtered.filter(i => {
-      const title = (i.musica || i.titulo || i.tit || i.t || '').toLowerCase();
-      const artist = (i.artista || i.art || i.a || '').toLowerCase();
-      const c = (i.country || i.pais || i.p2 || '').toLowerCase();
-      return title.includes(q) || artist.includes(q) || c.includes(q);
+      const title = (i.tit || '').toLowerCase();
+      const artist = (i.art || '').toLowerCase();
+      const pais = (i.pais || '').toLowerCase();
+      return title.includes(q) || artist.includes(q) || pais.includes(q);
     });
   }
   renderCountryRows(filtered);
@@ -744,29 +744,26 @@ function applyCountrySearch() {
 
 function renderCountryRows(data) {
   const area = document.getElementById('chart-area');
-  if (!data.length) {
+  if (!data || !data.length) {
     area.innerHTML = '<p style="text-align:center;color:#555;padding:40px;">Nenhum resultado encontrado.</p>';
     return;
   }
   area.innerHTML = data.map(i => {
-    const pos = i.posicao || i.pos || i.p || '-';
-    const cover = i.capa || i.c || 'https://via.placeholder.com/45';
-    const title = i.musica || i.titulo || i.tit || i.t || '-';
-    const artist = i.artista || i.art || i.a || '';
-    const country = i.country || i.pais || i.p2 || '';
-    const val = i.semana || i.streams || i.val || i.s || '0';
-    const st = i.status || i.st || '=';
-    const stClass = st == '↑' ? 'up' : (st == '↓' ? 'down' : (st == 'NEW' ? 'new' : ''));
-    const stIcon = st == '↑' ? '▲' : (st == '↓' ? '▼' : (st == 'NEW' ? 'NEW' : '='));
-    return `<div class="chart-row" style="grid-template-columns:50px 60px 1fr 120px 100px;">
-      <div><div class="rank">${pos}</div><div class="st-tag ${stClass}">${stIcon}</div></div>
-      <img src="${cover}">
-      <div style="padding-left:15px;overflow:hidden;">
-        <b style="font-size:15px;white-space:nowrap;">${title}</b>
-        <br><span style="color:#888;font-size:13px;">${artist}</span>
+    const pos   = i.pos  || '-';
+    const cover = i.capa || 'https://via.placeholder.com/45';
+    const title = i.tit  || '-';
+    const artist = i.art || '';
+    const pais  = i.pais || '';
+    const val   = i.val  || '0';
+    return `<div class="chart-row" style="grid-template-columns:40px 50px 1fr 110px 120px;">
+      <div class="rank" style="font-size:16px;">${pos}</div>
+      <img src="${cover}" onerror="this.src='https://via.placeholder.com/45'">
+      <div style="padding-left:12px;overflow:hidden;">
+        <b style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">${title}</b>
+        <span style="color:#888;font-size:12px;">${artist}</span>
       </div>
-      <div style="text-align:right;"><b style="font-size:15px;">${val}</b></div>
-      <div style="text-align:right;font-size:11px;color:#555;letter-spacing:1px;">${country}</div>
+      <div style="text-align:right;font-size:13px;font-weight:700;">${val}</div>
+      <div style="text-align:right;font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase;">${pais}</div>
     </div>`;
   }).join('');
 }
