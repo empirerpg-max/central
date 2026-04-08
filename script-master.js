@@ -667,6 +667,10 @@ async function initCountry(tab) {
   app.innerHTML = '<div class="skeleton"></div>'.repeat(5);
 
   const f = await fetchCached(`${API}?action=getFilters&tab=${tab}`);
+  if (!f || !f.dates || !f.dates.length) {
+    app.innerHTML = `<p style="text-align:center;color:#555;padding:60px;font-size:12px;letter-spacing:2px;">NENHUMA DATA ENCONTRADA PARA "${tab}"</p>`;
+    return;
+  }
   const ac = getThemeAccent();
   const searchBg  = document.body.classList.contains('theme-apple') ? '#f2f2f2' : '#111';
   const searchClr = document.body.classList.contains('theme-apple') ? '#000' : '#fff';
